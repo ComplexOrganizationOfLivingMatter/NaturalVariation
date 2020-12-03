@@ -9,18 +9,13 @@ function [centroidsRaw,newCentroids]=getCentroids(labelledImage,apicalLayer,basa
         coordCell = centroidsRaw(nCell,:);
         if ~isempty(coordCell)
            indApi = find(apicalLayer==nCell);
-           [xApi,yApi,zApi]=ind2sub(size(apicalLayer),indApi);
-           distancesApi = pdist2(coordCell,[xApi,yApi,zApi]);
-           [~,idMinApi]=min(distancesApi);
-           coordMinApi = [xApi(idMinApi),yApi(idMinApi),zApi(idMinApi)];
-
+           [yApi,xApi,zApi]=ind2sub(size(apicalLayer),indApi);
            indBas = find(basalLayer==nCell);
-           [xBas,yBas,zBas]=ind2sub(size(basalLayer),indBas);
-           distancesBas = pdist2(coordCell,[xBas,yBas,zBas]);
-           [~,idMinBas]=min(distancesBas);
-           coordMinBas = [xBas(idMinBas),yBas(idMinBas),zBas(idMinBas)];
-           newCentroids(nCell,:) = round(mean([coordMinApi;coordMinBas]));
-
+           [yBas,xBas,zBas]=ind2sub(size(basalLayer),indBas);
+       
+           meanApiCoord = mean([xApi,yApi,zApi]);
+           meanBasCoord = mean([xBas,yBas,zBas]);
+           newCentroids(nCell,:) = round(mean([meanApiCoord;meanBasCoord]));
 %            auxImage = (apicalLayer==nCell)+(basalLayer==nCell);
 %            auxImage(newCentroids(nCell,2),newCentroids(nCell,1),newCentroids(nCell,3))=1;
 %            volumeViewer(auxImage)

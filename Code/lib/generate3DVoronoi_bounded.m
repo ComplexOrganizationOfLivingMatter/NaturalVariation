@@ -12,14 +12,14 @@ function [labelledImageVoronoi] = generate3DVoronoi_bounded(seeds,validRegion)
     seeds(unique(rowNan),:)=[];
    
     %From valid pixels get closest seed (add this value)
-    tic
+    %tic
     display('generating 3D Voronoi')
     parfor nId = 1:length(ids)
-        distCoord = pdist2([row(nId), col(nId), z(nId)],seeds);
+        distCoord = pdist2([col(nId),row(nId), z(nId)],seeds);
         [~,idSeedMin]=min(distCoord);
         labelPerId(nId) = idSeedMin;
     end
-    toc
+    %toc
     
     labelledImageVoronoi(ids)=labelPerId;
     
