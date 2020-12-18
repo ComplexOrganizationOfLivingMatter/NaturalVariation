@@ -23,11 +23,8 @@ function [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetwo
         % Voxels/Pixels to Micrometers
         [meanCellsFeatures,stdFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatures] = convertPixelsToMicrons(meanCellsFeatures,stdFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatures,pixelScale);
 
-        cellularFeaturesNoCells = varfun(@(x) cell2mat(x), cellularFeatures(:, 4:5));
-        cellularFeatures.Total_neighbours = cellularFeaturesNoCells.Fun_Total_neighbours;
-        cellularFeatures.Apicobasal_neighbours = cellularFeaturesNoCells.Fun_Apicobasal_neighbours;
-        mean3DNeighsFeatures = varfun(@(x) mean(x), cellularFeatures(validCells, 2:7));
-        std3DNeighsFeatures = varfun(@(x) std(x), cellularFeatures(validCells, 2:7));
+        mean3DNeighsFeatures = varfun(@(x) mean(x), cellularFeatures(validCells, 2:end));
+        std3DNeighsFeatures = varfun(@(x) std(x), cellularFeatures(validCells, 2:end));
 
         totalMeanCellsFeatures = table2cell(meanCellsFeatures);
         totalStdCellsFeatures = table2cell(stdFeatures);

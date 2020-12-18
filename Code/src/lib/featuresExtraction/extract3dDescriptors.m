@@ -39,9 +39,9 @@ for indexCell= 1: max(labelledImage(:))
 end
 cells3dFeatures.normalizedVolume = arrayfun(@(x) x/mean(cells3dFeatures.Volume), cells3dFeatures.normalizedVolume);
 
-columnIDs = table('Size', size(validCells), 'VariableTypes', {'string'});
+columnIDs = table('Size', size([validCells(:)]), 'VariableTypes', {'string'});
 columnIDs.Properties.VariableNames = {'ID_Cell'};
-columnIDs.ID_Cell = arrayfun(@(x) strcat('cell_', num2str(x)), validCells, 'UniformOutput', false);
+columnIDs.ID_Cell = arrayfun(@(x) strcat('cell_', num2str(x)), [validCells(:)], 'UniformOutput', false);
 cells3dFeatures = horzcat(columnIDs, cells3dFeatures(validCells,:));
 end
 

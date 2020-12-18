@@ -16,14 +16,13 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         % get apical, basal and total sides cells. Areas and cell Volume
         [cellularFeaturesValidCells,cellularFeaturesAllCells,surfaceRatio3D,apicoBasalNeighs,polygon_distribution] = calculate_CellularFeatures(apical3dInfo,basal3dInfo,apicalLayer,basalLayer,labelledImage,noValidCells,validCells);
         %%Extract each cell and calculate 3D features
-        [cells3dFeatures] = extract3dDescriptors(labelledImage, validCells');
+        [cells3dFeatures] = extract3dDescriptors(labelledImage, validCells);
         
         polygon_distribution_basal= polygon_distribution.Basal;
         polygon_distribution_apical = polygon_distribution.Apical;
-        basalInfo = table(cellularFeaturesValidCells.Basal_sides, cellularFeaturesValidCells.Basal_area);
-        apicalInfo = table(cellularFeaturesValidCells.Apical_sides, cellularFeaturesValidCells.Apical_area);
+        apicalAndBasalInfo = table(cellularFeaturesValidCells.Apical_sides, cellularFeaturesValidCells.Apical_area,cellularFeaturesValidCells.Basal_sides, cellularFeaturesValidCells.Basal_area,'VariableNames',{'apical_NumNeighs','apical_Area','basal_NumNeighs','basal_Area'});
         polygon_distribution_total = calculate_polygon_distribution(cellfun(@(x,y) length(unique([x;y])), apical3dInfo, basal3dInfo), validCells);
-        cells3dFeatures = horzcat(cells3dFeatures, apicalInfo, basalInfo);
+        cells3dFeatures = horzcat(cells3dFeatures, apicalAndBasalInfo);
 
         %% Obtain Lumen descriptors
         [lumen3dFeatures] = extract3dDescriptors(lumenImage>0, 1);
