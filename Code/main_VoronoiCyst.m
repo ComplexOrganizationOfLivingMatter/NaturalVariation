@@ -53,10 +53,19 @@ for nCyst = 1:size(pathCysts,1)
         [labelledImageVoronoi_NewSeeds] = generate3DVoronoi_bounded(newCentroids,labelledImage>0);
         save([folderModel '\cystVoronoi.mat'],'labelledImageVoronoi_Raw','labelledImageVoronoi_NewSeeds','-v7.3')
     else
-        %load([folderModel '\cystVoronoi.mat'],'labelledImageVoronoi_Raw','labelledImageVoronoi_NewSeeds')
+        load([folderModel '\cystVoronoi.mat'],'labelledImageVoronoi_Raw')
+%         load([folderModel '\cystVoronoi.mat'],'labelledImageVoronoi_Raw','labelledImageVoronoi_NewSeeds')
     end
     %4. Extract features from 3D Voronoi models
+    load(fullfile(pathCysts(nCyst).folder,'pixelScaleOfGland.mat'),'pixelScale')
+    path2saveFeatures = fullfile(folderModel,'features');
+    fileName = [splittedFolder{6} '/' splittedFolder{7}];
     
+     %% get apical and basal layers, and Lumen
+    [apicalLayer,basalLayer,lumenImage] = getApicalBasalAndLumenFromCyst(labelledImageVoronoi_Raw);
+    [allGeneralInfo(nCyst),allTissues(nCyst),allLumens(nCyst),allHollowTissue3dFeatures(nCyst),allNetworkFeatures(nCyst),totalMeanCellsFeatures(nCyst),totalStdCellsFeatures(nCyst),totalMean3DNeighsFeatures(nCyst),totalSTD3DNeighsFeatures(nCyst)]=calculate3DMorphologicalFeatures(labelledImageVoronoi_Raw,basalLayer,apicalLayer,lumenImage,path2saveFeatures,fileName,pixelScale);
     
 end
+
+summarizeAllTissuesProperties(allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetworkFeatures,totalMeanCellsFeatures,totalStdCellsFeatures,totalMean3DNeighsFeatures,totalSTD3DNeighsFeatures,path2saveSummary);
         
