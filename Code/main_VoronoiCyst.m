@@ -3,9 +3,23 @@ clear all; close all; addpath(genpath('..\Code'))
 %1. Load final segmented cysts
 pathCysts = dir('..\data\**\3d_layers_info.mat');
 rootPathModels = '..\models\';
+path2saveSummary = [rootPathModels 'models_'];
 mkdir(rootPathModels)
 
-for nCyst = 1:size(pathCysts,1)
+allGeneralInfo = cell(size(pathCysts,1),1);
+allTissues = cell(size(pathCysts,1),1);
+allLumens = cell(size(pathCysts,1),1);
+allHollowTissue3dFeatures = cell(size(pathCysts,1),1);
+allNetworkFeatures = cell(size(pathCysts,1),1);
+totalMeanCellsFeatures = cell(size(pathCysts,1),1);
+totalStdCellsFeatures = cell(size(pathCysts,1),1);
+totalMean3DNeighsFeatures = cell(size(pathCysts,1),1);
+totalSTD3DNeighsFeatures = cell(size(pathCysts,1),1);
+%At least the 0.5% of lateral membrane contacting with other cell to be
+%considered as neighbor.
+contactThreshold = 0.5;
+
+for nCyst = 1:2%:size(pathCysts,1)
     splittedFolder = strsplit(pathCysts(nCyst).folder,'\');
     folderModel = fullfile(rootPathModels,splittedFolder{6},splittedFolder{7});
     display(splittedFolder{7})
@@ -61,11 +75,11 @@ for nCyst = 1:size(pathCysts,1)
     path2saveFeatures = fullfile(folderModel,'features');
     fileName = [splittedFolder{6} '/' splittedFolder{7}];
     
-     %% get apical and basal layers, and Lumen
-    [apicalLayer,basalLayer,lumenImage] = getApicalBasalAndLumenFromCyst(labelledImageVoronoi_Raw);
-    [allGeneralInfo(nCyst),allTissues(nCyst),allLumens(nCyst),allHollowTissue3dFeatures(nCyst),allNetworkFeatures(nCyst),totalMeanCellsFeatures(nCyst),totalStdCellsFeatures(nCyst),totalMean3DNeighsFeatures(nCyst),totalSTD3DNeighsFeatures(nCyst)]=calculate3DMorphologicalFeatures(labelledImageVoronoi_Raw,basalLayer,apicalLayer,lumenImage,path2saveFeatures,fileName,pixelScale);
-    
+    %%get apical and basal layers, and Lumen
+    [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImageVoronoi_Raw);
+    [allGeneralInfo{nCyst},allTissues{nCyst},allLumens{nCyst},allHollowTissue3dFeatures{nCyst},allNetworkFeatures{nCyst},totalMeanCellsFeatures{nCyst},totalStdCellsFeatures{nCyst}]=calculate3DMorphologicalFeatures(labelledImageVoronoi_Raw,apicalLayer,basalLayer,lateralLayer,lumenImage,path2saveFeatures,fileName,pixelScale,contactThreshold);
+
 end
 
-summarizeAllTissuesProperties(allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetworkFeatures,totalMeanCellsFeatures,totalStdCellsFeatures,totalMean3DNeighsFeatures,totalSTD3DNeighsFeatures,path2saveSummary);
+summarizeAllTissuesProperties(allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetworkFeatures,totalMeanCellsFeatures,totalStdCellsFeatures,path2saveSummary);
         

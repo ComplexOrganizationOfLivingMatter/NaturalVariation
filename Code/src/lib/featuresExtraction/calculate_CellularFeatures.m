@@ -1,11 +1,11 @@
-function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio, apicobasal_neighbours,polygon_distribution] = calculate_CellularFeatures(apical3dInfo,basal3dInfo,apicalLayer,basalLayer,labelledImage,noValidCells,validCells)
+function [CellularFeaturesValidCells, meanSurfaceRatio, apicobasal_neighbours,polygon_distribution] = calculate_CellularFeatures(apical3dInfo,basal3dInfo,lateral3dInfo,apicalLayer,basalLayer,labelledImage,totalLateralCellsArea,absoluteLateralContacts,noValidCells,validCells)
     %CALCULATE_CELLULARFEATURES Summary of this function goes here
     %   Detailed explanation goes here
 
-    %% Check cell motives that participate in apico-basal intercalations.
-    apicobasal_neighbours=cellfun(@(x,y)(unique(vertcat(x,y))), apical3dInfo, basal3dInfo, 'UniformOutput',false);
-    apicoBasalTransitionsLabels = cellfun(@(x, y) unique(vertcat(setdiff(x, y), setdiff(y, x))), apical3dInfo, basal3dInfo, 'UniformOutput', false);
-    apicoBasalTransitions = cellfun(@(x) length(x), apicoBasalTransitionsLabels);
+%     %% Check cell motives that participate in apico-basal intercalations.
+%     apicobasal_neighbours=cellfun(@(x,y)(unique(vertcat(x,y))), apical3dInfo, basal3dInfo, 'UniformOutput',false);
+%     apicoBasalTransitionsLabels = cellfun(@(x, y) unique(vertcat(setdiff(x, y), setdiff(y, x))), apical3dInfo, basal3dInfo, 'UniformOutput', false);
+%     apicoBasalTransitions = cellfun(@(x) length(x), apicoBasalTransitionsLabels);
 %     [verticesInfo] = getVertices3D(labelledImage, apicobasal_neighbours);
 %     indexCells = find(apicoBasalTransitions>0);
 %     indexCells=setdiff(indexCells,noValidCells);
@@ -43,20 +43,26 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
     %% Calculate polygon distribution
     [polygon_distribution_Apical] = calculate_polygon_distribution(cellfun(@length, apical3dInfo), validCells);
     [polygon_distribution_Basal] = calculate_polygon_distribution(cellfun(@length, basal3dInfo), validCells);
-    neighbours_data = table(apical3dInfo, basal3dInfo);
-    polygon_distribution = table(polygon_distribution_Apical, polygon_distribution_Basal);
-    neighbours_data.Properties.VariableNames = {'Apical','Basal'};
-    polygon_distribution.Properties.VariableNames = {'Apical','Basal'};
+    [polygon_distribution_Lateral] = calculate_polygon_distribution(cellfun(@length, lateral3dInfo), validCells);
+    neighbours_data = table(apical3dInfo, basal3dInfo, lateral3dInfo);
+    polygon_distribution = table(polygon_distribution_Apical, polygon_distribution_Basal,polygon_distribution_Lateral);
+    neighbours_data.Properties.VariableNames = {'Apical','Basal','Lateral'};
+    polygon_distribution.Properties.VariableNames = {'Apical','Basal','Lateral'};
 
     %%  Calculate number of neighbours of each cell
-    number_neighbours = table(cellfun(@length,(apical3dInfo)),cellfun(@length,(basal3dInfo)));
+    number_neighbours = table(cellfun(@length,(apical3dInfo)),cellfun(@length,(basal3dInfo)),cellfun(@length,(lateral3dInfo)));
+    
     apicobasal_neighbours=cellfun(@(x,y)(unique(vertcat(x,y))), apical3dInfo, basal3dInfo, 'UniformOutput',false);
-    apicobasal_neighboursRecount=cell2mat(cellfun(@(x) length(x),apicobasal_neighbours,'UniformOutput',false));
-
+    apicobasal_neighboursRecount= cellfun(@length ,apicobasal_neighbours);
+    
     %%  Calculate area cells
     apical_area_cells=cell2mat(struct2cell(regionprops(apicalLayer,'Area'))).';
     basal_area_cells=cell2mat(struct2cell(regionprops(basalLayer,'Area'))).';
-
+    lateral_area_cells = totalLateralCellsArea;
+    
+    average_lateral_wall = cellfun(@mean, absoluteLateralContacts);
+    std_lateral_wall = cellfun(@std, absoluteLateralContacts);
+    
     meanSurfaceRatio = sum(basal_area_cells(validCells)) / sum(apical_area_cells(validCells));
 
     %%  Calculate volume cells
@@ -68,8 +74,8 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
 
     %%  Export to a excel file
     ID_cells=(1:length(basal3dInfo)).';
-    CellularFeaturesAllCells=table(ID_cells,number_neighbours.Var1',number_neighbours.Var2',apicobasal_neighboursRecount',scutoids_cells', apicoBasalTransitions', apical_area_cells,basal_area_cells, volume_cells);
-    CellularFeaturesAllCells.Properties.VariableNames = {'ID_Cell','Apical_sides','Basal_sides','Apicobasal_neighbours','Scutoids', 'apicoBasalTransitions', 'Apical_area','Basal_area', 'Volume'};
+    CellularFeaturesAllCells=table(ID_cells,number_neighbours.Var1',number_neighbours.Var2',number_neighbours.Var3',apicobasal_neighboursRecount',scutoids_cells', apicoBasalTransitions', apical_area_cells,basal_area_cells,lateral_area_cells, average_lateral_wall, std_lateral_wall, volume_cells);
+    CellularFeaturesAllCells.Properties.VariableNames = {'ID_Cell','Apical_sides','Basal_sides','Lateral_sides','Apicobasal_neighbours','Scutoids', 'apicoBasalTransitions', 'Apical_area','Basal_area','Lateral_area','Average_cell_wall_area', 'Std_cell_wall_area', 'Volume'};
 
     CellularFeaturesValidCells = CellularFeaturesAllCells;
     CellularFeaturesValidCells(noValidCells,:) = [];  
