@@ -19,7 +19,7 @@ totalSTD3DNeighsFeatures = cell(size(pathCysts,1),1);
 %considered as neighbor.
 contactThreshold = 0.5;
 
-for nCyst = 1:2%:size(pathCysts,1)
+for nCyst = 1:size(pathCysts,1)
     splittedFolder = strsplit(pathCysts(nCyst).folder,'\');
     folderModel = fullfile(rootPathModels,splittedFolder{6},splittedFolder{7});
     display(splittedFolder{7})
@@ -70,15 +70,25 @@ for nCyst = 1:2%:size(pathCysts,1)
         load([folderModel '\cystVoronoi.mat'],'labelledImageVoronoi_Raw')
 %         load([folderModel '\cystVoronoi.mat'],'labelledImageVoronoi_Raw','labelledImageVoronoi_NewSeeds')
     end
-    %4. Extract features from 3D Voronoi models
+%         4. Extract features from 3D Voronoi models
     load(fullfile(pathCysts(nCyst).folder,'pixelScaleOfGland.mat'),'pixelScale')
     path2saveFeatures = fullfile(folderModel,'features');
     fileName = [splittedFolder{6} '/' splittedFolder{7}];
     
     %%get apical and basal layers, and Lumen
-    [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImageVoronoi_Raw);
+    if ~exist([folderModel '\layersTissue.mat'],'file')
+        [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImageVoronoi_Raw);
+        save([folderModel '\layersTissue.mat'],'apicalLayer','basalLayer','lateralLayer','lumenImage','-v7.3')
+    else
+        if ~exist(fullfile(path2saveFeatures, 'global_3dFeatures.mat'),'file')
+            load([folderModel '\layersTissue.mat'],'apicalLayer','basalLayer','lateralLayer','lumenImage')
+        else
+            apicalLayer=[]; basalLayer = []; lateralLayer =[]; lumenImage=[];
+        end
+    end
+    tic
     [allGeneralInfo{nCyst},allTissues{nCyst},allLumens{nCyst},allHollowTissue3dFeatures{nCyst},allNetworkFeatures{nCyst},totalMeanCellsFeatures{nCyst},totalStdCellsFeatures{nCyst}]=calculate3DMorphologicalFeatures(labelledImageVoronoi_Raw,apicalLayer,basalLayer,lateralLayer,lumenImage,path2saveFeatures,fileName,pixelScale,contactThreshold);
-
+    toc
 end
 
 summarizeAllTissuesProperties(allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetworkFeatures,totalMeanCellsFeatures,totalStdCellsFeatures,path2saveSummary);
