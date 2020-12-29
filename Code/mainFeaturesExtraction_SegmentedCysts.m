@@ -19,13 +19,13 @@ totalSTD3DNeighsFeatures = cell(size(pathCysts,1),1);
 
 %At least the 0.5% of lateral membrane contacting with other cell to be
 %considered as neighbor.
-contactThreshold = 0.5;
+contactThreshold = 1;
 
 for nCyst = 1:size(pathCysts,1)
     
     splittedFolder = strsplit(pathCysts(nCyst).folder,'\');
     display(splittedFolder{7})
-    folderFeatures = fullfile(pathCysts(nCyst).folder,'Features');
+    folderFeatures = [fullfile(pathCysts(nCyst).folder,'Features'), num2str(contactThreshold)];
     mkdir(folderFeatures)
     
     if exist(fullfile(pathCysts(nCyst).folder,'realSize3dLayers.mat'),'file')
@@ -47,12 +47,12 @@ for nCyst = 1:size(pathCysts,1)
     load(fullfile(pathCysts(nCyst).folder,'pixelScaleOfGland.mat'),'pixelScale')    
     fileName = [splittedFolder{6} '/' splittedFolder{7}];
     %%get apical and basal layers, and Lumen
-    if ~exist([folderFeatures '\layersTissue.mat'],'file')
+    if ~exist(fullfile(pathCysts(nCyst).folder, '\layersTissue.mat'),'file')
         [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage);
-        save([folderFeatures '\layersTissue.mat'],'apicalLayer','basalLayer','lateralLayer','lumenImage','-v7.3')
+        save(fullfile(pathCysts(nCyst).folder, '\layersTissue.mat'),'apicalLayer','basalLayer','lateralLayer','lumenImage','-v7.3')
     else
         if ~exist(fullfile(folderFeatures, 'global_3dFeatures.mat'),'file')
-            load([folderFeatures '\layersTissue.mat'],'apicalLayer','basalLayer','lateralLayer','lumenImage')
+            load(fullfile(pathCysts(nCyst).folder, '\layersTissue.mat'),'apicalLayer','basalLayer','lateralLayer','lumenImage')
         else
             apicalLayer=[]; basalLayer = []; lateralLayer =[]; lumenImage=[];
         end
