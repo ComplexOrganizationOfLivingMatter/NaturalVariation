@@ -22,7 +22,7 @@ for indexCell= uniqValidCells
         sphereArea = 4 * pi .* ((oneCell3dFeatures.EquivDiameter) ./ 2) .^ 2;
         sphericity = sphereArea ./ oneCell3dFeatures.SurfaceArea;
         normalizedVolume = oneCell3dFeatures.Volume;
-        irregularityShapeIndex = sqrt(oneCell3dFeatures.SurfaceArea)./(oneCell3dFeatures.SurfaceArea.^(1/3));
+        irregularityShapeIndex = sqrt(oneCell3dFeatures.SurfaceArea)./(oneCell3dFeatures.Volume.^(1/3));
         cells3dFeatures = [cells3dFeatures; horzcat(oneCell3dFeatures, table(aspectRatio, sphericity, normalizedVolume,irregularityShapeIndex))];
     end
 end
