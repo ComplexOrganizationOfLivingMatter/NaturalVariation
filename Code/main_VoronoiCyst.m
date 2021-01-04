@@ -2,8 +2,9 @@ clear all; close all; addpath(genpath('..\Code'))
 
 pathCysts = dir('..\data\**\3d_layers_info.mat');
 rootPathModels = '..\models\';
-mkdir(rootPathModels)
-
+if ~exist(rootPathModels,'dir')
+    mkdir(rootPathModels)
+end
 
 
 for nCyst = 1:size(pathCysts,1)
@@ -61,10 +62,11 @@ idEllipsoid7 = cellfun(@(x) contains(lower(x),'ellipsoid 7d'),structPaths(2,:));
 %considered as neighbor.
 contactThreshold = 0.5;
 
+
 cellsIds = {idOblate4,idOblate7,idEllipsoid7};
 phenLabels = {'Oblate4','Oblate7','Ellipsoid7'};
-for nPhen = 1:lenght(cellsIds)
-    
+for nPhen = 1:length(cellsIds)
+    disp(['<<<<<<<<<< features extraction ' phenLabels{nPhen} ' >>>>>>>>>>>>>']);
     allGeneralInfo = cell(sum(cellsIds{nPhen}),1);
     allTissues = cell(sum(cellsIds{nPhen}),1);
     allLumens = cell(sum(cellsIds{nPhen}),1);
@@ -102,9 +104,7 @@ for nPhen = 1:lenght(cellsIds)
             end
         end
 
-        tic
-        [allGeneralInfo{nCyst},allTissues{nCyst},allLumens{nCyst},allHollowTissue3dFeatures{nCyst},allNetworkFeatures{nCyst},totalMeanCellsFeatures{nCyst},totalStdCellsFeatures{nCyst}]=calculate3DMorphologicalFeatures(labelledImageVoronoi_Raw,apicalLayer,basalLayer,lateralLayer,lumenImage,path2saveFeatures,fileName,pixelScale,contactThreshold);
-        toc
+        [allGeneralInfo{nCyst},allTissues{nCyst},allLumens{nCyst},allHollowTissue3dFeatures{nCyst},allNetworkFeatures{nCyst},totalMeanCellsFeatures{nCyst},totalStdCellsFeatures{nCyst}]=calculate3DMorphologicalFeatures(labelledImageVoronoi_LineSeeds,apicalLayer,basalLayer,lateralLayer,lumenImage,path2saveFeatures,fileName,pixelScale,contactThreshold);
         
     end
     summarizeAllTissuesProperties(allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetworkFeatures,totalMeanCellsFeatures,totalStdCellsFeatures,path2saveSummary);

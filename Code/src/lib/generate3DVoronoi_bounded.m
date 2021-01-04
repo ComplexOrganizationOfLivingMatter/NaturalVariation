@@ -7,7 +7,7 @@ function [labelledImageVoronoi] = generate3DVoronoi_bounded(seeds,validRegion)
     labelPerId = zeros(size(ids));
     
     if iscell(seeds)
-        totalLabels={[1:length(seeds)]'};
+        totalLabels=num2cell([1:length(seeds)]');
         idsSeeds = cellfun(@(x,y) repmat(y,[size(x,1),1]), seeds, totalLabels,'UniformOutput',false);
         seeds = vertcat(seeds{:});
         seedsLabels = vertcat(idsSeeds{:});
