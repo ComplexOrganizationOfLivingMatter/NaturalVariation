@@ -25,13 +25,7 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         polygon_distribution_basal= polygon_distribution.Basal;
         polygon_distribution_apical = polygon_distribution.Apical;
         polygon_distribution_lateral = polygon_distribution.Lateral;
-        sumAreas = cellularFeaturesValidCells.Apical_area + cellularFeaturesValidCells.Basal_area + cellularFeaturesValidCells.Lateral_area;
-        %refactor purely voxels measurement to be compared with the surface
-        %area extraction 
-        refactorAreas = sumAreas./cells3dFeatures.SurfaceArea;
-        cellAreaNeighsInfo = table(cellularFeaturesValidCells.Apical_sides, cellularFeaturesValidCells.Apical_area./refactorAreas,cellularFeaturesValidCells.Basal_sides, cellularFeaturesValidCells.Basal_area./refactorAreas,cellularFeaturesValidCells.Lateral_sides, cellularFeaturesValidCells.Lateral_area./refactorAreas,cellularFeaturesValidCells.Average_cell_wall_area./refactorAreas,cellularFeaturesValidCells.Std_cell_wall_area./refactorAreas,'VariableNames',{'apical_NumNeighs','apical_Area','basal_NumNeighs','basal_Area','lateral_NumNeighs','lateral_Area','average_cell_wall_Area','std_cell_wall_Area'});
-        cells3dFeatures = horzcat(cells3dFeatures, cellAreaNeighsInfo,table(cellularFeaturesValidCells.Scutoids, cellularFeaturesValidCells.apicoBasalTransitions,'VariableNames',{'scutoids','apicoBasalTransitions'}));
-
+        
         %% Obtain Lumen descriptors
         [lumen3dFeatures] = extract3dDescriptors(lumenImage>0, 1);
         lumen3dFeatures.ID_Cell = 'Lumen';
@@ -45,6 +39,21 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         tissue3dFeatures.ID_Cell = 'Tissue and Lumen';
 
         numCells = length(validCells);
+        
+        %refactor purely voxels measurement to be compared with the surface
+        %area extraction 
+        sumApicalAreas = sum(cellularFeaturesValidCells.Apical_area);
+        sumBasalAreas = sum(cellularFeaturesValidCells.Basal_area);
+        refactorBasalAreas = sumBasalAreas/tissue3dFeatures.SurfaceArea;
+        refactorApicalAreas = sumApicalAreas/lumen3dFeatures.SurfaceArea;
+        
+        lateralAreas = cells3dFeatures.SurfaceArea - (cellularFeaturesValidCells.Apical_area./refactorApicalAreas) - (cellularFeaturesValidCells.Basal_area./refactorBasalAreas);
+        refactorLateralAreas = cellularFeaturesValidCells.Lateral_area./lateralAreas;
+        
+        cellAreaNeighsInfo = table(cellularFeaturesValidCells.Apical_sides, cellularFeaturesValidCells.Apical_area./refactorApicalAreas,cellularFeaturesValidCells.Basal_sides, cellularFeaturesValidCells.Basal_area./refactorBasalAreas,cellularFeaturesValidCells.Lateral_sides, cellularFeaturesValidCells.Lateral_area./refactorLateralAreas,cellularFeaturesValidCells.Average_cell_wall_area./refactorLateralAreas,cellularFeaturesValidCells.Std_cell_wall_area./refactorLateralAreas,'VariableNames',{'apical_NumNeighs','apical_Area','basal_NumNeighs','basal_Area','lateral_NumNeighs','lateral_Area','average_cell_wall_Area','std_cell_wall_Area'});
+        cells3dFeatures = horzcat(cells3dFeatures, cellAreaNeighsInfo,table(cellularFeaturesValidCells.Scutoids, cellularFeaturesValidCells.apicoBasalTransitions,'VariableNames',{'scutoids','apicoBasalTransitions'}));
+
+        
 
         %% Save variables
         save(fullfile(path2save, 'morphological3dFeatures.mat'), 'cells3dFeatures', 'tissue3dFeatures', 'lumen3dFeatures', 'polygon_distribution_apical', 'polygon_distribution_basal','polygon_distribution_lateral', 'cellularFeaturesValidCells', 'numCells', 'surfaceRatio3D', 'polygon_distribution_lateral','apicoBasalNeighs', 'hollowTissue3dFeatures');
