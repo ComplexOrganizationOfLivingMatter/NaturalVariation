@@ -93,7 +93,7 @@ for nPhen = 1:length(cellsIds)
         load([folderModel '\cystVoronoi.mat'],'labelledImageVoronoi_LineSeeds')
         
         %%get apical and basal layers, and Lumen from VORONOI cyst
-        if ~exist(fullfile(folderModel, '\layersTissue_lineSeeds.mat'),'file')
+        if ~exist(fullfile(pathCystsPhenotype(nCyst).folder, '\layersTissue_lineSeeds.mat'),'file')
             [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImageVoronoi_LineSeeds);
             save(fullfile(pathCystsPhenotype(nCyst).folder, '\layersTissue_lineSeeds.mat'),'apicalLayer','basalLayer','lateralLayer','lumenImage','-v7.3')
         else
