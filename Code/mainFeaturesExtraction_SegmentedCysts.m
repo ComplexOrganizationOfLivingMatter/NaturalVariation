@@ -18,7 +18,7 @@ phenLabels = {'Oblate4','Oblate7','Ellipsoid7'};
 
 %At least the 0.5% of lateral membrane contacting with other cell to be
 %considered as neighbor.
-contactThreshold = 1;
+contactThreshold = 0.5;
 
 for nPhen = 1:length(cellsIds)
     disp(['<<<<<<<<<< features extraction ' phenLabels{nPhen} ' >>>>>>>>>>>>>']);
