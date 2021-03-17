@@ -11,8 +11,8 @@ end
 
 nParallelThreads = 12;
 sensitivity = 0.6; % <0.5 more convex, >0.5 close to concave
-delete(gcp('nocreate'))
-parpool(nParallelThreads)
+% delete(gcp('nocreate'))
+% parpool(nParallelThreads)
 
 
 path2save = fullfile(selpath,'closePropMap');
@@ -22,7 +22,7 @@ end
 
 for nFile = 1: size(filePaths,1)
 
-    if ~exist(fullfile(path2save,filePaths(nFile).name),'file')
+%     if ~exist(fullfile(path2save,filePaths(nFile).name),'file')
     
         img = readStackTif(fullfile(filePaths(nFile).folder,filePaths(nFile).name));
 
@@ -81,6 +81,6 @@ for nFile = 1: size(filePaths,1)
         img(matchPerim)=1;
    
         writeStackTif(img,fullfile(path2save,filePaths(nFile).name));
-        disp(filePaths(nFile).name))
-    end
+        disp(filePaths(nFile).name)
+%     end
 end
