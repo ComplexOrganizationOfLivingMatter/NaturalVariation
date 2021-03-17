@@ -5,10 +5,15 @@ addpath(genpath('lib'))
 selpath = uigetdir;
 filePaths=dir([selpath '/*.tif']);
 
-nParallelThreads = 12;
+if isempty(filePaths)
+    filePaths=dir([selpath '/*.tiff']);
+end
 
+nParallelThreads = 12;
+sensitivity = 0.6; % <0.5 more convex, >0.5 close to concave
 delete(gcp('nocreate'))
 parpool(nParallelThreads)
+
 
 path2save = fullfile(selpath,'closePropMap');
 if ~exist(path2save,'dir')
@@ -34,7 +39,7 @@ for nFile = 1: size(filePaths,1)
         %Query points (all image coordinates)
         [xQ, yQ, zQ] = ind2sub(size(BWCyst), find(ones(size(BWCyst))));
 
-        k = boundary([x,y,z],0.5);
+        k = boundary([x,y,z],sensitivity);
     %     trisurf(k,x,y,z,'Facecolor','red','FaceAlpha',0.1)   
 
     
@@ -76,5 +81,6 @@ for nFile = 1: size(filePaths,1)
         img(matchPerim)=1;
    
         writeStackTif(img,fullfile(path2save,filePaths(nFile).name));
+        disp(filePaths(nFile).name))
     end
 end
