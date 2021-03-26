@@ -18,7 +18,7 @@ function summarizeAllTissuesProperties(allGeneralInfo,allTissues,allLumens,allHo
     
 
     PercentageLumenSpace = table(allLumens.Lumen_Volume./allTissues.Tissue_Volume,'VariableNames',{'PercentageLumenSpace'});
-    FeaturesPerCell=table(allTissues.Tissue_Volume./allGeneralInfo.NCells, allHollowTissue3dFeatures.HollowTissue_Volume./allGeneralInfo.NCells, allLumens.Lumen_Volume./allGeneralInfo.NCells,'VariableNames',{'TissueVolume_perCell','HollowTissueVolume_perCell','LumenVolume_perCell'});
+    FeaturesPerCell=table(allTissues.Tissue_Volume./allGeneralInfo.NCells_total, allHollowTissue3dFeatures.HollowTissue_Volume./allGeneralInfo.NCells_total, allLumens.Lumen_Volume./allGeneralInfo.NCells_total,'VariableNames',{'TissueVolume_perCell','HollowTissueVolume_perCell','LumenVolume_perCell'});
     
     
     %%Global parameters
