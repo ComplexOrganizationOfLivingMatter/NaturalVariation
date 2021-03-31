@@ -1,4 +1,4 @@
-function [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetworkFeatures,totalMeanCellsFeatures,totalStdCellsFeatures]=calculate3DMorphologicalFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,path2save,fileName,pixelScale,contactThreshold)
+function [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetworkFeatures,totalMeanCellsFeatures,totalStdCellsFeatures]=calculate3DMorphologicalFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,path2save,fileName,pixelScale,contactThreshold,validCells,noValidCells)
 
     if ~exist(path2save,'dir')
         mkdir(path2save)
@@ -6,10 +6,13 @@ function [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetwo
     
     if ~exist(fullfile(path2save, 'global_3dFeatures.mat'),'file')
         %defining all cells as valid cells
-        validCells = find(table2array(regionprops3(labelledImage,'Volume'))>0);
+        if isempty(validCells)
+            validCells = find(table2array(regionprops3(labelledImage,'Volume'))>0);
+            noValidCells = [];
+        end
 
         %% Obtain 3D features from Cells, Tissue, Lumen and Tissue+Lumen
-        [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatures, polygon_distribution_apical, polygon_distribution_basal,polygon_distribution_lateral, numValidCells,numTotalCells, surfaceRatio3D, validCells, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,path2save,contactThreshold);
+        [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatures, polygon_distribution_apical, polygon_distribution_basal,polygon_distribution_lateral, numValidCells,numTotalCells, surfaceRatio3D, validCells, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,path2save,contactThreshold);
         
         %% Calculate Network features
         [degreeNodesCorrelation,coefCluster,betweennessCentrality] = obtainNetworksFeatures(apicoBasalNeighs,validCells, fullfile(path2save, 'network3dFeatures.mat'));

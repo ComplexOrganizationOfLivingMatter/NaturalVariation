@@ -3,9 +3,8 @@ function [cells3dFeatures] = extract3dDescriptors(labelledImage, validCells)
 %   Detailed explanation goes here
 cells3dFeatures=[];
 
-uniqValidCells = unique(validCells)';
-for indexCell= uniqValidCells 
-    actualImg = bwlabeln(labelledImage==indexCell);
+for indexCell = 1:length(validCells)
+    actualImg = bwlabeln(labelledImage==validCells(indexCell));
     oneCell3dFeatures = regionprops3(actualImg, 'PrincipalAxisLength', 'Volume', 'ConvexVolume', 'Solidity', 'SurfaceArea', 'EquivDiameter');
     if size(oneCell3dFeatures, 1) > 0
         indMax = 1;

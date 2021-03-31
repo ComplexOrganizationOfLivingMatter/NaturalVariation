@@ -22,7 +22,7 @@ function summarizeAllTissuesProperties(allGeneralInfo,allTissues,allLumens,allHo
     
     
     %%Global parameters
-    globalFeatures = [allGeneralInfo(:,[1,3]),allTissues(:,[4,8]),allHollowTissue3dFeatures(:,2),PercentageLumenSpace(:,1),allGeneralInfo(:,[2,4,5]),allTissues(:,[6,2,5,7,9,11]),FeaturesPerCell,allLumens(:,[6,2,5,7,9,4,8,11]),allHollowTissue3dFeatures(:,[6,7,9,4,8])];
+    globalFeatures = [allGeneralInfo(:,[1,4,3]),allTissues(:,[4,8]),allHollowTissue3dFeatures(:,2),PercentageLumenSpace(:,1),allGeneralInfo(:,[2,5,6]),allTissues(:,[6,2,5,7,9,11]),FeaturesPerCell,allLumens(:,[6,2,5,7,9,4,8,11]),allHollowTissue3dFeatures(:,[6,7,9,4,8])];
     writetable(globalFeatures, [path2save,'global_3dFeatures' date '.xls'],'Sheet', 'globalFeatures','Range','B2');
     %%Polygon distribtutions
     polDistributions = [allGeneralInfo(:,1),allTissues(:,12:35)];

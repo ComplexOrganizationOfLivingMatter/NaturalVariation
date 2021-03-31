@@ -1,4 +1,4 @@
-function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatures, polygon_distribution_apical, polygon_distribution_basal, polygon_distribution_lateral, numValidCells,numTotalCells, surfaceRatio3D, validCells, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,path2save,contactThreshold)
+function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatures, polygon_distribution_apical, polygon_distribution_basal, polygon_distribution_lateral, numValidCells,numTotalCells, surfaceRatio3D, validCells, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,path2save,contactThreshold)
 
     if ~exist(fullfile(path2save, 'morphological3dFeatures.mat'),'file')
        
@@ -13,9 +13,20 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         [basal3dInfo] = calculateNeighbours3D(basalLayer, 3, basalLayer == 0);
         basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,basal3dInfo.neighbourhood','UniformOutput',false);
 
-        totalCells = 1:length(lateral3dInfo);
-        noValidCells = setdiff(totalCells,validCells);
+        %check for non considered valid cells, and delete cells "0" volume
+        missingCells = find(totalLateralCellsArea==0);
+        validCells(ismember(validCells,missingCells))=[];
+        cellsWithVolume = find(totalLateralCellsArea>0);
+        numTotalCells=length(cellsWithVolume);
+        extraValidCells = cellsWithVolume(~ismember(cellsWithVolume,unique([validCells(:);noValidCells(:)])));
+        if ~isempty(extraValidCells)
+            validCells=unique([validCells(:);extraValidCells(:)])';
+            disp(['Added as valid cell: ' num2str([extraValidCells(:)]')])
+        end
+        noValidCells(ismember(noValidCells,missingCells))=[];
+        numValidCells = length(validCells);
 
+        
         %% Obtain cells descriptors
         % get apical, basal and lateral sides cells. Areas and cell Volume
         [cellularFeaturesValidCells,CellularFeaturesAllCells,surfaceRatio3D,apicoBasalNeighs,polygon_distribution] = calculate_CellularFeatures(apical3dInfo,basal3dInfo,lateral3dInfo,apicalLayer,basalLayer,labelledImage,totalLateralCellsArea,absoluteLateralContacts,noValidCells,validCells);
@@ -38,8 +49,6 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         [tissue3dFeatures] = extract3dDescriptors(labelledImage>0|lumenImage>0, 1);
         tissue3dFeatures.ID_Cell = 'Tissue and Lumen';
 
-        numValidCells = length(validCells);
-        numTotalCells = length(totalCells);
         
         %refactor purely voxels measurement to be compared with the surface
         %area extraction 
