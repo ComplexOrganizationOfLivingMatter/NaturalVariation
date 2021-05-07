@@ -33,7 +33,7 @@ for nPhen = 1:length(cellsIds)
     pathCystsPhenotype = pathCysts(cellsIds{nPhen},:);
     path2saveSummary = ['..\data\' phenLabels{nPhen} '_' num2str(contactThreshold) '%_'];
 
-    for nCyst = 1:size(pathCystsPhenotype,1)
+    parfor nCyst = 1:size(pathCystsPhenotype,1)
         
         splittedFolder = strsplit(pathCystsPhenotype(nCyst).folder,'\');
         display(splittedFolder{7})
@@ -43,12 +43,10 @@ for nPhen = 1:length(cellsIds)
         end
 
         if exist(fullfile(pathCystsPhenotype(nCyst).folder,'realSize3dLayers.mat'),'file')
-            load(fullfile(pathCystsPhenotype(nCyst).folder,'realSize3dLayers.mat'),'labelledImage_realSize')
-            labelledImage = labelledImage_realSize;
-            clearvars labelledImage_realSize
+            labelledImage=struct2array(load(fullfile(pathCystsPhenotype(nCyst).folder,'realSize3dLayers.mat'),'labelledImage_realSize'));
         else
-            load(fullfile(pathCystsPhenotype(nCyst).folder,pathCystsPhenotype(nCyst).name),'labelledImage')
-            load(fullfile(pathCystsPhenotype(nCyst).folder,'zScaleOfGland.mat'),'zScale')
+            labelledImage=struct2array(load(fullfile(pathCystsPhenotype(nCyst).folder,pathCystsPhenotype(nCyst).name),'labelledImage'));
+            zScale = struct2array(load(fullfile(pathCystsPhenotype(nCyst).folder,'zScaleOfGland.mat'),'zScale'));
 
             labelledImage = imresize3(labelledImage,[size(labelledImage,1),size(labelledImage,2),round(size(labelledImage,3)*zScale)],'nearest');
             if size(labelledImage,3)>size(labelledImage,1)
@@ -58,15 +56,16 @@ for nPhen = 1:length(cellsIds)
         end
 
     %   4. Extract features from 3D Voronoi models
-        load(fullfile(pathCystsPhenotype(nCyst).folder,'pixelScaleOfGland.mat'),'pixelScale')    
+        pixelScale = struct2array(load(fullfile(pathCystsPhenotype(nCyst).folder,'pixelScaleOfGland.mat'),'pixelScale'));
         fileName = [splittedFolder{6} '/' splittedFolder{7}];
         %%get apical and basal layers, and Lumen
         if ~exist(fullfile(pathCystsPhenotype(nCyst).folder, '\layersTissue.mat'),'file')
-            [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage);
-            save(fullfile(pathCystsPhenotype(nCyst).folder, '\layersTissue.mat'),'apicalLayer','basalLayer','lateralLayer','lumenImage','-v7.3')
+            path2saveLayers = fullfile(pathCystsPhenotype(nCyst).folder, '\layersTissue.mat');
+            [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage,path2saveLayers);
         else
             if ~exist(fullfile(folderFeatures, 'global_3dFeatures.mat'),'file')
-                load(fullfile(pathCystsPhenotype(nCyst).folder, '\layersTissue.mat'),'apicalLayer','basalLayer','lateralLayer','lumenImage')
+                allLayers = load(fullfile(pathCystsPhenotype(nCyst).folder, '\layersTissue.mat'),'apicalLayer','basalLayer','lateralLayer','lumenImage');
+                apicalLayer= allLayers.apicalLayer;     basalLayer = allLayers.basalLayer;      lateralLayer = allLayers.lateralLayer;      lumenImage = allLayers.lumenImage;
             else
                 apicalLayer=[]; basalLayer = []; lateralLayer =[]; lumenImage=[];
             end

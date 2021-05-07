@@ -1,4 +1,4 @@
-function [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage)
+function [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage,path2saveLayers)
     basalLayer = zeros(size(labelledImage));
     apicalLayer = zeros(size(labelledImage));
     lateralLayer = zeros(size(labelledImage));
@@ -27,5 +27,5 @@ function [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLatera
         lumenImage = bwlabeln(lumenImage) == id;
     end
     
-    
+    save(path2saveLayers, 'apicalLayer','basalLayer','lateralLayer','lumenImage','labelledImage','-v7.3')
 end
