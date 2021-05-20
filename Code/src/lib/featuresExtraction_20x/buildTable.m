@@ -1,5 +1,6 @@
-function [contentTable] = buildTable(cystName, lumen3dFeatures, cyst3dFeatures, numOfCells, avgCellVolume, fullCyst3dFeatures)
-    contentTable = table(cystName, numOfCells, fullCyst3dFeatures.Volume, cyst3dFeatures.Volume, lumen3dFeatures.Volume, avgCellVolume, fullCyst3dFeatures.PrincipalAxisLength, lumen3dFeatures.PrincipalAxisLength, fullCyst3dFeatures.SurfaceArea, lumen3dFeatures.SurfaceArea);
-    contentTable.Properties.VariableNames = {'cystName', 'numOfCells', 'cystVolume', 'celularVolume', 'lumenVolume', 'avgCellVolume', 'cystPrincipalAxisLength', 'lumenPrincipalAxesLength', 'cystSurfaceArea', 'lumenSurfaceArea'};
-    contentTable.Properties.VariableUnits = {'', '', 'cubic microns', 'cubic microns', 'cubic microns', 'cubic microns', 'microns', 'microns', 'squared microns', 'squared microns'};
+%Build the metrics table for featuresExtraction_20x main's file
+function [contentTable] = buildTable(cystName, lumen3dFeatures, cyst3dFeatures, numOfCells, avgCellVolume, fullCyst3dFeatures, celularHeight, normalizedPrincipalAxesLength, class, ellipsoidFactor)
+    contentTable = table(cystName, numOfCells, string(class), ellipsoidFactor, celularHeight, fullCyst3dFeatures.Volume, fullCyst3dFeatures.Volume-lumen3dFeatures.Volume, lumen3dFeatures.Volume, avgCellVolume, fullCyst3dFeatures.PrincipalAxisLength, normalizedPrincipalAxesLength, lumen3dFeatures.PrincipalAxisLength, fullCyst3dFeatures.SurfaceArea, lumen3dFeatures.SurfaceArea);
+    contentTable.Properties.VariableNames = {'cystName', 'numOfCells', 'class', 'ellipsoidFactor','celularHeight', 'cystVolume', 'celularVolume', 'lumenVolume', 'avgCellVolume', 'cystPrincipalAxisLength', 'cystsNormalizedPrincipalAxesLength', 'lumenPrincipalAxesLength', 'cystSurfaceArea', 'lumenSurfaceArea'};
+    contentTable.Properties.VariableUnits = {'', '', '', '', 'microns', 'cubic microns', 'cubic microns', 'cubic microns', 'cubic microns', 'microns', 'microns', 'microns', 'squared microns', 'squared microns'};
 end
