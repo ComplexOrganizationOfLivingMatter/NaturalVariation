@@ -1,4 +1,4 @@
-function [apicalLayer,basalLayer,lateralLayer] = getApicalBasalLateralFromGlands(labelledImage,lumenImage)
+function [apicalLayer,basalLayer,lateralLayer] = getApicalBasalLateralFromGlands(labelledImage,lumenImage,path2saveLayers)
     basalLayer = zeros(size(labelledImage));
     apicalLayer = zeros(size(labelledImage));
     lateralLayer = zeros(size(labelledImage));
@@ -20,4 +20,5 @@ function [apicalLayer,basalLayer,lateralLayer] = getApicalBasalLateralFromGlands
     
     lateralLayer(basalLayer>0 | apicalLayer>0) = 0; 
         
+    save(path2saveLayers,'apicalLayer','basalLayer','lateralLayer','lumenImage','labelledImage','-v7.3')
 end

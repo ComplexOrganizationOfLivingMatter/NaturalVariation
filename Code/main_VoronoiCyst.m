@@ -78,27 +78,30 @@ for nPhen = 1:length(cellsIds)
     pathCystsPhenotype = pathCysts(cellsIds{nPhen},:);
     
     path2saveSummary = [rootPathModels phenLabels{nPhen} '_Voronoi_LineSeeds_'];
-
-    for nCyst = 1:size(pathCystsPhenotype,1)
+    
+    parpool(3)
+    parfor nCyst = 1:size(pathCystsPhenotype,1)
         splittedFolder = strsplit(pathCystsPhenotype(nCyst).folder,'\');
         folderModel = fullfile(rootPathModels,splittedFolder{6},splittedFolder{7});
         display(splittedFolder{7})
         
     
-        load(fullfile(pathCystsPhenotype(nCyst).folder,'pixelScaleOfGland.mat'),'pixelScale')
+        pixelScale=load(fullfile(pathCystsPhenotype(nCyst).folder,'pixelScaleOfGland.mat'),'pixelScale');
         path2saveFeatures = fullfile(folderModel,['LineSeedsVoronoi_features' num2str(contactThreshold)]);
         fileName = [splittedFolder{6} '/' splittedFolder{7}];
 
         %load Voronoi model
-        load([folderModel '\cystVoronoi.mat'],'labelledImageVoronoi_LineSeeds')
+        labelledImageVoronoi_LineSeeds=load([folderModel '\cystVoronoi.mat'],'labelledImageVoronoi_LineSeeds');
         
         %%get apical and basal layers, and Lumen from VORONOI cyst
         if ~exist(fullfile(pathCystsPhenotype(nCyst).folder, '\layersTissue_lineSeeds.mat'),'file')
-            [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImageVoronoi_LineSeeds);
-            save(fullfile(pathCystsPhenotype(nCyst).folder, '\layersTissue_lineSeeds.mat'),'apicalLayer','basalLayer','lateralLayer','lumenImage','-v7.3')
+            path2saveLayers = fullfile(pathCystsPhenotype(nCyst).folder, '\layersTissue_lineSeeds.mat');
+            [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImageVoronoi_LineSeeds,path2saveLayers);
+            
         else
             if ~exist(fullfile(path2saveFeatures, 'global_3dFeatures.mat'),'file')
-                load(fullfile(pathCystsPhenotype(nCyst).folder, '\layersTissue_lineSeeds.mat'),'apicalLayer','basalLayer','lateralLayer','lumenImage')
+                allLayers = load(fullfile(pathCystsPhenotype(nCyst).folder, '\layersTissue_lineSeeds.mat'),'apicalLayer','basalLayer','lateralLayer','lumenImage');
+                apicalLayer= allLayers.apicalLayer;     basalLayer = allLayers.basalLayer;      lateralLayer = allLayers.lateralLayer;      lumenImage = allLayers.lumenImage;
             else
                 apicalLayer=[]; basalLayer = []; lateralLayer =[]; lumenImage=[];
             end

@@ -1,0 +1,55 @@
+function data = getDisplayData(obj)
+% Return a data array that can be used for display.
+%
+%   DAT = img.getDisplayData()
+%
+%   For scalar images, the inner data array is simply returned.
+%   For vector images, the norm of each image element is computed.
+%
+%   Example
+%   getDisplayData
+%
+%   See also
+%
+
+% ------
+% Author: David Legland
+% e-mail: david.legland@inra.fr
+% Created: 2010-07-08,    using Matlab 7.9.0.529 (R2009b)
+% Copyright 2010 INRA - Cepia Software Platform.
+
+% number of channels
+nc = obj.DataSize(4);
+
+if nc == 1
+    % for grayscale images, simply extract appropriate slice, and transpose
+    data = obj.Data(:, :, 1, 1, 1)';
+    
+elseif nc == 3
+    % If number of channels is 3, assumes obj is a color image
+    % extract appropriate slice, and transpose.
+    data = permute(squeeze(obj.Data(:, :, 1, :, 1)), [2 1 3]);
+    
+    % if data type is signed integer, convert to uint8
+    if isinteger(data) && ~isa(data, 'uint8')
+        data = double(data);
+        data = uint8(data * 255 / max(data(:)));
+    end
+    
+else
+    % For vector images, create a new intensity image from norm
+    
+    % allocate memory for result
+    nx = obj.DataSize(1);
+    ny = obj.DataSize(2);
+    data = zeros([nx ny]);
+    
+    % iterate over channels
+    for i = 1:nc
+        channel = double(squeeze(obj.Data(:,:,1,i,1)));
+        data = data + channel.^2;
+    end
+    
+    % square root, and transpose to comply with matlab orientation
+    data = sqrt(data)';
+end

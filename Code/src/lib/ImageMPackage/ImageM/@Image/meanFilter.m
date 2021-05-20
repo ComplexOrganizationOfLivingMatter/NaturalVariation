@@ -1,0 +1,50 @@
+function res = meanFilter(obj, se, varargin)
+% Compute mean value in the neighboorhood of each pixel.
+%
+%   RES = meanFilter(IMG, SE);
+%   Compute the mean filter of image IMG, using structuring element SE.
+%   The goal of obj function is to provide the same interface as for
+%   other image filters (imopen, imerode ...), and to allow the use of 
+%   mean filter with user-defined structuring element. 
+%   This function can be used for directional filtering.
+%
+%
+%   RES = meanFilter(IMG, SE, PADOPT); 
+%   also specify padding option. PADOPT can be one of:
+%     X (numeric value)
+%     'symmetric'
+%     'replicate'
+%     'circular'
+%   see imfilter for details. Default is 'replicate'. 
+%
+%   See also:
+%     medianFilter, gaussianFilter, filter, imfilter, mean
+%
+
+% ------
+% Author: David Legland
+% e-mail: david.legland@inra.fr
+% Created: 2011-08-05,    using Matlab 7.9.0.529 (R2009b)
+% Copyright 2011 INRA - Cepia Software Platform.
+
+
+% transform STREL object into single array
+if isa(se, 'strel')
+    se = getnhood(se);
+end
+
+% get Padopt option
+padopt = 'replicate';
+if ~isempty(varargin)
+    padopt = varargin{1};
+end
+
+% adapt structuring element
+se = permute(se, [2 1 3]) ./ sum(se(:));
+
+% perform filtering
+data = imfilter(obj.Data, se, padopt);
+
+% create result image
+name = createNewName(obj, '%s-meanFilt');
+res = Image('Data', data, 'Parent', obj, 'Name', name);
