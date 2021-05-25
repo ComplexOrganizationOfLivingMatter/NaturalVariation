@@ -28,11 +28,11 @@ function summarizeAllTissuesProperties(allGeneralInfo,allTissues,allLumens,allHo
     polDistributions = [allGeneralInfo(:,1),allTissues(:,12:35)];
     writetable(polDistributions, [path2save,'global_3dFeatures' date '.xls'],'Sheet', 'polygonDistributions','Range','B2');
     %%Celullar parameters
-    cellularParameter_mean = [allGeneralInfo(:,1),totalMeanCellsFeatures(:,[12,14,16,17,18,1,11,13,15,4,5,6,8,3,7,10]),allNetworkFeatures(:,[1,2])];
+    cellularParameter_mean = [allGeneralInfo(:,1),totalMeanCellsFeatures(:,[12,14,15,17,18,19,1,11,13,16,4,5,6,8,3,7,10]),allNetworkFeatures(:,[1,2])];
     writetable(cellularParameter_mean, [path2save,'global_3dFeatures' date '.xls'],'Sheet', 'meanCellParameters','Range','B2');
 
     %%Std parameters
-    cellularParameter_std = [allGeneralInfo(:,1),totalStdCellsFeatures(:,[12,14,16,17,18,1,11,13,15,4,5,6,8,3,7,10]),allNetworkFeatures(:,[4,5])];
+    cellularParameter_std = [allGeneralInfo(:,1),totalStdCellsFeatures(:,[12,14,15,17,18,19,1,11,13,16,4,5,6,8,3,7,10]),allNetworkFeatures(:,[4,5])];
     writetable(cellularParameter_std, [path2save,'global_3dFeatures' date '.xls'],'Sheet', 'stdCellParameters','Range','B2');
 
 
