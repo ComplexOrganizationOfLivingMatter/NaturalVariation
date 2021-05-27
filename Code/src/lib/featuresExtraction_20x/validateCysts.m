@@ -1,21 +1,23 @@
+folderName = '7d.2C';
+cropsDirectory = '/media/pedro/6TB/jesus/NaturalVariation/crops';
 
 % Unet lumen Directory
-lumenDirectory = '/media/pedro/6TB/jesus/NaturalVariation/crops/7d.1B/7d.1B_lumen_r/';
+lumenDirectory = strcat(cropsDirectory, '/', folderName, '/', folderName, '_lumen_r/');
 lumenFileFormat = '.tiff';
 lumenFiles = dir(strcat(lumenDirectory, '*', lumenFileFormat));
 
 % Hollow Tissue Directory
-hollowTissueDirectory = '/media/pedro/6TB/jesus/NaturalVariation/crops/7d.1B/7d.1B_hollowTissue_rg/';
+hollowTissueDirectory = strcat(cropsDirectory, '/', folderName, '/', folderName, '_hollowTissue_rg/');
 hollowTissueFileFormat = '.tiff';
 hollowTissueFiles = dir(strcat(hollowTissueDirectory, '*', hollowTissueFileFormat));
 
 % Stardist Directory
-stardistDirectory = '/media/pedro/6TB/jesus/NaturalVariation/crops/7d.1B/7d.1B_stardist/';
+stardistDirectory = strcat(cropsDirectory, '/', folderName, '/', folderName, '_stardist/');
 stardistFileFormat = '.tif';
 stardistFiles = dir(strcat(stardistDirectory, '*', stardistFileFormat));
 
 % RG Directory
-rgDirectory = '/media/pedro/6TB/jesus/NaturalVariation/crops/7d.1B/7d.1B_rg/';
+rgDirectory = strcat(cropsDirectory, '/', folderName, '/', folderName, '_rg/');
 rgFileFormat = '.tif';
 rgFiles = dir(strcat(rgDirectory, '*', rgFileFormat));
 
@@ -29,7 +31,7 @@ imNumber_col = 5;
 
 imgCompoundStardist = zeros(imNumber_row*numRows, numCols*imNumber_col, numSlices);
 imgCompoundHollowTissue = zeros(imNumber_row*numRows, numCols*imNumber_col, numSlices);
-imgCompoundRG = zeros(imNumber_row*numRows, numCols*imNumber_col, numSlices); 
+imgCompoundRG = zeros(imNumber_row*numRows, numCcdols*imNumber_col, numSlices); 
 imgCompoundHollowTissueRG = zeros(imNumber_row*numRows, 2*numCols*imNumber_col, numSlices);
 imgCompoundTwoStardist = zeros(imNumber_row*numRows, 2*numCols*imNumber_col, numSlices);
 
@@ -47,6 +49,7 @@ for n_file = 1:length(hollowTissueFiles)
     stardistStackImg = readStackTif(fullfile(stardistDirectory, fileName));
     lumenStackImg = readStackTif(fullfile(lumenDirectory, strcat(fileName, lumenFileFormat)));
     rgStackImg = readStackTif(fullfile(rgDirectory, fileName));
+
 
     hollowTissueStackImg = imresize3(hollowTissueStackImg,[numRows numCols numSlices], 'nearest');
     stardistStackImg = imresize3(stardistStackImg,[numRows numCols numSlices], 'nearest');
@@ -73,10 +76,10 @@ for n_file = 1:length(hollowTissueFiles)
     n = n+1;
 
     if(n==(imNumber_row*imNumber_col) || n_file==length(hollowTissueFiles))
-       imgCompoundHollowTissueRG(1:numRows*(n_rows+1), 1:numCols*(n_cols+1), :) = imgCompoundHollowTissue;
-       imgCompoundHollowTissueRG(1:numRows*(n_rows+1), numCols*(n_cols+1)+1:2*numCols*(n_cols+1), :) = imgCompoundRG;
-       imgCompoundTwoStardist(1:numRows*(n_rows+1), 1:numCols*(n_cols+1), :) = imgCompoundStardist;
-       imgCompoundTwoStardist(1:numRows*(n_rows+1), numCols*(n_cols+1)+1:2*numCols*(n_cols+1), :) = imgCompoundStardist;
+       imgCompoundHollowTissueRG(1:numRows*(imNumber_row), 1:numCols*(imNumber_col), :) = imgCompoundHollowTissue;
+       imgCompoundHollowTissueRG(1:numRows*(imNumber_row), numCols*(imNumber_col)+1:2*numCols*(imNumber_col), :) = imgCompoundRG;
+       imgCompoundTwoStardist(1:numRows*(imNumber_row), 1:numCols*(imNumber_col), :) = imgCompoundStardist;
+       imgCompoundTwoStardist(1:numRows*(imNumber_row), numCols*(imNumber_col)+1:2*numCols*(imNumber_col), :) = imgCompoundStardist;
        volumeSegmenter(imgCompoundHollowTissueRG, imgCompoundTwoStardist);  
        
        w = waitforbuttonpress;
