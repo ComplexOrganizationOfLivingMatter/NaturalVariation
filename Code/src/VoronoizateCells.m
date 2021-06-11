@@ -1,4 +1,4 @@
-function [voronoiCyst] = VoronoisateCells(binaryMask,imgCells)
+function [voronoiCyst] = VoronoizateCells(binaryMask,imgCells)
 
     voronoiCyst=imgCells.*binaryMask;
 
@@ -15,7 +15,7 @@ function [voronoiCyst] = VoronoisateCells(binaryMask,imgCells)
     
     %From valid pixels get closest seed (add this value)
     %tic
-    display('generating 3D Voronoi')
+%     disp('generating 3D Voronoi')
     parfor nId = 1:length(idsToFill)
         distCoord = pdist2([col(nId),row(nId), z(nId)],[colPer,rowPer, zPer]);
         [~,idSeedMin]=min(distCoord);
