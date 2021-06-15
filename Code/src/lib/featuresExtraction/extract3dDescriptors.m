@@ -5,7 +5,7 @@ cells3dFeatures=[];
 
 for indexCell = 1:length(validCells)
     actualImg = bwlabeln(labelledImage==validCells(indexCell));
-    oneCell3dFeatures = regionprops3(actualImg, 'PrincipalAxisLength', 'Volume', 'ConvexVolume', 'Solidity', 'SurfaceArea', 'EquivDiameter');
+    oneCell3dFeatures = regionprops3(actualImg, 'PrincipalAxisLength', 'ConvexImage', 'Volume', 'ConvexVolume', 'Solidity', 'SurfaceArea', 'EquivDiameter');
     if size(oneCell3dFeatures, 1) > 0
         indMax = 1;
         if size(oneCell3dFeatures, 1) > 1
@@ -13,10 +13,10 @@ for indexCell = 1:length(validCells)
             oneCell3dFeatures = oneCell3dFeatures(indMax,:);
         end
         
-        [x, y, z] = ind2sub(size(labelledImage), find(actualImg==indMax));
-        [~, convexVolume] = convhull(x, y, z);
-        oneCell3dFeatures.ConvexVolume = convexVolume;
-        oneCell3dFeatures.Solidity = sum(actualImg(:)==indMax) / convexVolume;
+%         [x, y, z] = ind2sub(size(labelledImage), find(actualImg==indMax));
+%         [~, convexVolume] = convhull(x, y, z);
+%         oneCell3dFeatures.ConvexVolume = convexVolume;
+%         oneCell3dFeatures.Solidity = sum(actualImg(:)==indMax) / convexVolume;
         aspectRatio = max(oneCell3dFeatures.PrincipalAxisLength,[],2) ./ min(oneCell3dFeatures.PrincipalAxisLength,[],2);
         sphereArea = 4 * pi .* ((oneCell3dFeatures.EquivDiameter) ./ 2) .^ 2;
         sphericity = sphereArea ./ oneCell3dFeatures.SurfaceArea;
@@ -26,6 +26,7 @@ for indexCell = 1:length(validCells)
     end
 end
 cells3dFeatures.normalizedVolume = arrayfun(@(x) x/mean(cells3dFeatures.Volume), cells3dFeatures.normalizedVolume);
+
 
 columnIDs = table('Size', size([validCells(:)]), 'VariableTypes', {'string'});
 columnIDs.Properties.VariableNames = {'ID_Cell'};

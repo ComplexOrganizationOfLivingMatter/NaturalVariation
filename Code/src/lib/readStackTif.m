@@ -1,4 +1,4 @@
-function loadedImage = readStackTif(fileName)
+function [loadedImage, infoImage] = readStackTif(fileName)
 
     infoImage = imfinfo(fileName);
     loadedImage = zeros(infoImage(1).Height,infoImage(1).Width,size(infoImage,1));

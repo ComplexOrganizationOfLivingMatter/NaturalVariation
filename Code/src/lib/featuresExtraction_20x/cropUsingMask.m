@@ -1,9 +1,10 @@
-function [croppedStackImg] = cropUsingMask(img, volumeMask, threshold, dilateFactor, overlap, centroidMethod)
-    volumeMaskBW = volumeMask/255;
-    volumeMaskBW = imbinarize(volumeMaskBW, threshold); 
-    se = strel('sphere',dilateFactor); 
-    dilatedVolumeMask = imdilate(volumeMaskBW,se);
-    
+function [croppedStackImg] = cropUsingMask(img, volumeMask, dilateFactor, overlap, centroidMethod)
+%     volumeMaskBW = volumeMask/255;
+%     volumeMaskBW = imbinarize(volumeMaskBW, threshold); 
+    volumeMaskBW = volumeMask;
+%     se = strel('sphere',dilateFactor); 
+%     dilatedVolumeMask = imdilate(volumeMaskBW,se);
+    dilatedVolumeMask = volumeMaskBW;
     if centroidMethod == false
         croppedStackImg = dilatedVolumeMask.*img;
 
@@ -32,6 +33,7 @@ function [croppedStackImg] = cropUsingMask(img, volumeMask, threshold, dilateFac
                 img(img==cellId)=0;
                 counter=counter+1;
             end
+%             img(round(imgFeatures.Centroid(cell,2)), round(imgFeatures.Centroid(cell,1)),round(imgFeatures.Centroid(cell,3))) =0;
         end
         fprintf('%s cells removed by centroid method\n', num2str(counter));
         croppedStackImg = img;
