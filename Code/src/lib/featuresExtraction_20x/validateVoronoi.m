@@ -37,7 +37,7 @@ numCols = 128;
 numSlices = 50;
 
 %initialze compounds
-imNumber_row = 3;
+imNumber_row = 2;
 imNumber_col = 2;
 
 imgCompoundStardist = zeros(imNumber_row*numRows, numCols*imNumber_col, numSlices);
@@ -65,8 +65,8 @@ for cyst=1:size(validCysts, 1)
     
     binaryHollowTissue = tagVoronoiWarnings(binaryHollowTissue, lumenImage, croppedStardistImgRelabel, labelledImage, warningCyst);
 
-    n_cols = floor(n/3);
-    n_rows = n-n_cols*3;
+    n_cols = floor(n/imNumber_row);
+    n_rows = n-n_cols*imNumber_col;
     disp(n_rows)
     imgCompoundStardist((1+numRows*(n_rows)):numRows*(n_rows+1), (1+numCols*(n_cols)):numCols*(n_cols+1), :) = croppedStardistImgRelabel;
     imgCompoundHollowTissue((1+numRows*(n_rows)):numRows*(n_rows+1), (1+numCols*(n_cols)):numCols*(n_cols+1), :) = binaryHollowTissue*255;
