@@ -5,7 +5,7 @@ cells3dFeatures=[];
 
 for indexCell = 1:length(validCells)
     actualImg = bwlabeln(labelledImage==validCells(indexCell));
-    oneCell3dFeatures = regionprops3(actualImg, 'PrincipalAxisLength', 'ConvexImage', 'Volume', 'ConvexVolume', 'Solidity', 'SurfaceArea', 'EquivDiameter');
+    oneCell3dFeatures = regionprops3(actualImg, 'PrincipalAxisLength', 'Volume', 'ConvexVolume', 'Solidity', 'SurfaceArea', 'EquivDiameter');
     if size(oneCell3dFeatures, 1) > 0
         indMax = 1;
         if size(oneCell3dFeatures, 1) > 1
