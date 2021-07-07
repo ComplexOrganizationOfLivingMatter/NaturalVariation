@@ -1,8 +1,8 @@
 %Voronoi Warnings table path
-voronoiWarningsPath = '/media/pedro/6TB/jesus/NaturalVariation/crops/voronoi/voronoiCystWarnings_10-Jun-2021.xls';
+voronoiWarningsPath = '/media/pedro/6TB/jesus/NaturalVariation/crops/voronoi_20210618/voronoiCystWarnings_18-Jun-2021.xls';
 
 % Voronoi .mat files path
-voronoiMatFilePath = '/media/pedro/6TB/jesus/NaturalVariation/crops/voronoi/';
+voronoiMatFilePath = '/media/pedro/6TB/jesus/NaturalVariation/crops/voronoi_20210618/';
 
 % RG image filepath
 rgFilePath = '/media/pedro/6TB/jesus/NaturalVariation/crops';
@@ -16,20 +16,21 @@ voronoiCysts = voronoiWarningsTable.name;
 % Remove .mat
 voronoiCysts = strrep(voronoiCysts, '.mat', '');
 voronoiCystsModNames = strrep(voronoiCysts, '_', '.');
-
-%Valid cysts table path
-validCystsPath = '/media/pedro/6TB/jesus/NaturalVariation/crops/voronoi/cleanCystsSelection.csv';
-
-%read table
-validCystsTable = readtable(validCystsPath);
+% 
+% %Valid cysts table path
+% validCystsPath = '/media/pedro/6TB/jesus/NaturalVariation/crops/voronoi/cleanCystsSelection.csv';
+% 
+% %read table
+% validCystsTable = readtable(validCystsPath);
 
 % Compare and filter
-validCysts = voronoiWarningsTable(ismember(voronoiCystsModNames, validCystsTable.Variables), :);
+validCysts = voronoiWarningsTable;
 
 %filter (4 wrong cells or less [user customizable])
 lengths = cellfun(@(x) length(str2num(x)), validCysts.cellsNoBothSurfaces, 'UniformOutput', false);
-lessThan4 = cellfun(@(x) x, lengths)<4;
+lessThan4 = cellfun(@(x) x, lengths)<=4;
 validCysts = validCysts(lessThan4, :);
+errorNum = lengths(lessThan4);
 
 %New shape
 numRows = 128;
@@ -52,6 +53,10 @@ n=0;
 for cyst=1:size(validCysts, 1)
     cystName = strrep(validCysts(cyst, :).name{1}, '.tif.mat', '');
     cystFolderName = validCysts(cyst, :).folder{1};
+    
+    if ~strcmp(cystFolderName, '7d.4c')
+        continue
+    end
     matFile = strcat(voronoiMatFilePath, cystFolderName, '/', cystName, '/cystVoronoi.mat');
     load(matFile)
     
@@ -63,13 +68,18 @@ for cyst=1:size(validCysts, 1)
     rgStackImg = imresize3(rgStackImg,[numRows numCols numSlices], 'nearest');
     labelledImage = imresize3(labelledImage,[numRows numCols numSlices], 'nearest');
     
+    
+    htFirstSlice = binaryHollowTissue(:, :, 1);
+    htFirstSlice = insertText(htFirstSlice, [0, 0], strcat(cystName, ' - errors: ', num2str(errorNum{cyst})), 'TextColor', 'white', 'FontSize', 6);
+    binaryHollowTissue(:, :, 1) = htFirstSlice(:, :, 1);
+    
     binaryHollowTissue = tagVoronoiWarnings(binaryHollowTissue, lumenImage, croppedStardistImgRelabel, labelledImage, warningCyst);
 
     n_cols = floor(n/imNumber_row);
     n_rows = n-n_cols*imNumber_col;
     disp(n_rows)
     imgCompoundStardist((1+numRows*(n_rows)):numRows*(n_rows+1), (1+numCols*(n_cols)):numCols*(n_cols+1), :) = croppedStardistImgRelabel;
-    imgCompoundHollowTissue((1+numRows*(n_rows)):numRows*(n_rows+1), (1+numCols*(n_cols)):numCols*(n_cols+1), :) = binaryHollowTissue*255;
+    imgCompoundHollowTissue((1+numRows*(n_rows)):numRows*(n_rows+1), (1+numCols*(n_cols)):numCols*(n_cols+1), :) = binaryHollowTissue;
     imgCompoundRG((1+numRows*(n_rows)):numRows*(n_rows+1), (1+numCols*(n_cols)):numCols*(n_cols+1), :) = rgStackImg;
     imgCompoundLabelled((1+numRows*(n_rows)):numRows*(n_rows+1), (1+numCols*(n_cols)):numCols*(n_cols+1), :) = labelledImage;
 

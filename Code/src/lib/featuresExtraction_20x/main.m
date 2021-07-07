@@ -1,5 +1,7 @@
 folders = ["4d.1a", "4d.1HX3.B","4d.2HX3.A","4d.3b", "4d.5c","7d.1B","7d.1HX3.B","7d.2C","7d.2HX3.B","7d.4c","10d.1B","10d.2b","10d.4B", "7d.3HX3"] ;
 % folders = ["10d.1B"];
+test = false;
+label= false;
 for folder_ix=1:length(folders)
     folder = folders(folder_ix);
     %% Directories
@@ -18,21 +20,37 @@ for folder_ix=1:length(folders)
 
     %%%%%%%%%%%%%%%%%%% Unet lumen Directory %%% %%%%%%%%%%%%%
     lumenDirectory = strcat('/media/pedro/6TB/jesus/NaturalVariation/crops/', folder, '/',folder,'_lumen_r/');
+    if test
+        lumenDirectory = '/home/pedro/Escritorio/jesus/featuresExtraction_20x_images/test/10_test_red_predicted/';
+    elseif label
+        lumenDirectory = '/home/pedro/Escritorio/jesus/featuresExtraction_20x_images/test/10_test_red_label/';
+    end
     lumenFileFormat = '.tiff';
     lumenFiles = dir(strcat(lumenDirectory, '*', lumenFileFormat));
 
     %%%%%%%%%%%%%%%%% Hollow Tissue Directory %%%%%%%%%%%%%%%
     hollowTissueDirectory = strcat('/media/pedro/6TB/jesus/NaturalVariation/crops/', folder, '/',folder,'_hollowTissue_rg/');
+    if test
+        hollowTissueDirectory = '/home/pedro/Escritorio/jesus/featuresExtraction_20x_images/test/10_test_rg_predicted/';
+    elseif label
+        hollowTissueDirectory = '/home/pedro/Escritorio/jesus/featuresExtraction_20x_images/test/10_test_green_label/';
+    end
     hollowTissueFileFormat = '.tiff';
     hollowTissueFiles = dir(strcat(hollowTissueDirectory, '*', hollowTissueFileFormat));
 
     %%%%%%%%%%%%%%%%%%%%% Stardist Directory %%%%%%%%%%%%%%%%
     stardistDirectory = strcat('/media/pedro/6TB/jesus/NaturalVariation/crops/', folder, '/',folder,'_stardist_bigSigma/');
+    if test || label
+        stardistDirectory = '/home/pedro/Escritorio/jesus/featuresExtraction_20x_images/test/10_img_test_green_predicted_bigSigma/';
+    end
     stardistFileFormat = '.tif'; 
     stardistFiles = dir(strcat(stardistDirectory, '*', stardistFileFormat));
 
     %%%%%%%%%%%%%%%%%%%%% RG Directory %%%%%%%%%%%%%%%%
     rgDirectory = strcat('/media/pedro/6TB/jesus/NaturalVariation/crops/', folder, '/',folder,'_rg/');
+    if test || label
+        rgDirectory = '/home/pedro/Escritorio/jesus/featuresExtraction_20x_images/test/10_test_rg/';
+    end
     rgFileFormat = '.tif';
     rgFiles = dir(strcat(stardistDirectory, '*', rgFileFormat));
 
@@ -96,7 +114,6 @@ for folder_ix=1:length(folders)
             %Remove spare cells from stardist image
             croppedStardistImg = cropUsingMask(stardistStackImg, binaryHollowTissue, 1, 0.85, true); 
 
-            
             %Count cells
             numOfCells = countCells(croppedStardistImg)-1;
 
@@ -111,7 +128,6 @@ for folder_ix=1:length(folders)
             %Average cell volume
             avgCellVolume =  hollowTissueVolume/numOfCells;
 
-            binaryHollowTissue = hollowTissueStackImg;
             saveName = strcat(matDirectory, fileName, '.mat');
             save(saveName, 'binaryHollowTissue', 'croppedStardistImg', 'x_pixel');
 
@@ -210,9 +226,14 @@ for folder_ix=1:length(folders)
 
     %% Write table
     disp('Writting table . . .');
-
+    
+    if label
+        folder = 'label';
+    else test
+        folder = 'test';
+    end
     writetable(resultTable, strcat(tableDirectory, strcat('results_', folder,'.csv')));
-    clearvars -except folders
+    clearvars -except folders test label
 
     disp('End');
 end

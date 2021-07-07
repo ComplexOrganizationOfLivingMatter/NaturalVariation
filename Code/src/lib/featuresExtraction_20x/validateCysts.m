@@ -26,8 +26,8 @@ numRows = 128;
 numCols = 128;
 numSlices = 50;
 
-imNumber_row = 5;
-imNumber_col = 5;
+imNumber_row = 2;
+imNumber_col = 2;
 
 imgCompoundStardist = zeros(imNumber_row*numRows, numCols*imNumber_col, numSlices);
 imgCompoundHollowTissue = zeros(imNumber_row*numRows, numCols*imNumber_col, numSlices);
@@ -89,8 +89,8 @@ for n_file = 1:length(hollowTissueFiles)
     rgFirstSlice = insertText(rgFirstSlice, [0, 0], fileName, 'TextColor', 'white');
     rgStackImg(:, :, 1) = rgFirstSlice(:, :, 1)*255;
     
-    n_cols = floor(n/5);
-    n_rows = n-n_cols*5;
+    n_cols = floor(n/imNumber_col);
+    n_rows = n-n_cols*imNumber_row;
     disp(n_rows)
     imgCompoundStardist((1+numRows*(n_rows)):numRows*(n_rows+1), (1+numCols*(n_cols)):numCols*(n_cols+1), :) = croppedStardistImg;
     imgCompoundHollowTissue((1+numRows*(n_rows)):numRows*(n_rows+1), (1+numCols*(n_cols)):numCols*(n_cols+1), :) = binaryHollowTissue*255;
