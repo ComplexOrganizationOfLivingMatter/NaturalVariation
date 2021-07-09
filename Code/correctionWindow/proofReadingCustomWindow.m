@@ -1,5 +1,7 @@
 function [labelledImage,lumenImage,apicalLayer,basalLayer] = proofReadingCustomWindow(rawImg,labelledImage,lumenImage,apicalLayer,basalLayer,colours,notFoundCellsSurfaces,cellWithStrangeSurface,outputDir)
-
+    
+    rawImg = permute(rawImg,[2 1 3]);
+    
     resizeImg=1;
     tipValue=0;
     glandOrientation = 0;
@@ -14,6 +16,7 @@ function [labelledImage,lumenImage,apicalLayer,basalLayer] = proofReadingCustomW
     answer='Yes';
     while isequal(answer, 'Yes')
         %volumeViewer(vertcat(labelledImage>0, lumenImage))
+
         [h, labelledImage_Temp, lumenImage_Temp, colours_Temp] = window(rawImg, outputDir, labelledImage, lumenImage, resizeImg, tipValue, glandOrientation, colours, notFoundCellsSurfaces, cellWithStrangeSurface);
 
         savingResults = saveResults();
@@ -25,7 +28,7 @@ function [labelledImage,lumenImage,apicalLayer,basalLayer] = proofReadingCustomW
             colours = colours_Temp;
 
             close all
-            [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromPlantSeg(labelledImage,path2saveLayers);
+            [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage,'');
            
             %% Save apical and basal 3d information
             save(outputDir, 'labelledImage', 'basalLayer', 'apicalLayer', 'lateralLayer', 'lumenImage', 'colours', '-v7.3')

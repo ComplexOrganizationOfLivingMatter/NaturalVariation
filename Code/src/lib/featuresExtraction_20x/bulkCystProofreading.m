@@ -1,51 +1,42 @@
-% No-voronoi Warnings table path
+addpath '/home/pedro/Escritorio/jesus/NaturalVariation/Code/correctionWindow/gui'
+
+%% No-voronoi Warnings table path
 voronoiWarningsPath = '/media/pedro/6TB/jesus/NaturalVariation/crops/no_voronoi_20210705/voronoiCystWarnings_05-Jul-2021.xls';
 
-% No-voronoi .mat files path
+%% No-voronoi .mat files path
 voronoiMatFilePath = '/media/pedro/6TB/jesus/NaturalVariation/crops/no_voronoi_20210705/';
 
-% RG image filepath
+%% Fixed cysts file path
+fixedCystsFilePath = '/media/pedro/6TB/jesus/NaturalVariation/fixedCysts/';
+
+%% RG image filepath
 rgFilePath = '/media/pedro/6TB/jesus/NaturalVariation/crops';
 
 matDirectory = strcat('/media/pedro/6TB/jesus/NaturalVariation/validateCysts_reducedLumen/');
 
-%Load table
+%% Load table
 voronoiWarningsTable = readtable(voronoiWarningsPath);
 
-%Make list
+%% Make list
 voronoiCysts = voronoiWarningsTable.name;
 
-% Remove .mat
+%% Remove .mat
 voronoiCysts = strrep(voronoiCysts, '.mat', '');
 voronoiCystsModNames = strrep(voronoiCysts, '_', '.');
 
-% Compare and filter
+%% Compare and filter
 validCysts = voronoiWarningsTable;
 
-%filter (4 wrong cells or less [user customizable])
+%% filter (4 wrong cells or less [user customizable])
 validCysts(strcmp(validCysts.cellsNoBothSurfaces,'OPEN cyst'), :) = [];
 lengths = cellfun(@(x) length(str2num(x)), validCysts.cellsNoBothSurfaces, 'UniformOutput', false);
 lessThan4 = cellfun(@(x) x, lengths)<=4;
 validCysts = validCysts(lessThan4, :);
 errorNum = lengths(lessThan4);
 
-%New shape
-numRows = 128;
-numCols = 128;
-numSlices = 50;
-
-%initialze compounds
-imNumber_row = 2;
-imNumber_col = 2;
-
-imgCompoundRG = zeros(imNumber_row*numRows, numCols*imNumber_col, numSlices); 
-imgCompoundLabelled = zeros(imNumber_row*numRows, numCols*imNumber_col, numSlices); 
-
-labelledImageCompound = zeros(imNumber_row*numRows, numCols*imNumber_col, numSlices);
-
-n=0;
-%for loop
+%% for loop
 for cyst=1:size(validCysts, 1)
+    %Load images
     cystName = strrep(validCysts(cyst, :).name{1}, '.tif.mat', '');
     cystFolderName = strsplit(cystName, '/');
     cystName = cystFolderName{2};
@@ -76,38 +67,25 @@ for cyst=1:size(validCysts, 1)
     rgStackImg_scaled = imresize3(rgStackImg,[numRows_ numCols_ numSlices_], 'nearest');
     labelledImage_scaled = imresize3(labelledImage,[numRows_ numCols_ numSlices_], 'nearest');
     labelledImage_scaled = reduceLumenVolume(labelledImage_scaled);
+%     save(saveName, 'rgStackImg_scaled', 'labelledImage_scaled');
 
-    save(saveName, 'rgStackImg_scaled', 'labelledImage_scaled');
-
-
-%     rgStackImg = tagCellOutliers(rgStackImg, labelledImage);
-%     rgStackImg = tagVoronoiWarnings(rgStackImg, labelledImage, validCysts(cyst, :).Variables, true);
-%     rgFirstSlice = rgStackImg(:, :, 1)/255;
-%     rgFirstSlice = insertText(rgFirstSlice, [0, 0], strcat(cystName, ' - errors: ', num2str(errorNum{cyst})), 'TextColor', 'white', 'FontSize', 6);
-%     rgStackImg(:, :, 1) = rgFirstSlice(:, :, 1)*255;
-% 
-%     n_cols = floor(n/imNumber_row);
-%     n_rows = n-n_cols*imNumber_col;
-%     disp(n_rows)
-%     imgCompoundRG((1+numRows*(n_rows)):numRows*(n_rows+1), (1+numCols*(n_cols)):numCols*(n_cols+1), :) = rgStackImg;
-%     imgCompoundLabelled((1+numRows*(n_rows)):numRows*(n_rows+1), (1+numCols*(n_cols)):numCols*(n_cols+1), :) = labelledImage;
-% 
-%     n = n+1;
-%     
-%     if(n==(imNumber_row*imNumber_col) || cyst==size(validCysts, 1))
-%        imgCompoundRG(1:numRows*(imNumber_row), 1:numCols*(imNumber_col), :) = imgCompoundRG;
-%        labelledImageCompound(1:numRows*(imNumber_row), 1:numCols*(imNumber_col), :) = imgCompoundLabelled;
-% 
-%        volumeSegmenter(imgCompoundRG, labelledImageCompound);  
-%        
-% 
-%        w = waitforbuttonpress;
-%        labelledImageCompound = zeros(imNumber_row*numRows, numCols*imNumber_col, numSlices);
-%        imgCompoundRG = zeros(imNumber_row*numRows, numCols*imNumber_col, numSlices);  
-%        imgCompoundLabelled = zeros(imNumber_row*numRows, numCols*imNumber_col, numSlices);  
-%        n=0;
-%     end
+    [~, cellOutlier] = tagCellOutliers(rgStackImg, labelledImage);
+    cellOutlierStringArray = string(cellOutlier);
+    cellOutlier = strjoin(cellOutlierStringArray,',');
     
+    notFoundCellsSurfaces = validCysts(cyst, :).cellsNoBothSurfaces{1};
+    notFoundCellsSurfacesStringArray = string(notFoundCellsSurfaces);
+    notFoundCellsSurfaces = strjoin(notFoundCellsSurfacesStringArray,',');
+    
+    saveCystPath = strcat(fixedCystsFilePath, cystName, '.mat');
+    
+    addpath '/home/pedro/Escritorio/jesus/NaturalVariation/Code'
+    [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage_scaled, '');
+    
+    disp(cystName)
+    proofReadingCustomWindow(rgStackImg_scaled,labelledImage_scaled,lumenImage,apicalLayer,basalLayer,[],notFoundCellsSurfaces,cellOutlier,saveCystPath);
+    w = waitforbuttonpress;
+
 end
 
 

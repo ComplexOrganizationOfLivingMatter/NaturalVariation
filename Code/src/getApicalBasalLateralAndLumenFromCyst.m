@@ -27,5 +27,7 @@ function [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLatera
         lumenImage = bwlabeln(lumenImage) == id;
     end
     
-    save(path2saveLayers, 'apicalLayer','basalLayer','lateralLayer','lumenImage','labelledImage','-v7.3')
+    if ~isempty(path2saveLayers)
+        save(path2saveLayers, 'apicalLayer','basalLayer','lateralLayer','lumenImage','labelledImage','-v7.3')
+    end
 end

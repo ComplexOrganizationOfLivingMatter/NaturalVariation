@@ -17,9 +17,7 @@ function [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLatera
         disp(['removed label(s) ' num2str(bigLabels(1))])
     end
     
-   
-    
-    
+
     cystFilled = imfill(labelledImage>0,'holes');
     perimCystFilled = bwperim(cystFilled);
     basalLayer(perimCystFilled) = labelledImage(perimCystFilled);
@@ -35,7 +33,7 @@ function [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLatera
         lateralLayer(perimLateralCell)=nCell;
     end
     
-    lateralLayer(basalLayer>0 | apicalLayer>0) = 0; 
+    lateralLayer(basalLayer>0 | apicalLayer>0) = 0;
     
     lumenImage = labelledImage==0 & cystFilled;
     volumeLumen =regionprops3(bwlabeln(lumenImage),'Volume');

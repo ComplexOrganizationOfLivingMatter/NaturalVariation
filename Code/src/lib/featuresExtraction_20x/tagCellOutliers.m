@@ -1,4 +1,4 @@
-function [rg] = tagCellOutliers(rg, labelledImage)
+function [rg, cellOutlierId] = tagCellOutliers(rg, labelledImage)
     
 
     uniqueCells = unique(labelledImage);
