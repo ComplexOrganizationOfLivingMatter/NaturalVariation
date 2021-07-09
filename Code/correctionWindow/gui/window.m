@@ -62,10 +62,18 @@ set(0, 'currentfigure', hObject);
 guidata(hObject, handles);
 
 if isempty(varargin{9}) == 0
-    set(handles.missingApical,'string', strjoin(arrayfun(@num2str, varargin{9}, 'UniformOutput', false), ', '));
+    if isstring(varargin{9})
+        set(handles.missingApical,'string',varargin{9});
+    else
+        set(handles.missingApical,'string', strjoin(arrayfun(@num2str, varargin{9}, 'UniformOutput', false), ', '));
+    end
 end
 if isempty(varargin{10}) == 0
-    set(handles.missingBasal,'string', strjoin(arrayfun(@num2str,varargin{10}, 'UniformOutput', false), ', '))
+    if isstring(varargin{10})
+        set(handles.missingBasal,'string',varargin{10});
+    else
+        set(handles.missingBasal,'string', strjoin(arrayfun(@num2str,varargin{10}, 'UniformOutput', false), ', '))
+    end
 end
 
 handles.imageSequence = varargin{1};

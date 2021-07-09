@@ -1,6 +1,5 @@
 function [labelledImage,lumenImage,apicalLayer,basalLayer] = proofReadingCustomWindow(rawImg,labelledImage,lumenImage,apicalLayer,basalLayer,colours,notFoundCellsSurfaces,cellWithStrangeSurface,outputDir)
 
-    outputDir='';
     resizeImg=1;
     tipValue=0;
     glandOrientation = 0;
