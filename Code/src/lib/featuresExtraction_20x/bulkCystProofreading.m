@@ -1,5 +1,8 @@
 addpath '/home/pedro/Escritorio/jesus/NaturalVariation/Code/correctionWindow/gui'
 
+%% Last fixed Cyst.
+lastFixedCyst = ''; %Example '7d.1B/7d.1.B.5_3.tif_itkws.tiff' // all cysts are in the same folder. That's to resume the fixing where you stopped (based on the xls)
+
 %% No-voronoi Warnings table path
 voronoiWarningsPath = '/media/pedro/6TB/jesus/NaturalVariation/crops/no_voronoi_20210705/voronoiCystWarnings_05-Jul-2021.xls';
 
@@ -34,8 +37,14 @@ lessThan4 = cellfun(@(x) x, lengths)<=4;
 validCysts = validCysts(lessThan4, :);
 errorNum = lengths(lessThan4);
 
+if ~isempty(lastFixedCyst)
+    startCyst = find(strcmp(validCysts.name, lastFixedCyst)) + 1;
+else
+    startCyst = 1;
+end
+
 %% for loop
-for cyst=1:size(validCysts, 1)
+for cyst=startCyst:size(validCysts, 1)
     %Load images
     cystName = strrep(validCysts(cyst, :).name{1}, '.tif.mat', '');
     cystFolderName = strsplit(cystName, '/');
