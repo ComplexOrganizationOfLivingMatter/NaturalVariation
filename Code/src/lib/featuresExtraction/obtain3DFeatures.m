@@ -2,15 +2,16 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
 
     if ~exist(fullfile(path2save, 'morphological3dFeatures.mat'),'file')
        
-      
-        [lateral3dInfo,totalLateralCellsArea,absoluteLateralContacts] = getLateralContacts(lateralLayer,3,contactThreshold);
+        %% (default se = 3)
+        dilatedVx = 4;
+        [lateral3dInfo,totalLateralCellsArea,absoluteLateralContacts] = getLateralContacts(lateralLayer,dilatedVx,contactThreshold);
         %lateral3dInfo = lateral3dInfo.neighbourhood';
 
-        %% Cellular features
-        [apical3dInfo] = calculateNeighbours3D(apicalLayer, 3, apicalLayer == 0);
+        %% Cellular features 
+        [apical3dInfo] = calculateNeighbours3D(apicalLayer, dilatedVx, apicalLayer == 0);
         apical3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,apical3dInfo.neighbourhood','UniformOutput',false);
         
-        [basal3dInfo] = calculateNeighbours3D(basalLayer, 3, basalLayer == 0);
+        [basal3dInfo] = calculateNeighbours3D(basalLayer, dilatedVx, basalLayer == 0);
         basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,basal3dInfo.neighbourhood','UniformOutput',false);
 
         %check for non considered valid cells, and delete cells "0" volume

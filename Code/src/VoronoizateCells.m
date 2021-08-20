@@ -1,6 +1,6 @@
 function [voronoiCyst] = VoronoizateCells(binaryMask,imgCells)
 
-    voronoiCyst=imgCells.*binaryMask;
+    voronoiCyst=imgCells.*cast(binaryMask,class(imgCells));
 
     perimCells=bwperim(voronoiCyst>0);
     
@@ -16,10 +16,20 @@ function [voronoiCyst] = VoronoizateCells(binaryMask,imgCells)
     %From valid pixels get closest seed (add this value)
     %tic
 %     disp('generating 3D Voronoi')
-    parfor nId = 1:length(idsToFill)
-        distCoord = pdist2([col(nId),row(nId), z(nId)],[colPer,rowPer, zPer]);
-        [~,idSeedMin]=min(distCoord);
-        labelPerId(nId) = labelsPerimIds(idSeedMin);
+    if isempty(gcp('nocreate'))
+        parfor nId = 1:length(idsToFill)
+            distCoord = pdist2([col(nId),row(nId), z(nId)],[colPer,rowPer, zPer]);
+            [~,idSeedMin]=min(distCoord);
+            labelPerId(nId) = labelsPerimIds(idSeedMin);
+        end
+        poolobj = gcp('nocreate');
+        delete(poolobj);
+    else
+        for nId = 1:length(idsToFill)
+            distCoord = pdist2([col(nId),row(nId), z(nId)],[colPer,rowPer, zPer]);
+            [~,idSeedMin]=min(distCoord);
+            labelPerId(nId) = labelsPerimIds(idSeedMin);
+        end
     end
     %toc
     voronoiCyst(idsToFill)=labelPerId;
