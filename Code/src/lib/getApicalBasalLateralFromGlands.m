@@ -8,14 +8,14 @@ function [apicalLayer,basalLayer,lateralLayer,lumenSkeleton] = getApicalBasalLat
     
     labelledImageNoGaps = VoronoizateCells(cystFilled-(lumenImage>0),labelledImage);
 
-    basalLayer(perimCystFilled) = labelledImage(perimCystFilled);
+    basalLayer(perimCystFilled) = labelledImageNoGaps(perimCystFilled);
     
     apicalBasalLayer = bwperim(cystFilled-(lumenImage>0));
     apicalLayer(apicalBasalLayer) = labelledImageNoGaps(apicalBasalLayer);
     
     apicalLayer(perimCystFilled)=0;
     
-    totalCells = unique(labelledImage(:))';
+    totalCells = unique(labelledImageNoGaps(:))';
     totalCells(totalCells==0)=[];
     for nCell = totalCells
         perimLateralCell = bwperim(labelledImageNoGaps==nCell);
