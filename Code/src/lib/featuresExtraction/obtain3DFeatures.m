@@ -20,8 +20,8 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         lateralLayerAux(labelledImage==0)=0;
         if ~isequal(lateralLayer, lateralLayerAux)
             %%the threshold is only applied in the full lateral surface
-            [lateral3dInfo,totalLateralCellsArea,absoluteLateralContacts] = getLateralContacts(lateralLayer,dilatedVx,0);
-            lateral3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo_total,lateral3dInfo,'UniformOutput',false);
+            [lateral3dInfoAux,totalLateralCellsArea,absoluteLateralContacts] = getLateralContacts(lateralLayerAux,dilatedVx,0);
+            lateral3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo_total,lateral3dInfoAux,'UniformOutput',false);
         else
             lateral3dInfo = lateral3dInfo_total;
             clearvars lateral3dInfo_total lateralLayerAux
