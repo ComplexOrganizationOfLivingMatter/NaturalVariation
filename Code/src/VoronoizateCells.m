@@ -29,6 +29,8 @@ function [voronoiCyst] = VoronoizateCells(binaryMask,imgCells)
             distCoord = pdist2([col(nId),row(nId), z(nId)],[colPer,rowPer, zPer]);
             [~,idSeedMin]=min(distCoord);
             labelPerId(nId) = labelsPerimIds(idSeedMin);
+            disp([num2str(nId) '/' num2str(length(idsToFill))])
+%             waitbar(nId/length(idsToFill))
         end
     end
     %toc

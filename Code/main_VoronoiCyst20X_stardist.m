@@ -17,7 +17,7 @@ for nCyst = 1:size(pathCysts,1)
     end
     disp([pathCysts(nCyst).name ' - ' num2str(nCyst) '/' num2str(size(pathCysts,1))])
     
-%     if ~exist(fullfile(folder2save,'cystVoronoi.mat'),'file')
+    if ~exist(fullfile(folder2save,'cystVoronoi.mat'),'file')
         load(fullfile(pathCysts(nCyst).folder,pathCysts(nCyst).name),'binaryHollowTissue','croppedStardistImg','x_pixel')
         
         %% Relabel 
@@ -51,10 +51,10 @@ for nCyst = 1:size(pathCysts,1)
         end        
         warningCyst = cystToCheck(nCyst,:);
         save(fullfile(folder2save,'cystVoronoi.mat'),'croppedStardistImgRelabel','binaryHollowTissue','warningCyst','x_pixel','-append')
-%     else
-%         load(fullfile(folder2save,'cystVoronoi.mat'),'warningCyst')
-%         cystToCheck(nCyst,:) = warningCyst;
-%     end    
+    else
+        load(fullfile(folder2save,'cystVoronoi.mat'),'warningCyst')
+        cystToCheck(nCyst,:) = warningCyst;
+    end    
 end
 
 writetable(cell2table(cystToCheck,'VariableNames',{'name','cellsNoBothSurfaces','growingTooMuch'}),fullfile(rootPathModels,['voronoiCystWarnings_' date '.xls']))

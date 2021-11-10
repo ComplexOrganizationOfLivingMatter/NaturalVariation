@@ -1,11 +1,11 @@
 clear all; close all; addpath(genpath('..\Code'))
 
-pathCysts = dir('E:\Pedro\NaturalVariation\data\stardistCysts_20X\plantSeg_segmentation\**\*.tiff');
+pathCysts = dir('E:\Pedro\NaturalVariation\data\stardistCysts_20X\normalized\**\*.tiff');
 
 warning('off','all')
 cystToCheck = cell(size(pathCysts,1),2);
 
-for nCyst = 852:size(pathCysts,1)
+for nCyst = 1:size(pathCysts,1)
 
     disp(pathCysts(nCyst).name)
     
@@ -19,7 +19,7 @@ for nCyst = 852:size(pathCysts,1)
     end
         
     %% Create Voronoi cells from stardist cells
-    [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromPlantSeg(imgRelabel,fullfile(pathCysts(nCyst).folder,strrep(pathCysts(nCyst).name,'.tif_itkws.tiff','.mat')));
+    [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromPlantSeg(imgRelabel,fullfile(pathCysts(nCyst).folder,strrep(pathCysts(nCyst).name,'_itkws.tiff','.mat')));
 
     %generate warning because possible under-detected cells "holes";
     %multilayer or cells not touching any surface

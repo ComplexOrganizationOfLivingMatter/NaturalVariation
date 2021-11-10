@@ -13,3 +13,6 @@
 *rawCysts/
 *.asv
 *.fig
+Code/src/lib/ImageMPackage/*
+*.txt
+*.md
