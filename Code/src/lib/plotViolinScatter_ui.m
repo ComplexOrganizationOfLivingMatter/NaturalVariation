@@ -85,6 +85,19 @@ size_wind = [1 50; 1 50; 1 50; 1 50]; % Windows size
 idx = listdlg('PromptString','Select type variable (oblate/prolate, ...)',...
               'SelectionMode','single',...
               'ListString',C, 'ListSize',[550,250]);
+
+%% select average or median
+
+parameterQuest = questdlg('Do you want to plot the median or the average?', ...
+	'Median or Average', ...
+	'Median','Average', 'Average');
+
+median_boolean = 0;
+
+if strcmp(parameterQuest,'Median')
+    median_boolean = 1;
+end
+
           
 % Show the values of the fields that the user picked:
 chosenTypeVariable = [];
@@ -93,9 +106,10 @@ for k = 1:numel(idx)
 end
 
 %%
+    uniqueTypes = unique(dataTable(:, chosenTypeVariable{1}));
+
 if strcmp(colorQuest, 'YES')
     colorMatrix = [];
-    uniqueTypes = unique(dataTable(:, chosenTypeVariable{1}));
     for typeIx = 1:size(uniqueTypes, 1)
         colorMatrix = [colorMatrix; uisetcolor(strcat(string(uniqueTypes{typeIx, :}), ' color'))];
     end
@@ -104,7 +118,7 @@ else
 end
 
 if strcmp(violinQuest, 'YES')
-    violinColor = [];
+    violinColor = [];   
     for classIx = 1:size(uniqueClasses, 1)
         violinColor = [violinColor; uisetcolor(strcat(string(uniqueClasses{classIx, :}), ' color'))];
     end
@@ -114,4 +128,4 @@ end
 
 tableForScatter = dataTableCopy(:, {chosenClassVariable{1}, chosenNumericVariable{1}, chosenTypeVariable{1}});
 tableForScatter.Properties.VariableNames = {'class', 'var1', 'type'};
-plotViolinScatter(tableForScatter, colorMatrix, violinColor, plotOrder)
+plotViolinScatter(tableForScatter, colorMatrix, violinColor, plotOrder,median_boolean,chosenNumericVariable)

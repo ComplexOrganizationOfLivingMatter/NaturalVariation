@@ -1,4 +1,4 @@
-function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder)
+function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,median_boolean,chosenNumericVariable)
 
     uniqueClasses = unique(tableForScatter.class);
     uniqueTypes = unique(tableForScatter.type);
@@ -11,7 +11,19 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder)
         classTicks = [classTicks, classIx];
         classTicksNames = [classTicksNames, uniqueClasses(classIx)];
         tableForScatter = tableForScatterOrig(strcmp(tableForScatterOrig.class,uniqueClasses(classIx)),  :);
-        radius = 0.01;
+        allNumericData = tableForScatter(:, 'var1').var1; % Here the data
+        allNumericData( ~any(allNumericData,2), : ) = []; % We delete the zero rows (they affect to precision because for example 0.000 == 0)
+        allNumericData_integer = floor(allNumericData); % Here the data rounded to the nearest integer
+        decimal_part = allNumericData-allNumericData_integer; % We keep the decimal part.
+        for i=1:length(decimal_part)
+        decimal_part_length(i) = numel(num2str(decimal_part(i)));
+        end
+        if min(decimal_part_length) <= 3
+            radius = 10^(-min(decimal_part_length));
+        else 
+            radius = 1e-3;
+        end
+        %radius = 0.01; %good for scutoids.
         xyPositions = [];
         sampleTypes = [];
         colors = dotColors;
@@ -38,14 +50,17 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder)
                 continue
             end
 
-            newXPos = linspace(0, radius*countClosesstPoints/2, countClosesstPoints);
-            newXPos = newXPos + classIxPlotOrder-radius*countClosesstPoints/4;
+            newXPos = linspace(0, 0.05*countClosesstPoints/2, countClosesstPoints);
+            %newXPos = linspace(0, 1.5*countClosesstPoints*radius, countClosesstPoints);
+            newXPos = newXPos + classIxPlotOrder-0.05*countClosesstPoints/4;
             xyPositions(closestPoints, 1) = newXPos;
 
         end
 
         %%Median
+     
         medianValue = median(xyPositions(:, 2));
+        averageValue = mean(xyPositions(:, 2));
 
         %hfit
         hfit = figure;
@@ -57,7 +72,7 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder)
         %%
         curveXData = hfit(2).XData;
         curveYData = 1.25*(hfit(2).YData-min(hfit(2).YData))/(max((hfit(2).YData-min(hfit(2).YData)))/(max(abs(xyPositions(:, 1)))-classIxPlotOrder));
-
+        %curveYData = hfit(2).YData/10;
         %Violin
         violinx1 = curveYData+classIxPlotOrder;
         violinx2 = -curveYData+classIxPlotOrder;
@@ -86,10 +101,17 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder)
             plot(xyPositions(dotIx,1),xyPositions(dotIx,2), 'r.', 'MarkerSize', 25,'Color', colors(sampleTypes(dotIx),:));
             hold all
         end
-        plot([classIxPlotOrder-0.2 classIxPlotOrder+0.2], [medianValue medianValue], 'r')
+        if median_boolean == 1
+            plot([classIxPlotOrder-0.2 classIxPlotOrder+0.2], [medianValue medianValue], 'r')
+        else 
+            plot([classIxPlotOrder-0.2 classIxPlotOrder+0.2], [averageValue averageValue], 'r')
+        end
         hold on
         xlim([0.5 size(uniqueClasses, 1)+0.5])
-        ylim([0 1])
+        %ylim([min(tableForScatter.var1) max(tableForScatter.var1)])
+        ylim tight
+        y_axis = string(chosenNumericVariable);
+        ylabel(y_axis)
         hold on
 
     end
