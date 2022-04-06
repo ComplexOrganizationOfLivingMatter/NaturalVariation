@@ -1,7 +1,7 @@
 function [image3dInfo] = calculateNeighbours3D(L_img, dilatedPixels, invalidRegion)
 
     %% Generate neighbours
-    se = strel('cuboid', [dilatedPixels dilatedPixels dilatedPixels]);
+    se = strel('sphere', dilatedPixels);
     cells=1:max(max(max(L_img)));
     imgPerim = uint16(bwperim(L_img)) .* uint16(L_img);
     
@@ -13,9 +13,8 @@ function [image3dInfo] = calculateNeighbours3D(L_img, dilatedPixels, invalidRegi
     
     for numCell = 1 : length(cells)
         %Dilating cell of interest
-        cellRegion = imgPerim==cells(numCell);
-        BW_dilate = imdilate(cellRegion, se);
-        indxCellDilated = find(BW_dilate & ~invalidRegion & ~cellRegion);
+        BW_dilate = imdilate(imgPerim==cells(numCell), se);
+        indxCellDilated = find(BW_dilate & ~invalidRegion);
         [x,y,z]=ind2sub(size(BW_dilate),indxCellDilated);
 %           shp=alphashape(x,y,z);
 %           figure;plot(shp)

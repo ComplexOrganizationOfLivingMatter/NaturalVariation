@@ -1,26 +1,28 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % mainFeaturesExtraction_20XCysts
 % 
+% Main code for Cysts features extraction 
 %
-% aquí la clave es:
-% 
-% 1. Cargar las imagen 3d 
-% 
-% 2. Haces que X, Y, Z tengan la misma resolución
-% 
-% 3. Cargar el pixel/voxel scale, para tener las mediciones en micrometros
-% 
-% 4. obtener superficies apical, basal, lateral y lumen
-% 
-% 5. Con todos estos ingredientes se lanzan las funciones para extraer features
+% 1.- Load 3d labelledImage and rgStack (raw) image
+%
+% 2.- Check sizes and homogenize x, y and z  resolution
+%
+% 3.- Load pixel/voxel scale for micrometer conversion
+%
+% 4.- Obtain layers: apical, basal, lateral & lumen
+%
+% 5.- Extract features
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Add paths
 addpath(genpath('/home/pedro/Escritorio/jesus/NaturalVariation/'));
 
 %% mat files of fixed cysts
-fixedCystsPath = '/media/pedro/6TB/jesus/NaturalVariation/fixedCysts_CARMEN/validateCysts_03_nov/fixedCysts/';
+fixedCystsPath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions/10d/fixedCysts/';
 
 %% original tif files of rg cysts
-originalImagesPath = '/media/pedro/6TB/jesus/NaturalVariation/fixedCysts_CARMEN/validateCysts_03_nov/rgStack/';
+originalImagesPath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions/10d/rgStack/';
 
 %% path 2 save output
 path2save = '';
@@ -29,7 +31,7 @@ path2save = '';
 fixedCystsDir = dir(strcat(fixedCystsPath, '*.mat'));
 
 %% Write table path
-tablePath = '/media/pedro/6TB/jesus/NaturalVariation/fixedCysts_CARMEN/validateCysts_03_nov/';
+tablePath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions/10d/';
 tablePath = strcat(tablePath, 'cysts_features_', num2str(datetime('now').Day), '_', num2str(datetime('now').Month), '_', num2str(datetime('now').Year), '.xls');
 %% Create empty table
 dataTable = table();
@@ -74,12 +76,18 @@ for cyst=1:length(fixedCystsDir)
     [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage,'');
     
     %% At least the 0.5% of lateral membrane contacting with other cell to be1 considered as neighbor.
-    contactThreshold = 0.5;
+    contactThreshold = 1;
     dilatedVx = 2;
     
-    %% Obtain 3D descriptors
-    [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetworkFeatures,totalMeanCellsFeatures,totalStdCellsFeatures]=calculate3DMorphologicalFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,path2save,cystName,pixelScale,contactThreshold, [], [], dilatedVx);
-    
+    try
+        %% Obtain 3D descriptors
+        [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetworkFeatures,totalMeanCellsFeatures,totalStdCellsFeatures]=calculate3DMorphologicalFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,path2save,cystName,pixelScale,contactThreshold, [], [], dilatedVx);
+    catch
+        warning("on")
+        warning("calculate3DMorphologicalFeatures failed!")    
+        warning("off")
+        continue
+    end
     %% ID_Cysts
     allGeneralInfo.Properties.VariableNames{1} = 'ID_Cysts';    
     
@@ -102,11 +110,14 @@ for cyst=1:length(fixedCystsDir)
     %% perCell Volumes 
     perCell = table({allTissues.tissue_Volume/allGeneralInfo.NCells_valid}, {allLumens.lumen_Volume/allGeneralInfo.NCells_valid}, {allHollowTissue3dFeatures.hollowTissue_Volume/allGeneralInfo.NCells_valid}, 'VariableNames', {'tissueVolume_perCell', 'lumenVolume_perCell', 'hollowTissueVolume_perCell'});
     
-    %% 
+    %%  percentage Lumen/Space
     percentageLumenSpace = table({allLumens.lumen_Volume/allTissues.tissue_Volume}, 'VariableNames', {'percentageLumenSpace'});
     
+    %% negative  Curvature
+    negativeCurvature = table({evaluateCurvNeg(allTissues.tissue_Solidity, 0.9)}, 'VariableNames', {'negativeCurvature'});
+    
     %% build and write table
-    aux_table = [allGeneralInfo, allTissues, allHollowTissue3dFeatures, allLumens, allNetworkFeatures, totalMeanCellsFeatures, totalStdCellsFeatures, cystShape, perCell, percentageLumenSpace];
+    aux_table = [allGeneralInfo, allTissues, allHollowTissue3dFeatures, allLumens, allNetworkFeatures, totalMeanCellsFeatures, totalStdCellsFeatures, cystShape, negativeCurvature, perCell, percentageLumenSpace];
     
     dataTable = [dataTable; aux_table];
     
@@ -114,13 +125,13 @@ end
 
 % writetable(dataTable,tablePath); 
 
-dataTable_sheet_1 = dataTable(:, {'ID_Cysts', 'cystShape', 'NCells_total', 'NCells_valid',   'tissue_PrincipalAxisLength', 'tissue_aspectRatio', 'hollowTissue_Volume', 'SurfaceRatio3D_areas',   'Scutoids', 'ApicoBasalTransitions',    'tissue_Solidity',  'tissue_Volume',    'tissue_ConvexVolume',  'tissue_SurfaceArea',   'tissue_sphericity',    'tissue_irregularityShapeIndex',    'tissueVolume_perCell', 'hollowTissueVolume_perCell',   'lumenVolume_perCell',  'lumen_Solidity',   'lumen_Volume', 'lumen_ConvexVolume',   'lumen_SurfaceArea',    'lumen_sphericity', 'lumen_PrincipalAxisLength', 'lumen_aspectRatio',    'lumen_irregularityShapeIndex', 'hollowTissue_Solidity',    'hollowTissue_SurfaceArea', 'hollowTissue_sphericity',  'hollowTissue_PrincipalAxisLength',   'hollowTissue_aspectRatio', 'percentageLumenSpace'});
+dataTable_sheet_1 = dataTable(:, {'ID_Cysts', 'cystShape', 'negativeCurvature', 'NCells_total', 'NCells_valid',   'tissue_PrincipalAxisLength', 'tissue_aspectRatio', 'hollowTissue_Volume', 'SurfaceRatio3D_areas',   'Scutoids', 'ApicoBasalTransitions',    'tissue_Solidity',  'tissue_Volume',    'tissue_ConvexVolume',  'tissue_SurfaceArea',   'tissue_sphericity',    'tissue_irregularityShapeIndex',    'tissueVolume_perCell', 'hollowTissueVolume_perCell',   'lumenVolume_perCell',  'lumen_Solidity',   'lumen_Volume', 'lumen_ConvexVolume',   'lumen_SurfaceArea',    'lumen_sphericity', 'lumen_PrincipalAxisLength', 'lumen_aspectRatio',    'lumen_irregularityShapeIndex', 'hollowTissue_Solidity',    'hollowTissue_SurfaceArea', 'hollowTissue_sphericity',  'hollowTissue_PrincipalAxisLength',   'hollowTissue_aspectRatio', 'percentageLumenSpace'});
 writetable(dataTable_sheet_1,tablePath,'Sheet','globalFeatures');
 dataTable_sheet_2 = dataTable(:, {'ID_Cysts', 'tissue_apical_triangles', 'tissue_apical_squares', 'tissue_apical_pentagons', 'tissue_apical_hexagons', 'tissue_apical_heptagons', 'tissue_apical_octogons', 'tissue_apical_nonagons', 'tissue_apical_decagons', 'tissue_basal_triangles', 'tissue_basal_squares', 'tissue_basal_pentagons', 'tissue_basal_hexagons', 'tissue_basal_heptagons', 'tissue_basal_octogons', 'tissue_basal_nonagons', 'tissue_basal_decagons', 'tissue_lateral_triangles', 'tissue_lateral_squares', 'tissue_lateral_pentagons', 'tissue_lateral_hexagons', 'tissue_lateral_heptagons', 'tissue_lateral_octogons', 'tissue_lateral_nonagons', 'tissue_lateral_decagons'});
 writetable(dataTable_sheet_2,tablePath,'Sheet','polygonDistributions');
-dataTable_sheet_3 = dataTable(:, {'ID_Cysts', 'mean_cell_apical_Area', 'mean_cell_basal_Area', 'mean_cell_lateral_Area', 'mean_cell_average_cell_wall_Area', 'mean_cell_std_cell_wall_Area', 'mean_cell_Volume', 'mean_cell_apical_NumNeighs', 'mean_cell_basal_NumNeighs', 'mean_cell_lateral_NumNeighs', 'mean_cell_ConvexVolume', 'mean_cell_Solidity', 'mean_cell_SurfaceArea', 'mean_cell_sphericity', 'mean_cell_PrincipalAxisLength', 'mean_cell_aspectRatio', 'mean_cell_irregularityShapeIndex', 'mean_coefCluster', 'mean_betCentrality'});
+dataTable_sheet_3 = dataTable(:, {'ID_Cysts', 'mean_cell_apical_Area', 'mean_cell_basal_Area', 'mean_cell_lateral_Area', 'mean_cell_average_cell_wall_Area', 'mean_cell_std_cell_wall_Area', 'mean_cell_Volume', 'mean_cell_cell_height', 'mean_cell_apical_NumNeighs', 'mean_cell_basal_NumNeighs', 'mean_cell_lateral_NumNeighs', 'mean_cell_ConvexVolume', 'mean_cell_Solidity', 'mean_cell_SurfaceArea', 'mean_cell_sphericity', 'mean_cell_PrincipalAxisLength', 'mean_cell_aspectRatio', 'mean_cell_irregularityShapeIndex', 'mean_coefCluster', 'mean_betCentrality'});
 writetable(dataTable_sheet_3,tablePath,'Sheet','meanCellParameters');
-dataTable_sheet_4 = dataTable(:, {'ID_Cysts', 'std_cell_apical_Area', 'std_cell_basal_Area', 'std_cell_lateral_Area', 'std_cell_average_cell_wall_Area', 'std_cell_std_cell_wall_Area', 'std_cell_Volume', 'std_cell_apical_NumNeighs', 'std_cell_basal_NumNeighs', 'std_cell_lateral_NumNeighs', 'std_cell_ConvexVolume', 'std_cell_Solidity', 'std_cell_SurfaceArea', 'std_cell_sphericity', 'std_cell_PrincipalAxisLength', 'std_cell_aspectRatio', 'std_cell_irregularityShapeIndex', 'std_coefCluster', 'std_betCentrality'});
+dataTable_sheet_4 = dataTable(:, {'ID_Cysts', 'std_cell_apical_Area', 'std_cell_basal_Area', 'std_cell_lateral_Area', 'std_cell_average_cell_wall_Area', 'std_cell_std_cell_wall_Area', 'std_cell_Volume', 'std_cell_cell_height', 'std_cell_apical_NumNeighs', 'std_cell_basal_NumNeighs', 'std_cell_lateral_NumNeighs', 'std_cell_ConvexVolume', 'std_cell_Solidity', 'std_cell_SurfaceArea', 'std_cell_sphericity', 'std_cell_PrincipalAxisLength', 'std_cell_aspectRatio', 'std_cell_irregularityShapeIndex', 'std_coefCluster', 'std_betCentrality'});
 writetable(dataTable_sheet_4,tablePath,'Sheet','stdCellParameters');
 
 

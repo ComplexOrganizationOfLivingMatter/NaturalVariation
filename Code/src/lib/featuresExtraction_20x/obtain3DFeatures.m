@@ -47,6 +47,12 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         %% Obtain cells descriptors
         % get apical, basal and lateral sides cells. Areas and cell Volume
         [cellularFeaturesValidCells,CellularFeaturesAllCells,surfaceRatio3D,apicoBasalNeighs,polygon_distribution] = calculate_CellularFeatures(apical3dInfo,basal3dInfo,lateral3dInfo,apicalLayer,basalLayer,labelledImage,totalLateralCellsArea,absoluteLateralContacts,noValidCells,validCells);
+        
+            
+        %% Filter Scutoids
+        cellularFeaturesValidCells.Scutoids = filterScutoids(apical3dInfo, basal3dInfo, lateral3dInfo, validCells)';
+    
+        
         %%Extract each cell and calculate 3D features
         [cells3dFeatures] = extract3dDescriptors(labelledImage, validCells);
         
