@@ -1,4 +1,4 @@
-function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, saveName, statQuest)
+function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, saveName)
     
     rgStackPath = strcat(rgStackPath, '/');
     labelsPath = strcat(labelsPath, '/');
@@ -48,8 +48,8 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
         [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage,'');
 
         %% At least the 0.5% of lateral membrane contacting with other cell to be1 considered as neighbor.
-        contactThreshold = 0.5;
-        dilatedVx = 1;
+        contactThreshold = 1;
+        dilatedVx = 2;
 
         if isempty(validCells)
             validCells = find(table2array(regionprops3(labelledImage,'Volume'))>0);
@@ -106,40 +106,39 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             end
         end
         
-        if statQuest=="NO"
-            paint3D(labelledImage, validCells, colours, 3, 2.5);
-            fig = get(groot,'CurrentFigure');
-            pause(1)
-            set(fig, 'Position', [676   669   570   413]);
-            camlight('headlight') 
-            frame = getframe(fig);      % Grab the rendered frame
-            renderedFrontImage = frame.cdata;    % This isclearv the rendered image
+        paint3D(labelledImage, validCells, colours, 3);
+        fig = get(groot,'CurrentFigure');
+        camlight('headlight') 
+        frame = getframe(fig);      % Grab the rendered frame
+        renderedFrontImage = frame.cdata;    % This is the rendered image
+        renderedFrontImage = imresize(renderedFrontImage, [413, 570]);
 
-            camorbit(180, 0)
-            camlight('headlight') 
-            frame = getframe(fig);      % Grab the rendered frame
-            renderedBackImage = frame.cdata;    % This is the rendered image
+        camorbit(180, 0)
+        camlight('headlight') 
+        frame = getframe(fig);      % Grab the rendered frame
+        renderedBackImage = frame.cdata;    % This is the rendered image
+        renderedBackImage = imresize(renderedBackImage, [413, 570]);
 
-            camorbit(0, -90)
-    %         view(az,el)
-    %         camlight
-            camlight('headlight') 
-            frame = getframe(fig);      % Grab the rendered frame
-            renderedBottomImage = frame.cdata;    % This is the rendered image
+        camorbit(0, -90)
+%         view(az,el)
+%         camlight
+        camlight('headlight') 
+        frame = getframe(fig);      % Grab the rendered frame
+        renderedBottomImage = frame.cdata;    % This is the rendered image
+        renderedBottomImage = imresize(renderedBottomImage, [413, 570]);
 
-            %% Insert text
-            renderedFrontImage = insertText(renderedFrontImage,[1, 1],name{1},'FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
-            renderedFrontImage = insertText(renderedFrontImage,[1, 40],variable,'FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
-            renderedFrontImage = insertText(renderedFrontImage,[403, 1],'FRONT','FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
-            renderedBackImage = insertText(renderedBackImage,[403, 1],'BACK','FontSize',18,'BoxOpacity',0.4,'TextColor','black',  'BoxColor', 'white');
-            renderedBottomImage = insertText(renderedBottomImage,[403, 1],'BOTTOM','FontSize',18,'BoxOpacity',0.4,'TextColor','black',  'BoxColor', 'white');
+        %% Insert text
+        renderedFrontImage = insertText(renderedFrontImage,[1, 1],name{1},'FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
+        renderedFrontImage = insertText(renderedFrontImage,[1, 40],variable,'FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
+        renderedFrontImage = insertText(renderedFrontImage,[403, 1],'FRONT','FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
+        renderedBackImage = insertText(renderedBackImage,[403, 1],'BACK','FontSize',18,'BoxOpacity',0.4,'TextColor','black',  'BoxColor', 'white');
+        renderedBottomImage = insertText(renderedBottomImage,[403, 1],'BOTTOM','FontSize',18,'BoxOpacity',0.4,'TextColor','black',  'BoxColor', 'white');
 
-            layout(413*(labelIx-1)+1:413*(labelIx),1:570,:) = renderedFrontImage;
-            layout(413*(labelIx-1)+1:413*(labelIx), 571:570*2, :) = renderedBackImage;
-            layout(413*(labelIx-1)+1:413*(labelIx), 570*2+1:end, :) = renderedBottomImage;
+        layout(413*(labelIx-1)+1:413*(labelIx),1:570,:) = renderedFrontImage;
+        layout(413*(labelIx-1)+1:413*(labelIx), 571:570*2, :) = renderedBackImage;
+        layout(413*(labelIx-1)+1:413*(labelIx), 570*2+1:end, :) = renderedBottomImage;
 
-            close(fig)
-        end
+        close(fig)
         
 %         principalAxisLength = regionprops3(labelledImage>1, 'PrincipalAxisLength');
 %         cystClassification = clasifyCyst(principalAxisLength.PrincipalAxisLength, 0.1);
