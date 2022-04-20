@@ -19,10 +19,13 @@
 addpath(genpath('/home/pedro/Escritorio/jesus/NaturalVariation/'));
 
 %% mat files of fixed cysts
-fixedCystsPath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions/10d/fixedCysts/';
-
+fixedCystsPath = 'F:\jesus\';
+fixedCystsPath = uigetdir(fixedCystsPath, 'Select fixedCysts (.mat) path');
+fixedCystsPath = strcat(fixedCystsPath, '\');
 %% original tif files of rg cysts
-originalImagesPath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions/10d/rgStack/';
+originalImagesPath = 'F:\jesus\';
+originalImagesPath = uigetdir(originalImagesPath, 'Select rgStack (.tif) path');
+originalImagesPath = strcat(originalImagesPath, '\');
 
 %% path 2 save output
 path2save = '';
@@ -31,8 +34,22 @@ path2save = '';
 fixedCystsDir = dir(strcat(fixedCystsPath, '*.mat'));
 
 %% Write table path
-tablePath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions/10d/';
-tablePath = strcat(tablePath, 'cysts_features_', num2str(datetime('now').Day), '_', num2str(datetime('now').Month), '_', num2str(datetime('now').Year), '.xls');
+tablePath = 'F:\jesus\';
+tablePath = uigetdir(tablePath, 'Select savePath (.xls) path');
+
+%% Select name or automatic (date)
+nameQuest = questdlg('Choose name or use default (date)?', ...
+	'Table name', ...
+	'Choose name','Default', 'Default');
+
+if strcmp(nameQuest,'Default')
+    tablePath = strcat(tablePath, 'cysts_features_', num2str(datetime('now').Day), '_', num2str(datetime('now').Month), '_', num2str(datetime('now').Year), '.xls');
+else
+    prompt = 'Enter a saveName: ';
+    saveName = input(prompt, 's');
+    tablePath = strcat(tablePath, '\', saveName, '.xls');
+end
+
 %% Create empty table
 dataTable = table();
 
@@ -78,6 +95,11 @@ for cyst=1:length(fixedCystsDir)
     %% At least the 0.5% of lateral membrane contacting with other cell to be1 considered as neighbor.
     contactThreshold = 1;
     dilatedVx = 2;
+
+    disp('###################################')
+    disp(strcat('dilatedVx: ', num2str(dilatedVx)))
+    disp(strcat('contactThreshold: ', num2str(contactThreshold)))
+    disp('###################################')
     
     try
         %% Obtain 3D descriptors
