@@ -68,14 +68,15 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
     %%  Calculate volume cells
     volume_cells=table2array(regionprops3(labelledImage,'Volume'));
 
-%     %%  Determine if a cell is a scutoid or not _old
-%     scutoids_cells=cellfun(@(x,y) double(~isequal(x,y)), neighbours_data.Apical,neighbours_data.Basal);
-%     apicoBasalTransitions = cellfun(@(x, y) length(unique(vertcat(setdiff(x, y), setdiff(y, x)))), neighbours_data.Apical,neighbours_data.Basal);
-
     %%  Determine if a cell is a scutoid or not
     apicoBasalTransitions = cellfun(@(x, y) length(unique(vertcat(setdiff(y,x), setdiff(x,y)))), neighbours_data.Apical,neighbours_data.Basal);
     scutoids_cells = double(apicoBasalTransitions>0);
     
+    %% Filter Scutoids
+    scutoids_cells = filterScutoids(apical3dInfo, basal3dInfo, lateral3dInfo, validCells);
+    
+    %% Correct apicoBasalTransitions
+    apicoBasalTransitions = apicoBasalTransitions.*scutoids_cells;
     
     %% Calculate cell height
     cell_heights = calculateCellHeight(apicalLayer, basalLayer);

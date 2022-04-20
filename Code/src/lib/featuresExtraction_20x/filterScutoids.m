@@ -36,21 +36,6 @@ function newScutoids_cells = filterScutoids(apical3dInfo, basal3dInfo, lateral3d
             newScutoids_cells(cellIx) = 1;
         end
     end
-    
-%     for cellIx=1:length(scutoids_cells)
-%         if ismember(cellIx, scutoid_ids)
-%             for neigh=1:length(apicoBasalTransitionsLabels{cellIx})
-%                 intersection = intersect(lateral3dInfo_scutoids{cellIx},lateral3dInfo_scutoids{apicoBasalTransitionsLabels{cellIx}(neigh)});
-%                 if length(intersection)>=2 
-%                     for intersectionElement = 1:length(intersection)
-%                         if length(intersect(apicoBasalTransitionsLabels{intersection(intersectionElement)}, intersection))>=1
-%                             newScutoids_cells_(cellIx) = 1;
-%                         end
-%                     end
-%                 end
-%             end
-%         end
-%     end
      
-    newScutoids_cells = newScutoids_cells(validCells);
+%     newScutoids_cells = newScutoids_cells(validCells);
 end
