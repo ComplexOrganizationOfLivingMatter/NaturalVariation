@@ -1,5 +1,13 @@
-function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,median_boolean,chosenNumericVariable)
-
+function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,median_boolean,chosenNumericVariable, typeStatsQuest)
+    %
+    % Example of tableForScatter:
+    %
+    %         class          var1         type    
+    %     _____________    ________    ___________
+    % 
+    %     {'class 1'   }      0.3617    {'type 1'}
+    %     {'class 2'   }     0.16667    {'type 0'}
+    %     {'class 1'   }     0.37143    {'type 2'}
     uniqueClasses = unique(tableForScatter.class);
     uniqueTypes = unique(tableForScatter.type);
     tableForScatterOrig = tableForScatter;
@@ -16,7 +24,7 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,me
         allNumericData_integer = floor(allNumericData); % Here the data rounded to the nearest integer
         decimal_part = allNumericData-allNumericData_integer; % We keep the decimal part.
         for i=1:length(decimal_part)
-        decimal_part_length(i) = numel(num2str(decimal_part(i)));
+            decimal_part_length(i) = numel(num2str(decimal_part(i)))-2;
         end
         if min(decimal_part_length) <= 3
             radius = 10^(-min(decimal_part_length));
@@ -47,13 +55,15 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,me
             countClosesstPoints = sum(closestPoints);
 
             if countClosesstPoints == 1
+                xyPositions(sampleIx, 1) = xyPositions(sampleIx, 1)+0.025*(rand-rand);
                 continue
             end
 
             newXPos = linspace(0, 0.05*countClosesstPoints/2, countClosesstPoints);
+            %newXPos = linspace(0, 0.05*countClosesstPoints/2, countClosesstPoints);
             %newXPos = linspace(0, 1.5*countClosesstPoints*radius, countClosesstPoints);
             newXPos = newXPos + classIxPlotOrder-0.05*countClosesstPoints/4;
-            xyPositions(closestPoints, 1) = newXPos;
+            xyPositions(closestPoints, 1) = newXPos+0.025*(rand-rand);
 
         end
 
@@ -67,7 +77,19 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,me
         figure(hfit);
         hfit = histfit(tableForScatter.var1,100,'kernel');
 
+        %% type stats
+        if strcmp(typeStatsQuest, 'YES')
+            typeStatsArray = [];
+            uniqueSampleTypes = unique(sampleTypes);
+            for typeId = 1:length(uniqueSampleTypes)
+                if median_boolean == 1
+                    typeStatsArray = [typeStatsArray, median(xyPositions(sampleTypes(:)==typeId, 2))];
+                else
+                    typeStatsArray = [typeStatsArray, mean(xyPositions(sampleTypes(:)==typeId, 2))];
 
+                end
+            end
+        end
         
         %%
         curveXData = hfit(2).XData;
@@ -102,14 +124,23 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,me
             hold all
         end
         if median_boolean == 1
-            plot([classIxPlotOrder-0.2 classIxPlotOrder+0.2], [medianValue medianValue], 'r')
+            plot([classIxPlotOrder-0.2 classIxPlotOrder+0.2], [medianValue medianValue], 'r--')
         else 
-            plot([classIxPlotOrder-0.2 classIxPlotOrder+0.2], [averageValue averageValue], 'r')
+            plot([classIxPlotOrder-0.2 classIxPlotOrder+0.2], [averageValue averageValue], 'r--')
         end
         hold on
+        
+        if strcmp(typeStatsQuest,'YES')
+            for typeId = 1:length(uniqueSampleTypes)
+                plot([classIxPlotOrder-0.2 classIxPlotOrder+0.2], [typeStatsArray(typeId) typeStatsArray(typeId)], 'Color', colors(typeId, :))
+                hold on
+            end
+        end   
+        hold on
+   
         xlim([0.5 size(uniqueClasses, 1)+0.5])
-        %ylim([min(tableForScatter.var1) max(tableForScatter.var1)])
-        ylim tight
+        ylim([min(tableForScatter.var1) max(tableForScatter.var1)])
+        %ylim tight
         y_axis = string(chosenNumericVariable);
         ylabel(y_axis)
         hold on

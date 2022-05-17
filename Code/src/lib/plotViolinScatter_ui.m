@@ -9,6 +9,10 @@ colorQuest = questdlg('Do you want to select colors?', ...
 	'COLOR SELECTION', ...
 	'Nah, random colors its OK','YES', 'YES');
 
+typeStatsQuest = questdlg('Do you want to plot mean/median bars for each type?', ...
+	'TYPE STATS', ...
+	'NO','YES', 'YES');
+
 violinQuest = questdlg('Do you want to plot violins?', ...
 	'VIOLINS OR SCATTER?', ...
 	'YES','Nah, just scatter', 'Nah, just scatter');
@@ -61,8 +65,7 @@ for k = 1:numel(idx)
 end
 
 uniqueClasses = unique(dataTable(:, chosenClassVariable{1}));
-
-prompt = table2cell(uniqueClasses);
+prompt = string(table2cell(uniqueClasses));
 dlgtitle = 'Choose plot order';
 dims = [1 35];
 defaultValues = linspace(1, size(uniqueClasses, 1), size(uniqueClasses, 1));
@@ -114,7 +117,7 @@ if strcmp(colorQuest, 'YES')
         colorMatrix = [colorMatrix; uisetcolor(strcat(string(uniqueTypes{typeIx, :}), ' color'))];
     end
 else
-    colorMatrix = random(size(uniqueTypes, 1), 3);
+    colorMatrix = rand(size(uniqueTypes, 1), 3);
 end
 
 if strcmp(violinQuest, 'YES')
@@ -128,4 +131,4 @@ end
 
 tableForScatter = dataTableCopy(:, {chosenClassVariable{1}, chosenNumericVariable{1}, chosenTypeVariable{1}});
 tableForScatter.Properties.VariableNames = {'class', 'var1', 'type'};
-plotViolinScatter(tableForScatter, colorMatrix, violinColor, plotOrder,median_boolean,chosenNumericVariable)
+plotViolinScatter(tableForScatter, colorMatrix, violinColor, plotOrder,median_boolean,chosenNumericVariable,typeStatsQuest)
