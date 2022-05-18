@@ -1,4 +1,4 @@
-function [normFirstQuartilePosition, normSecondQuartilePosition, normThirdQuartilePosition, normFourthQuartilePosition] = getCellSpatialStatistics(labelledImage, cells3dFeatures, variable)
+function [normFirstQuartilePosition, normSecondQuartilePosition, normThirdQuartilePosition, normFourthQuartilePosition] = getCellSpatialStatistics(labelledImage, data, cellIDArray, variable)
     
     % Position
     variableArray = [];
@@ -12,12 +12,12 @@ function [normFirstQuartilePosition, normSecondQuartilePosition, normThirdQuarti
     maxCystCentroids = max(cystCentroids.Centroid(:, 3));
     
     % Quartile splitting
-    firstQuantile = quantile(cells3dFeatures(:, variable).Variables, 0.25);
-    secondQuantile = quantile(cells3dFeatures(:, variable).Variables, 0.5);
-    thirdQuantile = quantile(cells3dFeatures(:, variable).Variables, 0.75);
+    firstQuantile = quantile(data, 0.25);
+    secondQuantile = quantile(data, 0.5);
+    thirdQuantile = quantile(data, 0.75);
         
-    for cellIx = 1:size(cells3dFeatures, 1)
-        cellID = cells3dFeatures.ID_Cell(cellIx);
+    for cellIx = 1:size(data, 1)
+        cellID = cellIDArray(cellIx);
         cellID = cellID{1};
         cellID = strsplit(cellID, '_');
         cellID = cellID{2};
@@ -27,7 +27,7 @@ function [normFirstQuartilePosition, normSecondQuartilePosition, normThirdQuarti
         centroidPos = centroidPos.Centroid;
         centroidPos = centroidPos(3);
         
-        variableValue = cells3dFeatures(cellIx, variable).Variables;
+        variableValue = data(cellIx);
         
         if variableValue<=firstQuantile
             firstQuartilePosArray = [firstQuartilePosArray, centroidPos];

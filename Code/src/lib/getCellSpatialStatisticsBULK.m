@@ -1,4 +1,4 @@
-function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variable, savePath)
+function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variable, savePath, saveName)
     
     % Directory
     fixedCystsDir = dir(strcat(fixedCystsPath, '*.mat'));
@@ -54,11 +54,24 @@ function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variab
         noValidCells = [];
 
         try
-            [cells3dFeatures, ~, ~,~, ~, ~,~, ~,~, ~, ~, ~] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,'',contactThreshold, dilatedVx);
+            [cells3dFeatures, ~, ~,~, ~, ~,~, ~,~, ~, ~, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,'',contactThreshold, dilatedVx);
+            %% Calculate Network features            
+            [~ ,coefCluster,betweennessCentrality] = obtainNetworksFeatures(apicoBasalNeighs,validCells, '');
         catch
             continue
         end
-        [normFirstQuartilePosition, normSecondQuartilePosition, normThirdQuartilePosition, normFourthQuartilePosition] = getCellSpatialStatistics(labelledImage, cells3dFeatures, variable);
+        
+        if strcmp(variable, "coefCluster")
+            data = coefCluster;
+        elseif strcmp(variable, "betCentrality")
+            data = betweennessCentrality;
+        else
+            data = cells3dFeatures;
+        end
+        
+        cellIDArray = cells3dFeatures.ID_Cell;
+        
+        [normFirstQuartilePosition, normSecondQuartilePosition, normThirdQuartilePosition, normFourthQuartilePosition] = getCellSpatialStatistics(labelledImage, data, cellIDArray, variable);
         
         cystIDArray = [cystIDArray; repmat({cystName}, [4, 1])];
 
@@ -83,9 +96,7 @@ function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variab
     spatialStatisticsTable.variable = variableArray;
     spatialStatisticsTable.type = typeArray;
     spatialStatisticsTable = struct2table(spatialStatisticsTable);
-    
-    writetable(spatialStatisticsTable,strcat('4dtest.csv'))
-    
+        
     %stats
     statsDataTable = table();
     firstQuartileMean = mean(spatialStatisticsTable(spatialStatisticsTable.type==1, 'variable').variable);
@@ -106,8 +117,11 @@ function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variab
     
     %data for plotting
     dataTable_sheet_1 = spatialStatisticsTable(:, {'class', 'cystID', 'variable', 'type'});
-    writetable(dataTable_sheet_1,savePath,'Sheet','polygonDistributions');
+    writetable(dataTable_sheet_1,strcat(savePath, saveName,'_', variable, '_stats.xls'),'Sheet','polygonDistributions');
     %data for stats
     dataTable_sheet_2 = statsDataTable(:, {'quartile', 'meanNormZpos', 'stdNormZpos'});
-    writetable(dataTable_sheet_2,savePath, 'Sheet','statsTable');
+    writetable(dataTable_sheet_2,strcat(savePath, saveName,'_', variable, '_stats.xls'), 'Sheet','statsTable');
+    
+    writetable(dataTable_sheet_1,strcat(savePath, saveName, '_', variable, '_forPlotViolin.xls'));
+
 end

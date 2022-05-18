@@ -3,12 +3,12 @@ function plotSpatialDistribution_ui
     addpath(genpath('D:\Github\Processing3DSegmentation\'));
     addpath(genpath('D:\Github\NaturalVariation\'));
 
-    rgStackPath = uigetdir('F:\Carmen\plotVariableDistributions\', 'Select rgStack (.tif) path');
-    labelsPath = uigetdir('F:\Carmen\plotVariableDistributions\', 'Select labels (.mat) path');
-    savePath = uigetdir('F:\Carmen\plotVariableDistributions\', 'Select save path');
+    rgStackPath = uigetdir('', 'Select rgStack (.tif) path');
+    labelsPath = uigetdir('', 'Select labels (.mat) path');
+    savePath = uigetdir('', 'Select save path');
 
     %% select variable to plot
-    params = ["ID_Cell", "Volume", "EquivDiameter", "PrincipalAxisLength", "ConvexVolume", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "apical_NumNeighs", "apical_Area", "basal_NumNeighs", "basal_Area", "cell_height", "lateral_NumNeighs", "lateral_Area", "average_cell_wall_Area", "std_cell_wall_Area", "scutoids", "apicoBasalTransitions", "surfaceRatio"];
+    params = ["ID_Cell", "Volume", "EquivDiameter", "PrincipalAxisLength", "ConvexVolume", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "apical_NumNeighs", "apical_Area", "basal_NumNeighs", "basal_Area", "cell_height", "lateral_NumNeighs", "lateral_Area", "average_cell_wall_Area", "std_cell_wall_Area", "scutoids", "apicoBasalTransitions", "surfaceRatio", "betCentrality", "coefCluster"];
 
     for idx = 1:length(params) 
        param = params{idx};

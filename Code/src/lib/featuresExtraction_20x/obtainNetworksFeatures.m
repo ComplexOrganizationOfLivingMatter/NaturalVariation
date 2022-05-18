@@ -8,6 +8,14 @@ for nCell=1:size(apicobasal_neighbours,2)
 end
 [~, ~, degreeNodesCorrelation, ~, coefCluster, ~, ~,~,~,~,~,~,~,~,betweennessCentrality]=Prueba_brain(apicobasal_neighbours_binary,apicobasal_neighbours_binary,apicobasal_neighbours_binary,validCells);
 
-save(pathSave, 'coefCluster', 'betweennessCentrality')
+if ~isempty(pathSave)
+    save(pathSave, 'coefCluster', 'betweennessCentrality')
+end
+
+if length(coefCluster)>length(validCells)
+    coefCluster = coefCluster(validCells);
+    betweennessCentrality = betweennessCentrality(validCells);
+end
+
 end
 

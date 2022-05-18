@@ -58,7 +58,9 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
 
         %% Obtain 3D features from Cells, Tissue, Lumen and Tissue+Lumen
         try
-            [cells3dFeatures, ~, ~,~, ~, ~,~, ~,~, ~, ~, ~] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,'',contactThreshold, dilatedVx);
+            [cells3dFeatures, ~, ~,~, ~, ~,~, ~,~, ~, ~, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,'',contactThreshold, dilatedVx);
+            %% Calculate Network features            
+            [degreeNodesCorrelation,coefCluster,betweennessCentrality] = obtainNetworksFeatures(apicoBasalNeighs,validCells, '');
         catch
             warning("ERROR")
             disp(cystName)
@@ -86,6 +88,32 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
 
                 cMap = interp1([0;1],[0 1 0; 1 0 0],linspace(0,1,100));
                 cMapIndex = round(100*(surfaceRatio(cellIx)-minValue)/(maxValue-minValue));
+                if cMapIndex == 0 || isnan(cMapIndex)
+                    cMapIndex = 1;
+                end
+                colours = [colours; cMap(cMapIndex, :)];
+            end
+        elseif variable == "betCentrality"
+            colours = [];
+            for cellIx = 1:size(cells3dFeatures, 1)
+                maxValue = max(betweennessCentrality);
+                minValue = min(betweennessCentrality);
+
+                cMap = interp1([0;1],[0 1 0; 1 0 0],linspace(0,1,100));
+                cMapIndex = round(100*(betweennessCentrality(cellIx)-minValue)/(maxValue-minValue));
+                if cMapIndex == 0 || isnan(cMapIndex)
+                    cMapIndex = 1;
+                end
+                colours = [colours; cMap(cMapIndex, :)];
+            end
+        elseif variable == "coefCluster"
+            colours = [];
+            for cellIx = 1:size(cells3dFeatures, 1)
+                maxValue = max(coefCluster);
+                minValue = min(coefCluster);
+
+                cMap = interp1([0;1],[0 1 0; 1 0 0],linspace(0,1,100));
+                cMapIndex = round(100*(coefCluster(cellIx)-minValue)/(maxValue-minValue));
                 if cMapIndex == 0 || isnan(cMapIndex)
                     cMapIndex = 1;
                 end
