@@ -1,14 +1,14 @@
 function getCellSpatialStatisticsBULKplot_ui()
     %ui get path rgStack
-    rgStackPath = uigetdir('', 'Select rgStack (.tif) path');
-    rgStackPath = strcat(rgStackPath, '/');
+    rgStackPath = uigetdir('F:\Carmen\plotVariableDistributions', 'Select rgStack (.tif) path');
+    rgStackPath = strcat(rgStackPath, '\');
     %ui get path labels
-    labelsPath = uigetdir('', 'Select labels (.mat) path');
-    labelsPath = strcat(labelsPath, '/');
+    labelsPath = uigetdir('F:\Carmen\plotVariableDistributions', 'Select labels (.mat) path');
+    labelsPath = strcat(labelsPath, '\');
 
     %ui get path to save
-    savePath = uigetdir('', 'Select save path');
-    savePath = strcat(savePath, '/');
+    savePath = uigetdir('F:\Carmen\plotVariableDistributions', 'Select save path');
+    savePath = strcat(savePath, '\');
 
     %% select variable to plot
     params = ["ID_Cell", "Volume", "EquivDiameter", "PrincipalAxisLength", "ConvexVolume", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "apical_NumNeighs", "apical_Area", "basal_NumNeighs", "basal_Area", "cell_height", "lateral_NumNeighs", "lateral_Area", "average_cell_wall_Area", "std_cell_wall_Area", "scutoids", "apicoBasalTransitions", "surfaceRatio", "coefCluster", "betCentrality"];

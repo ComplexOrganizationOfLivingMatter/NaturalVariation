@@ -66,7 +66,7 @@ function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variab
         elseif strcmp(variable, "betCentrality")
             data = betweennessCentrality;
         else
-            data = cells3dFeatures;
+            data = cells3dFeatures(:, variable).Variables;
         end
         
         cellIDArray = cells3dFeatures.ID_Cell;
@@ -76,16 +76,16 @@ function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variab
         cystIDArray = [cystIDArray; repmat({cystName}, [4, 1])];
 
         variableArray = [variableArray; normFirstQuartilePosition];
-        typeArray = [typeArray; 1];
+        typeArray = [typeArray; "Q1"];
         
         variableArray = [variableArray; normSecondQuartilePosition];
-        typeArray = [typeArray; 2];
+        typeArray = [typeArray; "Q2"];
         
         variableArray = [variableArray; normThirdQuartilePosition];
-        typeArray = [typeArray; 3];
+        typeArray = [typeArray; "Q3"];
         
         variableArray = [variableArray; normFourthQuartilePosition];
-        typeArray = [typeArray; 4];
+        typeArray = [typeArray; "Q4"];
 
     end
     
@@ -99,14 +99,14 @@ function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variab
         
     %stats
     statsDataTable = table();
-    firstQuartileMean = mean(spatialStatisticsTable(spatialStatisticsTable.type==1, 'variable').variable);
-    firstQuartileStd = std(spatialStatisticsTable(spatialStatisticsTable.type==1, 'variable').variable);
-    secondQuartileMean = mean(spatialStatisticsTable(spatialStatisticsTable.type==2, 'variable').variable);
-    secondQuartileStd = std(spatialStatisticsTable(spatialStatisticsTable.type==2, 'variable').variable);
-    thirdQuartileMean = mean(spatialStatisticsTable(spatialStatisticsTable.type==3, 'variable').variable);
-    thirdQuartileStd = std(spatialStatisticsTable(spatialStatisticsTable.type==3, 'variable').variable);
-    fourthQuartileMean = mean(spatialStatisticsTable(spatialStatisticsTable.type==4, 'variable').variable);
-    fourthQuartileStd = std(spatialStatisticsTable(spatialStatisticsTable.type==4, 'variable').variable);
+    firstQuartileMean = mean(spatialStatisticsTable(strcmp(spatialStatisticsTable.type, "Q1"), 'variable').variable);
+    firstQuartileStd = std(spatialStatisticsTable(strcmp(spatialStatisticsTable.type, "Q1"), 'variable').variable);
+    secondQuartileMean = mean(spatialStatisticsTable(strcmp(spatialStatisticsTable.type, "Q2"), 'variable').variable);
+    secondQuartileStd = std(spatialStatisticsTable(strcmp(spatialStatisticsTable.type, "Q2"), 'variable').variable);
+    thirdQuartileMean = mean(spatialStatisticsTable(strcmp(spatialStatisticsTable.type, "Q3"), 'variable').variable);
+    thirdQuartileStd = std(spatialStatisticsTable(strcmp(spatialStatisticsTable.type, "Q3"), 'variable').variable);
+    fourthQuartileMean = mean(spatialStatisticsTable(strcmp(spatialStatisticsTable.type, "Q4"), 'variable').variable);
+    fourthQuartileStd = std(spatialStatisticsTable(strcmp(spatialStatisticsTable.type, "Q4"), 'variable').variable);
     
     meanArray = [firstQuartileMean; secondQuartileMean; thirdQuartileMean; fourthQuartileMean];
     stdArray = [firstQuartileStd; secondQuartileStd; thirdQuartileStd; fourthQuartileStd];
@@ -115,13 +115,15 @@ function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variab
     statsDataTable.meanNormZpos = meanArray;
     statsDataTable.stdNormZpos = stdArray;
     
+    fileName = strcat(savePath, saveName,'_', variable, '_spatialStats.xls');
     %data for plotting
     dataTable_sheet_1 = spatialStatisticsTable(:, {'class', 'cystID', 'variable', 'type'});
-    writetable(dataTable_sheet_1,strcat(savePath, saveName,'_', variable, '_stats.xls'),'Sheet','polygonDistributions');
+    writetable(dataTable_sheet_1,fileName{1},'Sheet','Q info');
     %data for stats
     dataTable_sheet_2 = statsDataTable(:, {'quartile', 'meanNormZpos', 'stdNormZpos'});
-    writetable(dataTable_sheet_2,strcat(savePath, saveName,'_', variable, '_stats.xls'), 'Sheet','statsTable');
+    writetable(dataTable_sheet_2,fileName{1}, 'Sheet','statsTable');
     
-    writetable(dataTable_sheet_1,strcat(savePath, saveName, '_', variable, '_forPlotViolin.xls'));
+    fileName = strcat(savePath, saveName, '_', variable, '_spatialStats_forPlotViolin.xls');
+    writetable(dataTable_sheet_1,fileName{1});
 
 end

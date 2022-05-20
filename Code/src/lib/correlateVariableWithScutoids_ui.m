@@ -1,14 +1,14 @@
 function correlateVariableWithScutoids_ui()
     %ui get path rgStack
-    rgStackPath = uigetdir('/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions', 'Select rgStack (.tif) path');
-    rgStackPath = strcat(rgStackPath, '/');
+    rgStackPath = uigetdir('F:\Carmen\DataSetMethod_4_7_10d', 'Select rgStack (.tif) path');
+    rgStackPath = strcat(rgStackPath, '\');
     %ui get path labels
-    labelsPath = uigetdir('/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions', 'Select labels (.mat) path');
-    labelsPath = strcat(labelsPath, '/');
+    labelsPath = uigetdir('F:\Carmen\DataSetMethod_4_7_10d', 'Select labels (.mat) path');
+    labelsPath = strcat(labelsPath, '\');
 
     %ui get path to save
-    savePath = uigetdir('/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions', 'Select save path');
-    savePath = strcat(savePath, '/');
+    savePath = uigetdir('F:\Carmen\DataSetMethod_4_7_10d', 'Select save path');
+    savePath = strcat(savePath, '\');
 
     %% select variable to plot
     params = ["ID_Cell", "Volume", "EquivDiameter", "PrincipalAxisLength", "ConvexVolume", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "apical_NumNeighs", "apical_Area", "basal_NumNeighs", "basal_Area", "cell_height", "lateral_NumNeighs", "lateral_Area", "average_cell_wall_Area", "std_cell_wall_Area", "scutoids", "apicoBasalTransitions", "surfaceRatio", "coefCluster", "betCentrality"];

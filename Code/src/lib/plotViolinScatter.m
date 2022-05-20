@@ -28,10 +28,11 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,me
             decimal_part_length(i) = numel(num2str(decimal_part(i)))-2;
         end
         if min(decimal_part_length) <= 3
-            radius = 10^(-mean(decimal_part_length));
+            radius = 10^(-min(decimal_part_length)+1);
         else 
             radius = 1e-3;
         end
+%         radius = (max(tableForScatter(:, 'var1').var1)-min(tableForScatter(:, 'var1').var1))/100;
         %radius = 0.01; %good for scutoids.
         xyPositions = [];
         sampleTypes = [];
@@ -51,7 +52,7 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,me
         for typeIx=1:size(uniqueTypes,1)
             sampleTypes(sampleTypes==uniqueTypes(typeIx))=categorical(categoricalUniqueTypes(typeIx));
         end
-        sampleTypes = double(sampleTypes)-1;
+        sampleTypes = str2num(char(sampleTypes));
         
         for sampleIx=1:size(tableForScatter,1)
             distances = pdist2([classIxPlotOrder, tableForScatter(sampleIx, 'var1').var1], xyPositions);
