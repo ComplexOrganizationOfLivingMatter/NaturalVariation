@@ -10,6 +10,7 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,me
     %     {'class 1'   }     0.37143    {'type 2'}
     uniqueClasses = unique(tableForScatter.class);
     uniqueTypes = unique(tableForScatter.type);
+    categoricalUniqueTypes = grp2idx(categorical(uniqueTypes));
     tableForScatterOrig = tableForScatter;
     classTicks = [];
     classTicksNames = [];
@@ -27,7 +28,7 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,me
             decimal_part_length(i) = numel(num2str(decimal_part(i)))-2;
         end
         if min(decimal_part_length) <= 3
-            radius = 10^(-min(decimal_part_length));
+            radius = 10^(-mean(decimal_part_length));
         else 
             radius = 1e-3;
         end
@@ -46,8 +47,12 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,me
             sampleTypes = [sampleTypes; tableForScatter(sampleIx, 'type').type];
         end
 
-        sampleTypes = grp2idx(categorical(sampleTypes));
-
+        sampleTypes = categorical(sampleTypes);
+        for typeIx=1:size(uniqueTypes,1)
+            sampleTypes(sampleTypes==uniqueTypes(typeIx))=categorical(categoricalUniqueTypes(typeIx));
+        end
+        sampleTypes = double(sampleTypes)-1;
+        
         for sampleIx=1:size(tableForScatter,1)
             distances = pdist2([classIxPlotOrder, tableForScatter(sampleIx, 'var1').var1], xyPositions);
 
@@ -55,7 +60,7 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,me
             countClosesstPoints = sum(closestPoints);
 
             if countClosesstPoints == 1
-                xyPositions(sampleIx, 1) = xyPositions(sampleIx, 1)+0.025*(rand-rand);
+                xyPositions(sampleIx, 1) = xyPositions(sampleIx, 1)+0*(rand-rand);
                 continue
             end
 
@@ -63,7 +68,7 @@ function plotViolinScatter(tableForScatter, dotColors, violinColor, plotOrder,me
             %newXPos = linspace(0, 0.05*countClosesstPoints/2, countClosesstPoints);
             %newXPos = linspace(0, 1.5*countClosesstPoints*radius, countClosesstPoints);
             newXPos = newXPos + classIxPlotOrder-0.05*countClosesstPoints/4;
-            xyPositions(closestPoints, 1) = newXPos+0.025*(rand-rand);
+            xyPositions(closestPoints, 1) = newXPos+0*(rand-rand);
 
         end
 

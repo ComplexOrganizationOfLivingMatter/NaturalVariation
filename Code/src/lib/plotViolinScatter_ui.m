@@ -109,7 +109,7 @@ for k = 1:numel(idx)
 end
 
 %%
-    uniqueTypes = unique(dataTable(:, chosenTypeVariable{1}));
+uniqueTypes = unique(dataTable(:, chosenTypeVariable{1}));
 
 if strcmp(colorQuest, 'YES')
     colorMatrix = [];
