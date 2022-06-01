@@ -29,14 +29,24 @@ function [normFirstQuartilePosition, normSecondQuartilePosition, normThirdQuarti
         
         variableValue = data(cellIx);
         
-        if variableValue<=firstQuantile
-            firstQuartilePosArray = [firstQuartilePosArray, centroidPos];
-        elseif (firstQuantile<variableValue) && (variableValue<=secondQuantile)
-            secondQuartilePosArray = [secondQuartilePosArray, centroidPos];
-        elseif (secondQuantile<variableValue) && (variableValue<=thirdQuantile)
-            thirdQuartilePosArray = [thirdQuartilePosArray, centroidPos];
-        elseif thirdQuantile<variableValue
-            fourthQuartilePosArray = [fourthQuartilePosArray, centroidPos];
+        if strcmp(variable, "scutoids")
+            if variableValue==1
+                firstQuartilePosArray = [firstQuartilePosArray, centroidPos];
+                secondQuartilePosArray = [secondQuartilePosArray, centroidPos];
+                thirdQuartilePosArray = [thirdQuartilePosArray, centroidPos];
+                fourthQuartilePosArray = [fourthQuartilePosArray, centroidPos];
+            end
+        else
+
+            if variableValue<=firstQuantile
+                firstQuartilePosArray = [firstQuartilePosArray, centroidPos];
+            elseif (firstQuantile<variableValue) && (variableValue<=secondQuantile)
+                secondQuartilePosArray = [secondQuartilePosArray, centroidPos];
+            elseif (secondQuantile<variableValue) && (variableValue<=thirdQuantile)
+                thirdQuartilePosArray = [thirdQuartilePosArray, centroidPos];
+            elseif thirdQuantile<variableValue
+                fourthQuartilePosArray = [fourthQuartilePosArray, centroidPos];
+            end
         end
         
         variableArray = [variableArray, variableValue];

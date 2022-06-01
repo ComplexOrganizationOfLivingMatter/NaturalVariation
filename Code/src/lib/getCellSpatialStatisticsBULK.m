@@ -70,7 +70,7 @@ function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variab
         end
         
         cellIDArray = cells3dFeatures.ID_Cell;
-        
+                
         [normFirstQuartilePosition, normSecondQuartilePosition, normThirdQuartilePosition, normFourthQuartilePosition] = getCellSpatialStatistics(labelledImage, data, cellIDArray, variable);
         
         cystIDArray = [cystIDArray; repmat({cystName}, [4, 1])];
@@ -123,7 +123,19 @@ function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variab
     dataTable_sheet_2 = statsDataTable(:, {'quartile', 'meanNormZpos', 'stdNormZpos'});
     writetable(dataTable_sheet_2,fileName{1}, 'Sheet','statsTable');
     
+    
+    if strcmp(variable, "scutoids")
+        spatialStatisticsTable(strcmp(spatialStatisticsTable.type, "Q2"), :) = [];
+        spatialStatisticsTable(strcmp(spatialStatisticsTable.type, "Q3"), :) = [];
+        spatialStatisticsTable(strcmp(spatialStatisticsTable.type, "Q4"), :) = [];
+
+        spatialStatisticsTable(isnan(spatialStatisticsTable.variable), :) = [];
+        
+        dataTable_sheet_1 = spatialStatisticsTable(:, {'class', 'cystID', 'variable', 'type'});
+         writetable(dataTable_sheet_1,fileName{1},'Sheet','Q info');
+    end
+    
     fileName = strcat(savePath, saveName, '_', variable, '_spatialStats_forPlotViolin.xls');
-    writetable(dataTable_sheet_1,fileName{1});
+    writetable(spatialStatisticsTable,fileName{1});
 
 end
