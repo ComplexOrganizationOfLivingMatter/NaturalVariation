@@ -1,7 +1,5 @@
-addpath 'C:\Users\atagua\Desktop\NaturalVariation\NaturalVariation\Code\correctionWindow\gui'
-addpath 'C:\Users\atagua\Desktop\NaturalVariation\NaturalVariation\Code\src'
-addpath 'C:\Users\atagua\Desktop\NaturalVariation\NaturalVariation\Code\correctionWindow'
-addpath 'C:\Users\atagua\Desktop\NaturalVariation\NaturalVariation\Code'
+addpath 'D:\Github\Processing3DSegmentation'
+
 %% Last fixed Cyst.
 lastFixedCyst = ''; %Example '7d.1B/7d.1.B.5_3.tif_itkws.tiff' // all cysts are in the same folder. That's to resume the fixing where you stopped (based on the xls)
 

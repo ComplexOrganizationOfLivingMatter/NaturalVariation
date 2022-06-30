@@ -67,7 +67,7 @@ function quantiles = getGeneralQuantiles(originalImagesPath, fixedCystsDir, fixe
             elseif strcmp(variable, "surfaceRatio")
                 data = cells3dFeatures(:, "basal_Area").Variables./cells3dFeatures(:, "apical_Area").Variables;
             else
-                data = cells3dFeatures(:, variable).Variable;
+                data = cells3dFeatures(:, variable).Variables;
             end
 
             alldata = [alldata; data];

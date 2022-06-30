@@ -1,4 +1,6 @@
 function getCellSpatialStatisticsBULKplot_ui()
+    rmpath(genpath('D:\Github\Processing3DSegmentation\'));
+
     %ui get path rgStack
     rgStackPath = uigetdir('F:\Carmen\plotVariableDistributions', 'Select rgStack (.tif) path');
     rgStackPath = strcat(rgStackPath, '\');

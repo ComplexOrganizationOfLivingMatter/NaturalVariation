@@ -27,7 +27,7 @@ function heatmapComparison(tablePath, variables, variablesCorr)
     dataTable = readtable(tablePath);
 
     %% Sort data table by days, condition and id
-    dataTable = sortrows(dataTable, {'condition', 'ID_Glands'}); 
+    dataTable = sortrows(dataTable, {'condition', 'ID_Cysts'}); 
 
     %% Variable Selection for heatMapComparison
     %Check is all variables exist
@@ -80,9 +80,34 @@ function heatmapComparison(tablePath, variables, variablesCorr)
     %% Z-Score normalization (corr)
     normMappingValuesCorr = splitapply(@zscore,mappingValuesCorr,1:size(mappingValuesCorr,2));
     
+    %% Z-Score normalization (corr) without split by condition
+    allCondition = dataTable(dataTable.condition_numeric > 0, variablesCorr);
+    allConditionMap = allCondition{:, :};
+    allConditionNorm = splitapply(@zscore,allConditionMap,1:size(allConditionMap,2));
+    allConditionCorrMaps = corrcoef(allConditionNorm); 
+
     %% Aggregate
     aggregatedMap=cell2mat(arrayfun(@(x) accumarray(dataTable.condition_numeric,normMappingValues(:,x), [], @median),1:size(normMappingValues,2),'un',0));
+    
+    %% Export Z-score tables
+    tableVariables = array2table(aggregatedMap,'VariableNames',variables);
+    tableConditions = cell2table(uniqueConditions);
+    tableZscore=[tableConditions tableVariables];
+    zScoreName=strsplit(tablePath,'.xls');
+    writetable(tableZscore,[zScoreName{1},'_zScoreFeatures.xls'],'Sheet', 'zScore','Range','B2');
 
+    for nConditions = 1:size(uniqueConditions,1)
+        tableVariablesCorr = array2table(conditionCorrMaps(:,:,nConditions),'VariableNames',variablesCorr);
+        tableNameVariablesCorr = cell2table(variablesCorr','VariableNames',{uniqueConditions{nConditions,1}});
+        tableZscoreCorr=[tableNameVariablesCorr tableVariablesCorr];
+        writetable(tableZscoreCorr,[zScoreName{1},'_zScoreFeatures.xls'],'Sheet', strcat('zScoreCorr_',uniqueConditions{nConditions,1}),'Range','B2');
+    end
+
+    tableVariablesCorrAllCond = array2table(allConditionCorrMaps,'VariableNames',variablesCorr);
+    tableNameVariablesCorrAllCond = cell2table(variablesCorr','VariableNames',{'All conditions'});
+    tableZscoreCorrAllCond=[tableNameVariablesCorrAllCond tableVariablesCorrAllCond];
+    writetable(tableZscoreCorrAllCond,[zScoreName{1},'_zScoreFeatures.xls'],'Sheet', 'zScoreCorrAllConditions','Range','B2');
+    
     %% Colormap
     franceColormap = [linspace(0,1,100)', linspace(0, 1, 100)', linspace(1,1,100)'];
     franceColormap = [franceColormap; [linspace(1,1,100)', linspace(1, 0, 100)', linspace(1,0,100)']];
@@ -92,7 +117,8 @@ function heatmapComparison(tablePath, variables, variablesCorr)
     hmap_1.Colormap = franceColormap;
     axs_1 = struct(gca); 
     cbar_1 = axs_1.Colorbar;
-    caxis([-1, 1]);
+    maxAxis = max(max(aggregatedMap(:)), abs(min(aggregatedMap(:))));
+    caxis([-maxAxis, maxAxis]);
     ylabel(cbar_1, 'Z-Score')
     
     %% Calcualte corr matrix
