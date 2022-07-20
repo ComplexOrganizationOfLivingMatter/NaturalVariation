@@ -19,13 +19,13 @@
 addpath(genpath('/home/pedro/Escritorio/jesus/NaturalVariation/'));
 
 %% mat files of fixed cysts
-fixedCystsPath = 'F:\jesus\';
+fixedCystsPath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions';
 fixedCystsPath = uigetdir(fixedCystsPath, 'Select fixedCysts (.mat) path');
-fixedCystsPath = strcat(fixedCystsPath, '\');
-%% original tif files of rg cysts
-originalImagesPath = 'F:\jesus\';
+fixedCystsPath = strcat(fixedCystsPath, '/');
+%% original tif files of rg cysts            
+originalImagesPath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions';
 originalImagesPath = uigetdir(originalImagesPath, 'Select rgStack (.tif) path');
-originalImagesPath = strcat(originalImagesPath, '\');
+originalImagesPath = strcat(originalImagesPath, '/');
 
 %% path 2 save output
 path2save = '';
@@ -34,7 +34,7 @@ path2save = '';
 fixedCystsDir = dir(strcat(fixedCystsPath, '*.mat'));
 
 %% Write table path
-tablePath = 'F:\jesus\';
+tablePath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions/';
 tablePath = uigetdir(tablePath, 'Select savePath (.xls) path');
 
 %% Select name or automatic (date)

@@ -36,8 +36,6 @@ function getCellSpatialStatisticsBULKplot_ui()
     saveName = input(prompt, 's');
     
     %create table
-    getCellSpatialStatisticsBULK(rgStackPath, labelsPath, variable, savePath, saveName)
-    
-    %launch plotviolin
-    
+    getCellSpatialDataBulk(rgStackPath, labelsPath, variable, savePath, saveName)
+        
 end
