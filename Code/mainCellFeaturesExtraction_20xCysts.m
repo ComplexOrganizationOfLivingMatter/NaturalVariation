@@ -19,13 +19,15 @@ clear vars
 addpath(genpath('/home/pedro/Escritorio/jesus/NaturalVariation/'));
 
 %% mat files of fixed cysts
-fixedCystsPath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions';
-fixedCystsPath = uigetdir(fixedCystsPath, 'Select fixedCysts (.mat) path');
-fixedCystsPath = strcat(fixedCystsPath, '/');
-%% original tif files of rg cysts            
-originalImagesPath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions';
+
+fixedCystsPath = 'F:\Carmen\';
+fixedCystsPath = uigetdir(fixedCystsPath, 'Select labels (.mat or .tif) path');
+fixedCystsPath = strcat(fixedCystsPath, '\');
+%% original tif files of rg cysts
+originalImagesPath = 'F:\Carmen\';
 originalImagesPath = uigetdir(originalImagesPath, 'Select rgStack (.tif) path');
-originalImagesPath = strcat(originalImagesPath, '/');
+originalImagesPath = strcat(originalImagesPath, '\');
+
 %% path 2 save output
 path2save = '';
 
@@ -39,7 +41,11 @@ else
 end
 
 %% Write table path
+<<<<<<< HEAD
 tablePath = 'F:\jesus\';
+=======
+tablePath = 'F:\Carmen\';
+>>>>>>> a6700bcfc9943f66dbbfe5953d47185798649889
 tablePath = uigetdir(tablePath, 'Select savePath (.xls) path');
 
 %% Select name or automatic (date)
@@ -79,8 +85,16 @@ for cyst=1:length(fixedCystsDir)
     end
     
     %% Read rgStack and imgInfo
+<<<<<<< HEAD
     [rgStackImg, imgInfo] = readStackTif(strcat(originalImagesPath, cystName, '.tif'));
     
+=======
+    try
+        [rgStackImg, imgInfo] = readStackTif(strcat(originalImagesPath, cystName, '.tif'));
+    catch
+        continue
+    end
+>>>>>>> a6700bcfc9943f66dbbfe5953d47185798649889
     %% Extract pixel-micron relation
     xResolution = imgInfo(1).XResolution;
     yResolution = imgInfo(1).YResolution;
@@ -134,10 +148,15 @@ for cyst=1:length(fixedCystsDir)
     
     
     %% ID_Cysts
+<<<<<<< HEAD
     [cells3dFeatures, ~,~,~] = convertPixelsToMicrons(cells3dFeatures, cells3dFeatures, cells3dFeatures, cells3dFeatures,cells3dFeatures, pixelScale);
     aux_table = [table(string(repmat(cystName,size(cells3dFeatures, 1),1))), cells3dFeatures];
     
     
+=======
+    
+    aux_table = [table(string(repmat(cystName,size(cells3dFeatures, 1),1))), cells3dFeatures];
+>>>>>>> a6700bcfc9943f66dbbfe5953d47185798649889
     
     %% build and write table    
     dataTable = [dataTable; aux_table];

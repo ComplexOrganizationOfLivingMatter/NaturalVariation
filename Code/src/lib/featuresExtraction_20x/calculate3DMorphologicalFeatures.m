@@ -49,10 +49,10 @@ function [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetwo
         
         %% Calculate mean and std of 3D features
         cells3dFeatures((cells3dFeatures.ID_Cell == "Lumen" | cells3dFeatures.ID_Cell == "Tissue and Lumen"),:)=[];
-        meanCellsFeatures = varfun(@(x) mean(x),cells3dFeatures(:, 2:end-2));
+        meanCellsFeatures = varfun(@(x) mean(x, 'omitnan'),cells3dFeatures(:, 2:end-2));
         meanCellsFeatures.Properties.VariableNames = cellfun(@(x) strrep(x, 'Fun', 'mean_cell'), meanCellsFeatures.Properties.VariableNames, 'UniformOutput', false);    
 
-        stdCellsFeatures = varfun(@(x) std(x),cells3dFeatures(:, 2:end-2));
+        stdCellsFeatures = varfun(@(x) std(x, 'omitnan'),cells3dFeatures(:, 2:end-2));
         stdCellsFeatures.Properties.VariableNames = cellfun(@(x) strrep(x, 'Fun', 'std_cell'), stdCellsFeatures.Properties.VariableNames, 'UniformOutput', false);    
 
         % Voxels/Pixels to Micrometers

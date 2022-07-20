@@ -1,4 +1,6 @@
 function getCellSpatialStatisticsBULKplot_ui()
+    rmpath(genpath('D:\Github\Processing3DSegmentation\'));
+
     %ui get path rgStack
     rgStackPath = uigetdir('/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions/', 'Select rgStack (.tif) path');
     rgStackPath = strcat(rgStackPath, '/');

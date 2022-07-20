@@ -1,23 +1,24 @@
-addpath 'C:\Users\atagua\Desktop\NaturalVariation\NaturalVariation\Code\correctionWindow\gui'
-addpath 'C:\Users\atagua\Desktop\NaturalVariation\NaturalVariation\Code\src'
-addpath 'C:\Users\atagua\Desktop\NaturalVariation\NaturalVariation\Code\correctionWindow'
-addpath 'C:\Users\atagua\Desktop\NaturalVariation\NaturalVariation\Code'
+addpath(genpath('D:\Github\Processing3DSegmentation\'))
+rmpath 'C:\Program Files\MATLAB\R2021b\toolbox\signal\signal\'
+addpath(genpath('D:\Github\NaturalVariation\'))
+
 %% Last fixed Cyst.
-lastFixedCyst = ''; %Example '7d.1B/7d.1.B.5_3.tif_itkws.tiff' // all cysts are in the same folder. That's to resume the fixing where you stopped (based on the xls)
+lastFixedCyst = '4d.1FBS2.B.17.1.tiff'; %Example '7d.1B/7d.1.B.5_3.tif_itkws.tiff' // all cysts are in the same folder. That's to resume the fixing where you stopped (based on the xls)
 
 %% No-voronoi Warnings table path
-voronoiWarningsPath = 'C:\Users\atagua\Desktop\NaturalVariation\voronoiCystWarnings_05-Jul-2021.xls';
+voronoiWarningsPath = 'D:\GitHub\NaturalVariation\data\FBS\4d_FBS_01oct\voronoiCystWarnings_01-Oct-2021.xls';
 
 %% No-voronoi .mat files path
-voronoiMatFilePath = 'C:\Users\atagua\Desktop\NaturalVariation\NaturalVariation\';
+% voronoiMatFilePath = 'D:\GitHub\NaturalVariation\data\FBS\4d_FBS_01oct\matFiles\';
 
 %% Fixed cysts file path
-fixedCystsFilePath = 'C:\Users\atagua\Desktop\NaturalVariation\fixedCysts\';
+fixedCystsFilePath = 'D:\GitHub\NaturalVariation\data\FBS\4d_FBS_01oct\fixedCysts\';
 
 %% RG image filepath
-% rgFilePath = '/media/pedro/6TB/jesus/NaturalVariation/crops';
+rgFilePath = 'D:\GitHub\NaturalVariation\data\FBS\4d_FBS_01oct\rgStack\';
 
-matDirectory = strcat('C:\Users\atagua\Desktop\NaturalVariation\validateCysts_reducedLumen\');
+%%
+matDirectory = 'D:\GitHub\NaturalVariation\data\FBS\4d_FBS_01oct\matFiles\';
 
 %% Load table
 voronoiWarningsTable = readtable(voronoiWarningsPath);
@@ -47,40 +48,13 @@ end
 
 %% for loop
 for cyst=startCyst:size(validCysts, 1)
-    %Load images
-    cystName = strrep(validCysts(cyst, :).name{1}, '.tif.mat', '');
-    cystFolderName = strsplit(cystName, '/');
-    cystName = cystFolderName{2};
-    cystFolderName = cystFolderName{1};
-    cystName = strsplit(cystName, '.tif_itkws');
+
+    %load images
+    cystName = validCysts(cyst, :).name{1};
+    cystName = strsplit(validCysts(cyst, :).name{1}, '.tiff');
     cystName = cystName{1};
 
-%     matFile = strcat(voronoiMatFilePath, cystFolderName, '_probMap/', cystName, '.mat');
-%     load(matFile)
     load(strcat(matDirectory, cystName, '.mat'))
-    rgStackImg = rgStackImg_scaled;
-    labelledImage = labelledImage_scaled;
-%     [rgStackImg, infoImg] = readStackTif(strcat(rgFilePath, '/', cystFolderName, '/',cystFolderName, '_rg/', cystName, '.tif'));
-%     spacingInfo = strsplit(infoImg(1,:).ImageDescription, 'spacing=');
-%     spacingInfo = strsplit(spacingInfo{2}, '\n');
-%     z_pixel = str2num(spacingInfo{1});
-%     saveName = strcat(matDirectory, cystName, '.mat');
-    
-%     rgStackImg_validation = imresize3(rgStackImg,[numRows numCols numSlices], 'nearest');
-%     labelledImage_validation = imresize3(labelledImage,[numRows numCols numSlices], 'nearest');
-%     labelledImage_validation = reduceLumenVolume(labelledImage_validation);
-    
-    %%Rescaled img
-%     x_pixel = 1/infoImg(1, :).XResolution;
-%     y_pixel = 1/infoImg(1, :).YResolution;
-%     shape = size(rgStackImg);
-%     numRows_ = shape(1);
-%     numCols_ = shape(2);
-%     numSlices_ = round(shape(3)*(x_pixel/z_pixel));
-%     rgStackImg_scaled = imresize3(rgStackImg,[numRows_ numCols_ numSlices_], 'nearest');
-%     labelledImage_scaled = imresize3(labelledImage,[numRows_ numCols_ numSlices_], 'nearest');
-%     labelledImage_scaled = reduceLumenVolume(labelledImage_scaled);
-%     save(saveName, 'rgStackImg_scaled', 'labelledImage_scaled');
 
     [~, cellOutlier] = tagCellOutliers(rgStackImg, labelledImage);
     cellOutlierStringArray = string(cellOutlier);
@@ -92,10 +66,10 @@ for cyst=startCyst:size(validCysts, 1)
     
     saveCystPath = strcat(fixedCystsFilePath, cystName, '.mat');
     
-    [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage_scaled, '');
+    [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage, '');
     
     disp(cystName)
-    proofReadingCustomWindow(rgStackImg_scaled,labelledImage_scaled,lumenImage,apicalLayer,basalLayer,[],notFoundCellsSurfaces,cellOutlier,saveCystPath);
+    proofReadingCustomWindow(rgStackImg,labelledImage,lumenImage,apicalLayer,basalLayer,[],notFoundCellsSurfaces,cellOutlier,saveCystPath);
     w = waitforbuttonpress;
 
 end

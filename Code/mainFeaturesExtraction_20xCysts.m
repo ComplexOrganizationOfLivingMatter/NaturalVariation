@@ -14,16 +14,16 @@
 % 5.- Extract features
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+clear vars
 %% Add paths
 addpath(genpath('/home/pedro/Escritorio/jesus/NaturalVariation/'));
 
 %% mat files of fixed cysts
-fixedCystsPath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions';
-fixedCystsPath = uigetdir(fixedCystsPath, 'Select fixedCysts (.mat) path');
-fixedCystsPath = strcat(fixedCystsPath, '/');
-%% original tif files of rg cysts            
-originalImagesPath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions';
+fixedCystsPath = 'F:\jesus\';
+fixedCystsPath = uigetdir(fixedCystsPath, 'Select labels (.mat or .tif) path');
+fixedCystsPath = strcat(fixedCystsPath, '\');
+%% original tif files of rg cysts
+originalImagesPath = 'F:\jesus\';
 originalImagesPath = uigetdir(originalImagesPath, 'Select rgStack (.tif) path');
 originalImagesPath = strcat(originalImagesPath, '/');
 
@@ -32,6 +32,12 @@ path2save = '';
 
 %% Directory
 fixedCystsDir = dir(strcat(fixedCystsPath, '*.mat'));
+if isempty(fixedCystsDir)
+    fixedCystsDir = dir(strcat(fixedCystsPath, '*.tif'));
+    formatFlag = '.tif';
+else
+    formatFlag = '.mat';
+end
 
 %% Write table path
 tablePath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions/';
@@ -57,12 +63,21 @@ dataTable = table();
 for cyst=1:length(fixedCystsDir)
     %% Extract cyst name
     cystName = fixedCystsDir(cyst).name;
-    cystName = strsplit(cystName, '.mat');
+    if strcmp(formatFlag, '.mat')
+        cystName = strsplit(cystName, '.mat');
+    else
+        cystName = strsplit(cystName, '.tif');
+    end
+
     cystName = cystName{1};
     disp(cystName);
 
-    %% Load labels
-    load(strcat(fixedCystsPath, cystName, '.mat'), 'labelledImage');
+    if strcmp(formatFlag, '.mat')
+        %% Load labels
+        load(strcat(fixedCystsPath, cystName, '.mat'), 'labelledImage');
+    else
+        labelledImage = readStackTif(strcat(fixedCystsPath, cystName, '.tif'));
+    end
     
     %% Read rgStack and imgInfo
     [rgStackImg, imgInfo] = readStackTif(strcat(originalImagesPath, cystName, '.tif'));
@@ -93,7 +108,7 @@ for cyst=1:length(fixedCystsDir)
     [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage,'');
     
     %% At least the 0.5% of lateral membrane contacting with other cell to be1 considered as neighbor.
-    contactThreshold = 1;
+    contactThreshold = 0.5;
     dilatedVx = 2;
 
     disp('###################################')
