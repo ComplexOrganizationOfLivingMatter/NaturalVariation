@@ -15,6 +15,7 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
     normZPosArray = [];
     cellIDsArray = [];
     negativeCurvatureArray = [];
+    nCellsArray = [];
     
     for cyst=1:length(fixedCystsDir)
 
@@ -94,7 +95,8 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
         cystIDArray = [cystIDArray; repmat({cystName}, [size(normZPos,2), 1])];
         cystShapeArray = [cystShapeArray; repmat({cystShape}, [size(normZPos,2), 1])];
         negativeCurvatureArray = [negativeCurvatureArray; repmat({negativeCurvature}, [size(normZPos,2), 1])];
-        
+        nCellsArray = [nCellsArray; repmat({validCells}, [size(normZPos,2), 1])];
+
         cellIDsArray = [cellIDsArray, cellIDArray'];
         normZPosArray = [normZPosArray, normZPos];        
         zPosArray = [zPosArray, zPos];     
@@ -107,6 +109,7 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
     spatialDataTable.cellID = cellIDsArray';
     spatialDataTable.cystShape = cellfun(@(x) string(x), cystShapeArray);
     spatialDataTable.cystCurvature = cellfun(@(x) string(x), negativeCurvatureArray);
+    spatialDataTable.nCells = nCellsArray;
     spatialDataTable.normZpos = normZPosArray';
     spatialDataTable.zPos = zPosArray';
     spatialDataTable.normVariableData = normVariableDataArray';
