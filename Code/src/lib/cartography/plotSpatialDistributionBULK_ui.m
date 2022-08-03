@@ -1,5 +1,9 @@
 function plotSpatialDistributionBULK_ui
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % plotSpatialDistributionBULK_ui
+    % Plotting "estampitas" user interface
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     addpath(genpath('D:\Github\NaturalVariation\'));
     addpath(genpath('D:\Github\Processing3DSegmentation\'));
 
