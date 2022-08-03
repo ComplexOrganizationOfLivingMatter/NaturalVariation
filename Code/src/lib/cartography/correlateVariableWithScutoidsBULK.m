@@ -2,6 +2,7 @@ function correlateVariableWithScutoidsBULK(originalImagesPath, fixedCystsPath, v
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % correlateVariableWithScutoidsBULK
     % main code for using correlateViariableWithScutoids
+    % THIS FUNCTION IS INTENDED TO BE LAUNCHED USING THE HOMONIMOUS _UI FILE!
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % inputs:
     % originalImagesPath: raw images path
