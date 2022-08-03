@@ -1,6 +1,16 @@
 function [normFirstQuartilePosition, normSecondQuartilePosition, normThirdQuartilePosition, normFourthQuartilePosition] = getCellSpatialStatistics(labelledImage, data, cellIDArray, variable)
-    
-    % Position
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % getCellSpatialStatistics
+    % For each Variable Quartile, calculates mean ZPos of cells in that Quartile.
+    % If scutoids just the mean of ZPos (no quartiles)
+    % THIS FUNCTION IS INTENDED TO BE LAUNCHED USING THE HOMONIMOUS _UI FILE!
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % inputs:
+    % labelledImage: labels
+    % data: column of values of the chosen variable
+    % cellIDArray: IDs of all cells
+    % variable: Name of the variable e.g. "cell_height"
+
     variableArray = [];
     firstQuartilePosArray = [];
     secondQuartilePosArray = [];
