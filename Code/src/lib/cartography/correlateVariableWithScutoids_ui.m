@@ -1,4 +1,11 @@
 function correlateVariableWithScutoids_ui()
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % correlateVariableWithScutoids_ui
+    % User interface for correlateViariableWithScutoids
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
     %ui get path rgStack
     rgStackPath = uigetdir('F:\Carmen\DataSetMethod_4_7_10d', 'Select rgStack (.tif) path');
     rgStackPath = strcat(rgStackPath, '\');
