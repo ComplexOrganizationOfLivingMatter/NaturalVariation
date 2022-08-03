@@ -1,5 +1,8 @@
 function plotSpatialDistribution_ui
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % plotSpatialDistribution_ui
+    % Plotting "estampitas" of a single variable - user interface
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     addpath(genpath('D:\Github\Processing3DSegmentation\'));
     addpath(genpath('D:\Github\NaturalVariation\'));
 
