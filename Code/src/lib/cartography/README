@@ -1,0 +1,22 @@
+cartography code:
+
+User should run _ui (user interface) files.
+
+1.- correlateVariableWithScutoids_ui [RETURNS TABLE]
+    % Function that divide cyst in 4 quartiles 
+    % using the chosen variable
+    % then gives the percentage of cells in each quartile
+    % that are scutoids.
+    
+2.- getCellSpatialData_ui [RETURNS TABLE]
+    % Function that joins cell's variable info with cell's Z and XY Position
+   
+3.- getCellSpatialStatisticsBULKplot_ui [RETURNS TABLE AND TABLE FOR PLOTVIOLIN]
+    % For each Variable Quartile, calculates mean ZPos of cells in that Quartile.
+    % If scutoids just the mean of ZPos (no quartiles)
+    
+4.- plotSpatialDistribution_ui [RETURNS BMP AND PNG FILE]
+    % Plotting "estampitas" of single variables
+
+5.- plotSpatialDistributionBULK_ui [RETURNS BMP AND PNG FILE]
+    % Plotting "estampitas" of all variables
