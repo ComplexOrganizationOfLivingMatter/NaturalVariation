@@ -1,9 +1,19 @@
 function correlateVariableWithScutoidsBULK(originalImagesPath, fixedCystsPath, variable, savePath, saveName, statsQuest)
-
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % correlateVariableWithScutoidsBULK
+    % main code for using correlateViariableWithScutoids
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % inputs:
+    % originalImagesPath: raw images path
+    % fixedCystsPath: labels path
+    % variable: Name of the variable e.g. "cell_height"
+    % savePath: path to save the result
+    % statsQuest: "NO" if general quantiles. "YES" if you want to calculate quantiles for each cyst.
+    
     % Directory
     fixedCystsDir = dir(strcat(fixedCystsPath, '*.mat'));
 
-    % arrays for table
+    % initialize arrays for table
     variableArray = [];
     typeArray = [];
     classArray = [];
@@ -15,6 +25,7 @@ function correlateVariableWithScutoidsBULK(originalImagesPath, fixedCystsPath, v
         quantiles = [0, 0, 0];
     end
 
+    %For each cyst, calculate and write table
     for cyst=1:length(fixedCystsDir)
 
         cystName = fixedCystsDir(cyst).name;
