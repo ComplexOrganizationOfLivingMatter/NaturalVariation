@@ -1,4 +1,9 @@
 function getCellSpatialStatisticsBULKplot_ui()
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % getCellSpatialStatisticsBULKplot_ui
+    % User interface for correlateViariableWithScutoids
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     rmpath(genpath('D:\Github\Processing3DSegmentation\'));
 
     %ui get path rgStack
