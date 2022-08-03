@@ -1,5 +1,17 @@
 function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, saveName)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % plotSpatialDistribution
+    % Plotting "estampitas"
+    % THIS FUNCTION IS INTENDED TO BE LAUNCHED USING THE HOMONIMOUS _UI FILE!
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % inputs:
+    % rgStackPath: raw images path
+    % labelsPath: labels path
+    % variable: Name of the variable e.g. "cell_height"
+    % savePath: path to save table (unused)
+    % saveName: name to save table (unused)
     
+    % path management
     rgStackPath = strcat(rgStackPath, '/');
     labelsPath = strcat(labelsPath, '/');
   
@@ -7,10 +19,12 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
     
     layout = uint8(zeros([413*size(labelsDir, 1),570*3, 3]));
     
+    % intialize variables
     spatialStatisticsTable = table();
     meanScutoidZPosArray = [];
     cystIDArrayCyst = [];
 
+    % for loop for each cyst
     for labelIx = 1:size(labelsDir, 1)
         
         load(strcat(labelsPath, labelsDir(labelIx).name));
@@ -69,6 +83,8 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             disp(cystName)
             continue
         end
+        
+        % Assign colors depending on variables
         if variable == "scutoids"
             colours = [];
             maxValue = 1;
