@@ -1,9 +1,22 @@
 function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variable, savePath, saveName)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % getCellSpatialStatisticsBULK
+    % Runs getcellSpatialStatistics for each Cyst:
+    % For each Variable Quartile, calculates mean ZPos of cells in that Quartile.
+    % If scutoids just the mean of ZPos (no quartiles)
+    % THIS FUNCTION IS INTENDED TO BE LAUNCHED USING THE HOMONIMOUS _UI FILE!
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % inputs:
+    % originalImagesPath: raw images path
+    % fixedCystsPath: labels path
+    % variable: Name of the variable e.g. "cell_height"
+    % savePath: path to save table
+    % saveName: table name
     
     % Directory
     fixedCystsDir = dir(strcat(fixedCystsPath, '*.mat'));
     
-    % arrays for table
+    % Initialize arrays for table
     variableArray = [];
     typeArray = [];
     classArray = [];
@@ -71,10 +84,12 @@ function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variab
         
         cellIDArray = cells3dFeatures.ID_Cell;
                 
+        % get cell spatial data 
         [normFirstQuartilePosition, normSecondQuartilePosition, normThirdQuartilePosition, normFourthQuartilePosition] = getCellSpatialStatistics(labelledImage, data, cellIDArray, variable);
         
         cystIDArray = [cystIDArray; repmat({cystName}, [4, 1])];
 
+        % append arrays
         variableArray = [variableArray; normFirstQuartilePosition];
         typeArray = [typeArray; "Q1"];
         
@@ -88,7 +103,7 @@ function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variab
         typeArray = [typeArray; "Q4"];
 
     end
-    
+    % build table
     classArray = repmat({'class 0'}, [size(cystIDArray, 1), 1]);
 
     spatialStatisticsTable.class = classArray;
@@ -135,6 +150,7 @@ function getCellSpatialStatisticsBULK(originalImagesPath, fixedCystsPath, variab
          writetable(dataTable_sheet_1,fileName{1},'Sheet','Q info');
     end
     
+    %table ready for running plotViolin code
     fileName = strcat(savePath, saveName, '_', variable, '_spatialStats_forPlotViolin.xls');
     writetable(spatialStatisticsTable,fileName{1});
 
