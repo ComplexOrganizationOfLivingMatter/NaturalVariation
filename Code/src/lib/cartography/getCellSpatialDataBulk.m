@@ -1,9 +1,26 @@
 function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, savePath, saveName)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % getCellSpatialDataBulk
+    % Function that calls getCellSpatialData and get SpatialData for each cyst
+    % THIS FUNCTION IS INTENDED TO BE LAUNCHED USING THE HOMONIMOUS _UI FILE!
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % inputs:
+    % originalImagesPath: path for raw images
+    % fixedCystsPath: path for labels
+    % variable: Name of the variable e.g. "cell_height"
+    % savePath: path for saving table
+    % saveName: table's name
     
-    % Directory
+    %% Directory and assign format flag
     fixedCystsDir = dir(strcat(fixedCystsPath, '*.mat'));
+    if isempty(fixedCystsDir)
+        fixedCystsDir = dir(strcat(fixedCystsPath, '*.tif'));
+        formatFlag = '.tif';
+    else
+        formatFlag = '.mat';
+    end
     
-    % arrays for table
+    % Initialize variables for table building
     variableArray = [];
     typeArray = [];
     classArray = [];
@@ -16,17 +33,31 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
     cellIDsArray = [];
     negativeCurvatureArray = [];
     nCellsArray = [];
+    normXYPosArray = [];
+    xyPosArray = [];
+    zPosCentroidArray = [];
     
+    % sweep cysts
     for cyst=1:length(fixedCystsDir)
 
+        %% Extract cyst name
         cystName = fixedCystsDir(cyst).name;
-        cystName = strsplit(cystName, '.mat');
+        if strcmp(formatFlag, '.mat')
+            cystName = strsplit(cystName, '.mat');
+        else
+            cystName = strsplit(cystName, '.tif');
+        end
+
         cystName = cystName{1};
-        disp(cystName);
-
+        disp(cystName)
+        
         %% Load labels
-        load(strcat(fixedCystsPath, cystName, '.mat'), 'labelledImage');
-
+        if strcmp(formatFlag, '.mat')
+            load(strcat(fixedCystsPath, cystName, '.mat'), 'labelledImage');
+        else
+            labelledImage = readStackTif(strcat(fixedCystsPath, cystName, '.tif'));
+        end
+        
         %% Read rgStack and imgInfo
         [rgStackImg, imgInfo] = readStackTif(strcat(originalImagesPath, cystName, '.tif'));
 
@@ -85,33 +116,41 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
         end
         
         cellIDArray = cells3dFeatures.ID_Cell;
-                
-        [normZPos, zPos, normVariableData, variableData] = getCellSpatialData(labelledImage, data, cellIDArray, variable, pixelScale);
         
+        % get spatial data
+        [normZPos, zPos, normVariableData, variableData, xyPos, normXYPos, zPosCentroid] = getCellSpatialData(labelledImage, data, cellIDArray, variable, pixelScale);
+        
+        %get CystShape and negative curvature
         cystShape = clasifyCyst(tissue3dFeatures.PrincipalAxisLength, 0.1);
         negativeCurvature = {evaluateCurvNeg(tissue3dFeatures.Solidity, 0.9)};
 
-
+        % fill arrays for table building
         cystIDArray = [cystIDArray; repmat({cystName}, [size(normZPos,2), 1])];
         cystShapeArray = [cystShapeArray; repmat({cystShape}, [size(normZPos,2), 1])];
         negativeCurvatureArray = [negativeCurvatureArray; repmat({negativeCurvature}, [size(normZPos,2), 1])];
-        nCellsArray = [nCellsArray; repmat({validCells}, [size(normZPos,2), 1])];
+        nCellsArray = [nCellsArray; repmat({length(validCells)}, [size(normZPos,2), 1])];
 
         cellIDsArray = [cellIDsArray, cellIDArray'];
-        normZPosArray = [normZPosArray, normZPos];        
+        normZPosArray = [normZPosArray, normZPos];      
+        zPosCentroidArray = [zPosCentroidArray, zPosCentroid];        
         zPosArray = [zPosArray, zPos];     
+        normXYPosArray = [normXYPosArray, normXYPos];        
+        xyPosArray = [xyPosArray, xyPos];   
         normVariableDataArray = [normVariableDataArray, normVariableData];  
         variableDataArray = [variableDataArray, variableData];
 
     end
-    
+    % build table
     spatialDataTable.cystID = cellfun(@(x) string(x), cystIDArray);
     spatialDataTable.cellID = cellIDsArray';
     spatialDataTable.cystShape = cellfun(@(x) string(x), cystShapeArray);
     spatialDataTable.cystCurvature = cellfun(@(x) string(x), negativeCurvatureArray);
     spatialDataTable.nCells = nCellsArray;
-    spatialDataTable.normZpos = normZPosArray';
+    spatialDataTable.normZPos = normZPosArray';
     spatialDataTable.zPos = zPosArray';
+    spatialDataTable.zPosCentroid = zPosCentroidArray';
+    spatialDataTable.normXYPos = normXYPosArray';
+    spatialDataTable.xyPos = xyPosArray';
     spatialDataTable.normVariableData = normVariableDataArray';
     spatialDataTable.variableData = variableDataArray';
 
