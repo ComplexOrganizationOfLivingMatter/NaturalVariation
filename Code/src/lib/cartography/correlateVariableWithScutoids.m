@@ -5,6 +5,7 @@ function [firstQuartileScutoids, secondQuartileScutoids, thirdQuartileScutoids, 
     % using the chosen variable
     % then gives the percentage of cells in each quartile
     % that are scutoids.
+    % THIS FUNCTION IS INTENDED TO BE LAUNCHED USING THE HOMONIMOUS _UI FILE!
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % inputs:
     % labelledImage: labels
