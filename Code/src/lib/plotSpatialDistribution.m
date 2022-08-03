@@ -61,6 +61,9 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             [cells3dFeatures, ~, ~,~, ~, ~,~, ~,~, ~, ~, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,'',contactThreshold, dilatedVx);
             %% Calculate Network features            
             [degreeNodesCorrelation,coefCluster,betweennessCentrality] = obtainNetworksFeatures(apicoBasalNeighs,validCells, '');
+            
+            [cells3dFeatures, ~,~,~] = convertPixelsToMicrons(cells3dFeatures, cells3dFeatures, cells3dFeatures, cells3dFeatures,cells3dFeatures, pixelScale);
+
         catch
             warning("ERROR")
             disp(cystName)
@@ -68,14 +71,16 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
         end
         if variable == "scutoids"
             colours = [];
+            maxValue = 1;
+            minValue = 0;
             scu = 0;
             uniqueLabels = unique(labelledImage);
             for cellIx = 1:size(cells3dFeatures, 1)
                 if cells3dFeatures.scutoids(cellIx) == 1
                     scu = scu + 1;
-                    colours = [colours; [0.1,0.1,0.1]];
+                    colours = [colours; [1,0,0]];
                 else
-                    colours = [colours; [0.4, 0.4, 0.4]];
+                    colours = [colours; [0,1,0]];
                 end
             end
             disp(strcat('scutoids: ', num2str(scu/size(cells3dFeatures, 1))));
@@ -86,7 +91,9 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
                 maxValue = max(surfaceRatio);
                 minValue = min(surfaceRatio);
 
-                cMap = interp1([0;1],[0 1 0; 1 0 0],linspace(0,1,100));
+                cMap1 = interp1([0;0.5],[0 1 0; 1 1 0],linspace(0,0.5,50));
+                cMap2 = interp1([0.5;1],[1 1 0; 1 0 0],linspace(0.5,1,50));
+                cMap = [cMap1; cMap2];
                 cMapIndex = round(100*(surfaceRatio(cellIx)-minValue)/(maxValue-minValue));
                 if cMapIndex == 0 || isnan(cMapIndex)
                     cMapIndex = 1;
@@ -99,7 +106,9 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
                 maxValue = max(betweennessCentrality);
                 minValue = min(betweennessCentrality);
 
-                cMap = interp1([0;1],[0 1 0; 1 0 0],linspace(0,1,100));
+                cMap1 = interp1([0;0.5],[0 1 0; 1 1 0],linspace(0,0.5,50));
+                cMap2 = interp1([0.5;1],[1 1 0; 1 0 0],linspace(0.5,1,50));
+                cMap = [cMap1; cMap2];
                 cMapIndex = round(100*(betweennessCentrality(cellIx)-minValue)/(maxValue-minValue));
                 if cMapIndex == 0 || isnan(cMapIndex)
                     cMapIndex = 1;
@@ -112,8 +121,9 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
                 maxValue = max(coefCluster);
                 minValue = min(coefCluster);
 
-                cMap = interp1([0;1],[0 1 0; 1 0 0],linspace(0,1,100));
-                cMapIndex = round(100*(coefCluster(cellIx)-minValue)/(maxValue-minValue));
+                cMap1 = interp1([0;0.5],[0 1 0; 1 1 0],linspace(0,0.5,50));
+                cMap2 = interp1([0.5;1],[1 1 0; 1 0 0],linspace(0.5,1,50));
+                cMap = [cMap1; cMap2];                cMapIndex = round(100*(coefCluster(cellIx)-minValue)/(maxValue-minValue));
                 if cMapIndex == 0 || isnan(cMapIndex)
                     cMapIndex = 1;
                 end
@@ -125,8 +135,9 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
                 maxValue = max(cells3dFeatures(:, variable).Variables);
                 minValue = min(cells3dFeatures(:, variable).Variables);
 
-                cMap = interp1([0;1],[0 1 0; 1 0 0],linspace(0,1,100));
-                cMapIndex = round(100*(cells3dFeatures(cellIx, variable).Variables-minValue)/(maxValue-minValue));
+                cMap1 = interp1([0;0.5],[0 1 0; 1 1 0],linspace(0,0.5,50));
+                cMap2 = interp1([0.5;1],[1 1 0; 1 0 0],linspace(0.5,1,50));
+                cMap = [cMap1; cMap2];                cMapIndex = round(100*(cells3dFeatures(cellIx, variable).Variables-minValue)/(maxValue-minValue));
                 if cMapIndex == 0 || isnan(cMapIndex)
                     cMapIndex = 1;
                 end
@@ -134,22 +145,47 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             end
         end
         
+        %Units
+        if contains(variable, 'height') || contains(variable, 'Height')
+            units = "\mum";
+        elseif contains(variable, 'area') || contains(variable, 'Area')
+            units = "\mum^2";
+        elseif contains(variable, 'volume') || contains(variable, 'Volume')
+            units = "\mum^3";
+        else
+            units = "";
+        end
+        
+        
         paint3D(labelledImage, validCells, colours, 3);
+        material([0.5 0.2 0.0 10 1])
         fig = get(groot,'CurrentFigure');
-        camlight('headlight') 
+        fig.Color = [1 1 1];
+        camlight('headlight');
+        
+        if ~strcmp(variable, "scutoids")
+            %colorBar
+            colormap(cMap)
+            caxis([minValue,maxValue])
+            colorbarHandler=colorbar;
+            title(colorbarHandler, units);
+            colorbarHandler.Label.String = strrep(variable, "_", " ");
+        end
+        
+        %first render
         frame = getframe(fig);      % Grab the rendered frame
         renderedFrontImage = frame.cdata;    % This is the rendered image
         renderedFrontImage = imresize(renderedFrontImage, [413, 570]);
-
+        
+        %second render
         camorbit(180, 0)
         camlight('headlight') 
         frame = getframe(fig);      % Grab the rendered frame
         renderedBackImage = frame.cdata;    % This is the rendered image
         renderedBackImage = imresize(renderedBackImage, [413, 570]);
 
+        %third render
         camorbit(0, -90)
-%         view(az,el)
-%         camlight
         camlight('headlight') 
         frame = getframe(fig);      % Grab the rendered frame
         renderedBottomImage = frame.cdata;    % This is the rendered image
@@ -158,9 +194,9 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
         %% Insert text
         renderedFrontImage = insertText(renderedFrontImage,[1, 1],name{1},'FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
         renderedFrontImage = insertText(renderedFrontImage,[1, 40],variable,'FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
-        renderedFrontImage = insertText(renderedFrontImage,[403, 1],'FRONT','FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
-        renderedBackImage = insertText(renderedBackImage,[403, 1],'BACK','FontSize',18,'BoxOpacity',0.4,'TextColor','black',  'BoxColor', 'white');
-        renderedBottomImage = insertText(renderedBottomImage,[403, 1],'BOTTOM','FontSize',18,'BoxOpacity',0.4,'TextColor','black',  'BoxColor', 'white');
+        renderedFrontImage = insertText(renderedFrontImage,[390, 1],'FRONT','FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
+        renderedBackImage = insertText(renderedBackImage,[390, 1],'BACK','FontSize',18,'BoxOpacity',0.4,'TextColor','black',  'BoxColor', 'white');
+        renderedBottomImage = insertText(renderedBottomImage,[390, 1],'BOTTOM','FontSize',18,'BoxOpacity',0.4,'TextColor','black',  'BoxColor', 'white');
 
         layout(413*(labelIx-1)+1:413*(labelIx),1:570,:) = renderedFrontImage;
         layout(413*(labelIx-1)+1:413*(labelIx), 571:570*2, :) = renderedBackImage;
