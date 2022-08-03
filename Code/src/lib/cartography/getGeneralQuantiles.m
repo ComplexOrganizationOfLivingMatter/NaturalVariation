@@ -1,5 +1,15 @@
 function quantiles = getGeneralQuantiles(originalImagesPath, fixedCystsDir, fixedCystsPath, variable, savePath, saveName)
-
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % getGeneralQuantiles
+   % get quantiles using all cysts
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % inputs:
+   % originalImagesPath: raw images path
+   % fixedCystsDir: labels path
+   % variable: Name of the variable e.g. "cell_height"
+   % savePath: path for saving table
+   % saveName: table name
+   
    alldata = [];
    fileName = strcat(savePath, saveName, '_', variable, '_generalQuantiles.xls');
 
