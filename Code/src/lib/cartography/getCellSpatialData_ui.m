@@ -1,4 +1,8 @@
-function getCellSpatialStatisticsBULKplot_ui()
+function getCellSpatialData_ui()
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % correlateVariableWithScutoids_ui
+    % User interface for getcellSpatialData
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %ui get path rgStack
     rgStackPath = uigetdir('/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions/', 'Select rgStack (.tif) path');
     rgStackPath = strcat(rgStackPath, '/');
