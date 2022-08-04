@@ -6,6 +6,8 @@
 Code for extracting cyst features.
 Result will be writen in a xls table.
 
+Running the code will display some User Interface  so no coding is needed to extract features.
+
 Global Features | Polygon Distributions | Mean Cell Features | Std Cell Features
 
 
@@ -19,3 +21,4 @@ Result will be writen in a xls table.
 Variables are the same as mainFeaturesExtraction_20xCysts/meanCellFeatures but raw
 instead of averaged.
 
+Running the code will display some User Interface  so no coding is needed to extract features.
