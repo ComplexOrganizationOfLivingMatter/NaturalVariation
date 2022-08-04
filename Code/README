@@ -1,0 +1,21 @@
+#########################################
+#    mainFeaturesExtraction_20xCysts    #
+#########################################
+
+
+Code for extracting cyst features.
+Result will be writen in a xls table.
+
+Global Features | Polygon Distributions | Mean Cell Features | Std Cell Features
+
+
+#########################################
+#  mainCellFeaturesExtraction_20xCysts  #
+#########################################
+
+Code for extracting cyst Cell Features.
+Result will be writen in a xls table.
+
+Variables are the same as mainFeaturesExtraction_20xCysts/meanCellFeatures but raw
+instead of averaged.
+
