@@ -94,9 +94,9 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             for cellIx = 1:size(cells3dFeatures, 1)
                 if cells3dFeatures.scutoids(cellIx) == 1
                     scu = scu + 1;
-                    colours = [colours; [1,0,0]];
+                    colours = [colours; [0.3,0.3,0.3]];
                 else
-                    colours = [colours; [0,1,0]];
+                    colours = [colours; [0.8,0.8,0.8]];
                 end
             end
             disp(strcat('scutoids: ', num2str(scu/size(cells3dFeatures, 1))));
