@@ -14,9 +14,11 @@
 % 5.- Extract features
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+warningCyst= [];
 clear vars
 %% Add paths
-addpath(genpath('/home/pedro/Escritorio/jesus/NaturalVariation/'));
+rmpath(genpath('D:\Github\Processing3DSegmentation\'));
+addpath(genpath('D:\Github\NaturalVariation\'));
 
 %% mat files of fixed cysts
 fixedCystsPath = 'F:\jesus\';
@@ -25,7 +27,7 @@ fixedCystsPath = strcat(fixedCystsPath, '\');
 %% original tif files of rg cysts
 originalImagesPath = 'F:\jesus\';
 originalImagesPath = uigetdir(originalImagesPath, 'Select rgStack (.tif) path');
-originalImagesPath = strcat(originalImagesPath, '/');
+originalImagesPath = strcat(originalImagesPath, '\');
 
 %% path 2 save output
 path2save = '';
@@ -40,7 +42,7 @@ else
 end
 
 %% Write table path
-tablePath = '/media/pedro/6TB/jesus/NaturalVariation/plotVariableDistributions/';
+tablePath = 'F:\jesus\';
 tablePath = uigetdir(tablePath, 'Select savePath (.xls) path');
 
 %% Select name or automatic (date)
@@ -120,6 +122,7 @@ for cyst=1:length(fixedCystsDir)
         %% Obtain 3D descriptors
         [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetworkFeatures,totalMeanCellsFeatures,totalStdCellsFeatures]=calculate3DMorphologicalFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,path2save,cystName,pixelScale,contactThreshold, [], [], dilatedVx);
     catch
+        warningCyst = [warningCyst; string(cystName)];
         warning("on")
         warning("calculate3DMorphologicalFeatures failed!")    
         warning("off")
@@ -170,5 +173,4 @@ dataTable_sheet_3 = dataTable(:, {'ID_Cysts', 'mean_cell_apical_Area', 'mean_cel
 writetable(dataTable_sheet_3,tablePath,'Sheet','meanCellParameters');
 dataTable_sheet_4 = dataTable(:, {'ID_Cysts', 'std_cell_apical_Area', 'std_cell_basal_Area', 'std_cell_lateral_Area', 'std_cell_average_cell_wall_Area', 'std_cell_std_cell_wall_Area', 'std_cell_Volume', 'std_cell_cell_height', 'std_cell_apical_NumNeighs', 'std_cell_basal_NumNeighs', 'std_cell_lateral_NumNeighs', 'std_cell_ConvexVolume', 'std_cell_Solidity', 'std_cell_SurfaceArea', 'std_cell_sphericity', 'std_cell_PrincipalAxisLength', 'std_cell_aspectRatio', 'std_cell_irregularityShapeIndex', 'std_coefCluster', 'std_betCentrality'});
 writetable(dataTable_sheet_4,tablePath,'Sheet','stdCellParameters');
-
 
