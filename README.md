@@ -1,8 +1,9 @@
 # NaturalVariation
 
-## Main features extraction codes inside: 
+## Main features extraction
 
-aturalVariation/Code/src/lib/featuresExtraction_20x/
+codes inside: 
+NaturalVariation/Code/src/lib/featuresExtraction_20x/
 
 ### mainFeaturesExtraction_20xCysts
 
