@@ -26,26 +26,26 @@ Running the code will display some User Interface  so no coding is needed to ext
 
 Inside NaturalVariation/Code/src/lib/cartography/
 
-### correlateVariableWithScutoids_ui [RETURNS TABLE]
+### correlateVariableWithScutoids_ui
 Function that divide cyst in 4 quartiles 
 using the chosen variable
 then gives the percentage of cells in each quartile
 that are scutoids.
 
-### getCellSpatialData_ui [RETURNS TABLE]
+### getCellSpatialData_ui
 Function that joins cell's variable info with cell's Z and XY Position
    
 ### getCellSpatialStatisticsBULKplot_ui [RETURNS TABLE AND TABLE FOR PLOTVIOLIN]
 For each Variable Quartile, calculates mean ZPos of cells in that Quartile.
 If scutoids just the mean of ZPos (no quartiles)
     
-### plotSpatialDistribution_ui [RETURNS BMP AND PNG FILE]
+### plotSpatialDistribution_ui
 Plotting "stamps" of single variables
 
-### plotSpatialDistributionBULK_ui [RETURNS BMP AND PNG FILE]
+### plotSpatialDistributionBULK_ui
 Plotting "stamps" of all variables
 
-### plotGradientBoomerangs [RETURNS SEVERAL PNG FILE]
+### plotGradientBoomerangs
 For each quartile of selected variable's distribution
 a scatter plot and histogram plot is plotted and saved
 
