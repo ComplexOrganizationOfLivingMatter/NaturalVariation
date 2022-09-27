@@ -11,7 +11,7 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
     % savePath: path for saving table
     % saveName: table's name
     
-    %% Directory and assign format flag
+    %% Directory
     fixedCystsDir = dir(strcat(fixedCystsPath, '*.mat'));
     if isempty(fixedCystsDir)
         fixedCystsDir = dir(strcat(fixedCystsPath, '*.tif'));
@@ -20,7 +20,7 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
         formatFlag = '.mat';
     end
     
-    % Initialize variables for table building
+    % arrays for table
     variableArray = [];
     typeArray = [];
     classArray = [];
@@ -36,8 +36,9 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
     normXYPosArray = [];
     xyPosArray = [];
     zPosCentroidArray = [];
+    polarDistrArray = [];
+    polarDistArray = [];
     
-    % sweep cysts
     for cyst=1:length(fixedCystsDir)
 
         %% Extract cyst name
@@ -111,20 +112,25 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
             data = coefCluster;
         elseif strcmp(variable, "betCentrality")
             data = betweennessCentrality;
+        elseif strcmp(variable, "surfaceRatio")
+            data = cells3dFeatures(:, "basal_Area").Variables./cells3dFeatures(:, "apical_Area").Variables;
         else
             data = cells3dFeatures(:, variable).Variables;
         end
         
         cellIDArray = cells3dFeatures.ID_Cell;
+                
+        try
+            [normZPos, zPos, normVariableData, variableData, xyPos, normXYPos, zPosCentroid, polarDist, polarDistr] = getCellSpatialData(labelledImage, data, cellIDArray, variable, pixelScale);
+        catch
+            warning('check segmentation')
+            continue
+        end
         
-        % get spatial data
-        [normZPos, zPos, normVariableData, variableData, xyPos, normXYPos, zPosCentroid] = getCellSpatialData(labelledImage, data, cellIDArray, variable, pixelScale);
-        
-        %get CystShape and negative curvature
         cystShape = clasifyCyst(tissue3dFeatures.PrincipalAxisLength, 0.1);
         negativeCurvature = {evaluateCurvNeg(tissue3dFeatures.Solidity, 0.9)};
 
-        % fill arrays for table building
+
         cystIDArray = [cystIDArray; repmat({cystName}, [size(normZPos,2), 1])];
         cystShapeArray = [cystShapeArray; repmat({cystShape}, [size(normZPos,2), 1])];
         negativeCurvatureArray = [negativeCurvatureArray; repmat({negativeCurvature}, [size(normZPos,2), 1])];
@@ -138,9 +144,12 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
         xyPosArray = [xyPosArray, xyPos];   
         normVariableDataArray = [normVariableDataArray, normVariableData];  
         variableDataArray = [variableDataArray, variableData];
+        polarDistArray = [polarDistArray, polarDist];
+        polarDistrArray = [polarDistrArray, polarDistr];
+
 
     end
-    % build table
+    
     spatialDataTable.cystID = cellfun(@(x) string(x), cystIDArray);
     spatialDataTable.cellID = cellIDsArray';
     spatialDataTable.cystShape = cellfun(@(x) string(x), cystShapeArray);
@@ -153,6 +162,8 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
     spatialDataTable.xyPos = xyPosArray';
     spatialDataTable.normVariableData = normVariableDataArray';
     spatialDataTable.variableData = variableDataArray';
+    spatialDataTable.polarDist = polarDistArray';
+    spatialDataTable.polarDistr = polarDistrArray';
 
     spatialDataTable = struct2table(spatialDataTable);
     
