@@ -1,6 +1,5 @@
 function variableData = convertPixelsToMicrons_singleVariable(variableData, variableType, pixelScale)
-    %UNTITLED Summary of this function goes here
-    %   Detailed explanation goes here
+    %Convert pixels to microns specifying data, type of variable and pixel scale
     
     if strcmp(variableType, 'volume')
         variableData = variableData*pixelScale^3;
