@@ -16,7 +16,11 @@ User should run _ui (user interface) files.
     % If scutoids just the mean of ZPos (no quartiles)
     
 4.- plotSpatialDistribution_ui [RETURNS BMP AND PNG FILE]
-    % Plotting "estampitas" of single variables
+    % Plotting "stamps" of single variables
 
 5.- plotSpatialDistributionBULK_ui [RETURNS BMP AND PNG FILE]
-    % Plotting "estampitas" of all variables
+    % Plotting "stamps" of all variables
+
+6.- plotGradientBoomerangs [RETURNS SEVERAL PNG FILE]
+    % For each quartile of selected variable's distribution
+    % a scatter plot and histogram plot is plotted and saved
