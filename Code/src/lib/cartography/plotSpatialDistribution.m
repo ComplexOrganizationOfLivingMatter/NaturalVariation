@@ -1,7 +1,7 @@
 function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, saveName)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % plotSpatialDistribution
-    % Plotting "estampitas"
+    % Plotting cysts stamps
     % THIS FUNCTION IS INTENDED TO BE LAUNCHED USING THE HOMONIMOUS _UI FILE!
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % inputs:
@@ -11,27 +11,45 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
     % savePath: path to save table (unused)
     % saveName: name to save table (unused)
     
-    % path management
-    rgStackPath = strcat(rgStackPath, '/');
-    labelsPath = strcat(labelsPath, '/');
+    rgStackPath = strcat(rgStackPath, '\');
+    labelsPath = strcat(labelsPath, '\');
   
+    %% Directory
     labelsDir = dir(strcat(labelsPath, '*.mat'));
-    
+    if isempty(labelsDir)
+        labelsDir = dir(strcat(labelsPath, '*.tif'));
+        formatFlag = '.tif';
+    else
+        formatFlag = '.mat';
+    end
+
     layout = uint8(zeros([413*size(labelsDir, 1),570*3, 3]));
     
-    % intialize variables
     spatialStatisticsTable = table();
     meanScutoidZPosArray = [];
     cystIDArrayCyst = [];
 
-    % for loop for each cyst
     for labelIx = 1:size(labelsDir, 1)
+        %% Extract cyst name
+        cystName = labelsDir(labelIx).name;
+        if strcmp(formatFlag, '.mat')
+            cystName = strsplit(cystName, '.mat');
+        else
+            cystName = strsplit(cystName, '.tif');
+        end
         
-        load(strcat(labelsPath, labelsDir(labelIx).name));
-        name = strsplit(labelsDir(labelIx).name, '.mat');
-        disp(name{1})
+        cystName = cystName{1};
+        disp(cystName);
+        name = cystName;
+        
+        if strcmp(formatFlag, '.mat')
+            %% Load labels
+            load(strcat(labelsPath, cystName, '.mat'), 'labelledImage');
+        else
+            labelledImage = readStackTif(strcat(labelsPath, cystName, '.tif'));
+        end
 
-        [rgStackImg, imgInfo] = readStackTif(strcat(rgStackPath, name{1}, '.tif'));
+        [rgStackImg, imgInfo] = readStackTif(strcat(rgStackPath, cystName, '.tif'));
 
         validCells = [];
         cystName = imgInfo(1).Filename;
@@ -83,8 +101,6 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             disp(cystName)
             continue
         end
-        
-        % Assign colors depending on variables
         if variable == "scutoids"
             colours = [];
             maxValue = 1;
@@ -96,7 +112,7 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
                     scu = scu + 1;
                     colours = [colours; [0.3,0.3,0.3]];
                 else
-                    colours = [colours; [0.8,0.8,0.8]];
+                    colours = [colours; [0.9, 0.9, 0.9]];
                 end
             end
             disp(strcat('scutoids: ', num2str(scu/size(cells3dFeatures, 1))));
@@ -107,8 +123,8 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
                 maxValue = max(surfaceRatio);
                 minValue = min(surfaceRatio);
 
-                cMap1 = interp1([0;0.5],[0 1 0; 1 1 0],linspace(0,0.5,50));
-                cMap2 = interp1([0.5;1],[1 1 0; 1 0 0],linspace(0.5,1,50));
+             cMap1 = interp1([0;0.5],[1 0.84 0.150; 1 0.28 0.65],linspace(0,0.5,50));
+             cMap2 = interp1([0.5;1],[1 0.28 0.6; 0.41 0.28 0.55],linspace(0.5,1,50));
                 cMap = [cMap1; cMap2];
                 cMapIndex = round(100*(surfaceRatio(cellIx)-minValue)/(maxValue-minValue));
                 if cMapIndex == 0 || isnan(cMapIndex)
@@ -137,7 +153,7 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
                 maxValue = max(coefCluster);
                 minValue = min(coefCluster);
 
-                cMap1 = interp1([0;0.5],[0 1 0; 1 1 0],linspace(0,0.5,50));
+                cMap1 = interp1([0;0.5],[0 0 1; 1 1 0],linspace(0,0.5,50));
                 cMap2 = interp1([0.5;1],[1 1 0; 1 0 0],linspace(0.5,1,50));
                 cMap = [cMap1; cMap2];                cMapIndex = round(100*(coefCluster(cellIx)-minValue)/(maxValue-minValue));
                 if cMapIndex == 0 || isnan(cMapIndex)
@@ -145,14 +161,21 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
                 end
                 colours = [colours; cMap(cMapIndex, :)];
             end
+        elseif variable == "GRAY"
+            colours = [];
+            for cellIx = 1:size(cells3dFeatures, 1)
+                colours = [colours; [0.9,0.9,0.9]];
+            end
         else
             colours = [];
             for cellIx = 1:size(cells3dFeatures, 1)
                 maxValue = max(cells3dFeatures(:, variable).Variables);
                 minValue = min(cells3dFeatures(:, variable).Variables);
 
-                cMap1 = interp1([0;0.5],[0 1 0; 1 1 0],linspace(0,0.5,50));
-                cMap2 = interp1([0.5;1],[1 1 0; 1 0 0],linspace(0.5,1,50));
+                
+        cMap1 = interp1([0;0.5],[1 0.84 0.150; 1 0.28 0.65],linspace(0,0.5,50));
+        cMap2 = interp1([0.5;1],[1 0.28 0.6; 0.41 0.28 0.55],linspace(0.5,1,50));
+
                 cMap = [cMap1; cMap2];                cMapIndex = round(100*(cells3dFeatures(cellIx, variable).Variables-minValue)/(maxValue-minValue));
                 if cMapIndex == 0 || isnan(cMapIndex)
                     cMapIndex = 1;
@@ -173,13 +196,16 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
         end
         
         
-        paint3D(labelledImage, validCells, colours, 3);
+        paint3D(labelledImage, validCells, colours, 3, 2);
         material([0.5 0.2 0.0 10 1])
         fig = get(groot,'CurrentFigure');
         fig.Color = [1 1 1];
-        camlight('headlight');
-        
-        if ~strcmp(variable, "scutoids")
+        delete(findall(gcf,'Type','light'));
+        camlight('headlight', 'infinite');
+        camlight('headlight', 'infinite');
+        camlight('headlight', 'infinite');
+
+        if ~strcmp(variable, "scutoids") && ~strcmp(variable, "GRAY")
             %colorBar
             colormap(cMap)
             caxis([minValue,maxValue])
@@ -191,24 +217,34 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
         %first render
         frame = getframe(fig);      % Grab the rendered frame
         renderedFrontImage = frame.cdata;    % This is the rendered image
+        delete(findall(gcf,'Type','light'));
+        camlight('headlight', 'infinite');
+        camlight('headlight', 'infinite');
+        camlight('headlight', 'infinite');
         renderedFrontImage = imresize(renderedFrontImage, [413, 570]);
-        
+
         %second render
         camorbit(180, 0)
-        camlight('headlight') 
+        delete(findall(gcf,'Type','light'));
+        camlight('headlight', 'infinite');
+        camlight('headlight', 'infinite');
+        camlight('headlight', 'infinite');
         frame = getframe(fig);      % Grab the rendered frame
         renderedBackImage = frame.cdata;    % This is the rendered image
         renderedBackImage = imresize(renderedBackImage, [413, 570]);
 
         %third render
         camorbit(0, -90)
-        camlight('headlight') 
+        delete(findall(gcf,'Type','light'));
+        camlight('headlight', 'infinite');
+        camlight('headlight', 'infinite');
+        camlight('headlight', 'infinite');
         frame = getframe(fig);      % Grab the rendered frame
         renderedBottomImage = frame.cdata;    % This is the rendered image
         renderedBottomImage = imresize(renderedBottomImage, [413, 570]);
 
         %% Insert text
-        renderedFrontImage = insertText(renderedFrontImage,[1, 1],name{1},'FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
+        renderedFrontImage = insertText(renderedFrontImage,[1, 1],name,'FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
         renderedFrontImage = insertText(renderedFrontImage,[1, 40],variable,'FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
         renderedFrontImage = insertText(renderedFrontImage,[390, 1],'FRONT','FontSize',18,'BoxOpacity',0.4,'TextColor','black', 'BoxColor', 'white');
         renderedBackImage = insertText(renderedBackImage,[390, 1],'BACK','FontSize',18,'BoxOpacity',0.4,'TextColor','black',  'BoxColor', 'white');
@@ -219,37 +255,14 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
         layout(413*(labelIx-1)+1:413*(labelIx), 570*2+1:end, :) = renderedBottomImage;
 
         close(fig)
-        
-%         principalAxisLength = regionprops3(labelledImage>1, 'PrincipalAxisLength');
-%         cystClassification = clasifyCyst(principalAxisLength.PrincipalAxisLength, 0.1);
-%         
-% 
-%         meanScutoidZPos = getCellSpatialStatistics(labelledImage, cells3dFeatures);
-%         cystIDArray = repmat({cystName}, [size(meanScutoidZPos, 2), 1]);
-%         cystType = repmat(cystClassification, [size(meanScutoidZPos, 2), 1]);
-%         cystTypeArray = [cystTypeArray, cystType];
-%         meanScutoidZPosArray = [meanScutoidZPosArray, meanScutoidZPos];
-%         cystIDArrayCyst = [cystIDArrayCyst, cystIDArray];
-
-%         spatialStatisticsTable.cystID(labelIx) = {cystName};
-%         spatialStatisticsTable.meanScutoidZPos(labelIx) = {meanScutoidZPos};
-%         spatialStatisticsTable.expName(labelIx) = {saveName};
-%         spatialStatisticsTable.cystClassification(labelIx) = {cystClassification};
 
 
     end
     
-%     cystTagArray = repmat({saveName}, [size(meanScutoidZPosArray, 2), 1]);
-%     spatialStatisticsTable.cystID = cystIDArray;
-%     spatialStatisticsTable.scutoidZPos = meanScutoidZPosArray(1, :)';
-%     spatialStatisticsTable.expName = cystTagArray;
-%     spatialStatisticsTable.cystClassification = cystTypeArray;
+    imwrite(layout, strcat(savePath, '/', saveName, '_', variable,'.bmp'),'bmp');
+    imwrite(layout, strcat(savePath, '/', saveName, '_', variable,'.png'),'png');
+    save(strcat(savePath, '/', saveName, '_', variable, '.mat'), 'layout');
 
-%     if statQuest=="NO"
-        imwrite(layout, strcat(savePath, '/', saveName, '_', variable,'.bmp'),'bmp');
-        imwrite(layout, strcat(savePath, '/', saveName, '_', variable,'.png'),'png');
-        save(strcat(savePath, '/', saveName, '_', variable, '.mat'), 'layout');
-%     end
     writetable(spatialStatisticsTable,strcat(savePath, '/', saveName, '_', variable, '.csv'))
     
 end
