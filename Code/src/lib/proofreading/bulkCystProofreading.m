@@ -1,37 +1,47 @@
-addpath(genpath('D:\Github\Processing3DSegmentation\'))
-rmpath 'C:\Program Files\MATLAB\R2021b\toolbox\signal\signal\'
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% bulkCystProofreading
+% 
+% Main code for proofreading and semiautomatic curation
+% of cysts
+%
+% It requires .mat files from:
+% saveForValidation.m
+%
+% and xls from:
+%
+% checkingSegmentedCysts.m
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% add and remove paths that might create conflicts
+addpath(genpath('D:\Github\Processing3DSegmentation'))
 addpath(genpath('D:\Github\NaturalVariation\'))
+rmpath(genpath("C:\Program Files\MATLAB\R2021b\toolbox\signal\signal"))
 
 %% Last fixed Cyst.
-lastFixedCyst = '4d.1FBS2.B.17.1.tiff'; %Example '7d.1B/7d.1.B.5_3.tif_itkws.tiff' // all cysts are in the same folder. That's to resume the fixing where you stopped (based on the xls)
+lastFixedCyst = []; %Example '7d.1.B.5_3.tif' // all cysts are in the same folder. That's to resume the fixing where you stopped (based on the xls)
 
 %% No-voronoi Warnings table path
-voronoiWarningsPath = 'D:\GitHub\NaturalVariation\data\FBS\4d_FBS_01oct\voronoiCystWarnings_01-Oct-2021.xls';
-
-%% No-voronoi .mat files path
-% voronoiMatFilePath = 'D:\GitHub\NaturalVariation\data\FBS\4d_FBS_01oct\matFiles\';
+warningsPath = 'F:\jesus\warnings.xls';
 
 %% Fixed cysts file path
-fixedCystsFilePath = 'D:\GitHub\NaturalVariation\data\FBS\4d_FBS_01oct\fixedCysts\';
+fixedCystsFilePath = 'F:\jesus\fixedCysts\';
 
 %% RG image filepath
-rgFilePath = 'D:\GitHub\NaturalVariation\data\FBS\4d_FBS_01oct\rgStack\';
 
-%%
-matDirectory = 'D:\GitHub\NaturalVariation\data\FBS\4d_FBS_01oct\matFiles\';
+cystsToFixPath = strcat('F:\jesus\cystsToFix\');
 
 %% Load table
-voronoiWarningsTable = readtable(voronoiWarningsPath);
+warningsTable = readtable(warningsPath);
 
 %% Make list
-voronoiCysts = voronoiWarningsTable.name;
+cystsToFix = warningsTable.name;
 
 %% Remove .mat
-voronoiCysts = strrep(voronoiCysts, '.mat', '');
-voronoiCystsModNames = strrep(voronoiCysts, '_', '.');
+cystsToFix = strrep(cystsToFix, '.mat', '');
 
 %% Compare and filter
-validCysts = voronoiWarningsTable;
+validCysts = warningsTable;
 
 %% filter (4 wrong cells or less [user customizable])
 validCysts(strcmp(validCysts.cellsNoBothSurfaces,'OPEN cyst'), :) = [];
@@ -48,18 +58,19 @@ end
 
 %% for loop
 for cyst=startCyst:size(validCysts, 1)
+    % Load images
+    cystName = strrep(validCysts(cyst, :).name{1}, '.tif', '');
 
-    %load images
-    cystName = validCysts(cyst, :).name{1};
-    cystName = strsplit(validCysts(cyst, :).name{1}, '.tiff');
-    cystName = cystName{1};
+    load(strcat(cystsToFixPath, cystName, '.mat'))
+    rgStackImg = rgStackImg;
+    labelledImage = labelledImage;
 
-    load(strcat(matDirectory, cystName, '.mat'))
-
+    % Tag outliers
     [~, cellOutlier] = tagCellOutliers(rgStackImg, labelledImage);
     cellOutlierStringArray = string(cellOutlier);
     cellOutlier = strjoin(cellOutlierStringArray,',');
     
+    % check cells that do not contact apical and basal surfaces
     notFoundCellsSurfaces = validCysts(cyst, :).cellsNoBothSurfaces{1};
     notFoundCellsSurfacesStringArray = string(notFoundCellsSurfaces);
     notFoundCellsSurfaces = strjoin(notFoundCellsSurfacesStringArray,',');
@@ -67,11 +78,10 @@ for cyst=startCyst:size(validCysts, 1)
     saveCystPath = strcat(fixedCystsFilePath, cystName, '.mat');
     
     [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage, '');
-    
+
     disp(cystName)
+    % start proofReadingCustomWindow
     proofReadingCustomWindow(rgStackImg,labelledImage,lumenImage,apicalLayer,basalLayer,[],notFoundCellsSurfaces,cellOutlier,saveCystPath);
     w = waitforbuttonpress;
-
 end
-
 
