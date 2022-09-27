@@ -49,3 +49,14 @@ Plotting "stamps" of all variables
 For each quartile of selected variable's distribution
 a scatter plot and histogram plot is plotted and saved
 
+## Semiautomatic curation | proofreading tools
+
+Some interesting tools can be found inside NaturalVariation/Code/src/lib/proofreading/
+
+### bulkCystProofreading
+Main code for semiautomatic curation GUI.
+
+### checkingSegmentedCysts
+Code for creating the warning table used by bulkCystProofReading.
+This table contains info of potentially misslabeled cells.
+
