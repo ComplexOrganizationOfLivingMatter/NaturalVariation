@@ -80,7 +80,7 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
         [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage,'');
 
         %% At least the 0.5% of lateral membrane contacting with other cell to be1 considered as neighbor.
-        contactThreshold = 1;
+        contactThreshold = 0.5;
         dilatedVx = 2;
 
         if isempty(validCells)
