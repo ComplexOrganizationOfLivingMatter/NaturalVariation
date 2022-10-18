@@ -64,30 +64,30 @@ ellipsoidCystsTable = CellSpatialDataTable(ellipsoidCysts, :);
 
 % oblate
 
-oblateZRange = [oblateCystsTable.normZPos>=lowerRangeZ].*[oblateCystsTable.normZPos<=higherRangeZ];
-oblateVarRange = [oblateCystsTable.normVariableData>=lowerRangeVar].*[oblateCystsTable.normVariableData<=higherRangeVar];
+oblateZRange = [oblateCystsTable.normZPos>lowerRangeZ].*[oblateCystsTable.normZPos<higherRangeZ];
+oblateVarRange = [oblateCystsTable.normVariableData>lowerRangeVar].*[oblateCystsTable.normVariableData<higherRangeVar];
 oblateRange = logical(oblateVarRange.*oblateZRange);
 
 oblateCystsFiltered = oblateCystsTable(oblateRange, :);
 
 % prolate
-prolateZRange = [prolateCystsTable.normZPos>=lowerRangeZ].*[prolateCystsTable.normZPos<=higherRangeZ];
-prolateVarRange = [prolateCystsTable.normVariableData>=lowerRangeVar].*[prolateCystsTable.normVariableData<=higherRangeVar];
+prolateZRange = [prolateCystsTable.normZPos>lowerRangeZ].*[prolateCystsTable.normZPos<higherRangeZ];
+prolateVarRange = [prolateCystsTable.normVariableData>lowerRangeVar].*[prolateCystsTable.normVariableData<higherRangeVar];
 prolateRange = logical(prolateVarRange.*prolateZRange);
 
 prolateCystsFiltered = prolateCystsTable(prolateRange, :);
 
 % curvNeg
-curvNegZRange = [curvNegCystsTable.normZPos>=lowerRangeZ].*[curvNegCystsTable.normZPos<=higherRangeZ];
-curvNegVarRange = [curvNegCystsTable.normVariableData>=lowerRangeVar].*[curvNegCystsTable.normVariableData<=higherRangeVar];
+curvNegZRange = [curvNegCystsTable.normZPos>lowerRangeZ].*[curvNegCystsTable.normZPos<higherRangeZ];
+curvNegVarRange = [curvNegCystsTable.normVariableData>lowerRangeVar].*[curvNegCystsTable.normVariableData<higherRangeVar];
 curvNegRange = logical(curvNegVarRange.*curvNegZRange);
 
 curvNegCystsFiltered = curvNegCystsTable(curvNegRange, :);
 
 % ellipsoid
 
-ellipsoidZRange = [ellipsoidCystsTable.normZPos>=lowerRangeZ].*[ellipsoidCystsTable.normZPos<=higherRangeZ];
-ellipsoidVarRange = [ellipsoidCystsTable.normVariableData>=lowerRangeVar].*[ellipsoidCystsTable.normVariableData<=higherRangeVar];
+ellipsoidZRange = [ellipsoidCystsTable.normZPos>lowerRangeZ].*[ellipsoidCystsTable.normZPos<higherRangeZ];
+ellipsoidVarRange = [ellipsoidCystsTable.normVariableData>lowerRangeVar].*[ellipsoidCystsTable.normVariableData<higherRangeVar];
 ellipsoidRange = logical(ellipsoidVarRange.*ellipsoidZRange);
 
 ellipsoidCystsFiltered = ellipsoidCystsTable(ellipsoidRange, :);
