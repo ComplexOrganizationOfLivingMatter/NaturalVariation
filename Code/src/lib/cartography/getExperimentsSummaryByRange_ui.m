@@ -1,4 +1,4 @@
-function getExperimentsSummaryByRange_ui
+function getCystSummaryByRange_ui
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %       getExperimentsSummaryByRange_ui       %
@@ -41,4 +41,4 @@ disp(strcat('Using ZRange [', inputRanges{1}, ' < normZPos < ', inputRanges{2}, 
 disp(strcat('Using varRange [', inputRanges{3}, ' < normVarData < ', inputRanges{4}, ']'))
 disp('##########################################')
 
-getExperimentsSummaryByRange(PathName, FileName, lowerRangeZ, higherRangeZ, lowerRangeVar, higherRangeVar)
+getCystSummaryByRange(PathName, FileName, lowerRangeZ, higherRangeZ, lowerRangeVar, higherRangeVar)
