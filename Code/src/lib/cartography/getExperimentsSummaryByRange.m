@@ -1,4 +1,4 @@
-function getExperimentsSummaryByRange(tablePath, tableName, lowerRangeZ, higherRangeZ, lowerRangeVar, higherRangeVar)
+function getCystSummaryByRange(tablePath, tableName, lowerRangeZ, higherRangeZ, lowerRangeVar, higherRangeVar)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     getExperimentsSummaryByRange(...)       %
@@ -25,8 +25,9 @@ function getExperimentsSummaryByRange(tablePath, tableName, lowerRangeZ, higherR
 
 %% Read table
 pathToTable = strcat(tablePath, tableName);
-
-CellSpatialDataTable = readtable(pathToTable);
+opts = detectImportOptions(pathToTable);
+opts = setvartype(opts, 'cystCurvature', 'string');  %or 'char' if you prefer
+CellSpatialDataTable = readtable(pathToTable, opts);
 
 %% Clean experiment names for future convenience (replace '_' by '.')
 
@@ -54,87 +55,106 @@ oblateCysts = cellfun(@(cystShape) strcmp(cystShape, 'oblate'), CellSpatialDataT
 prolateCysts = cellfun(@(cystShape) strcmp(cystShape, 'prolate'), CellSpatialDataTable.cystShape);
 curvNegCysts = cellfun(@(cystShape) strcmp(cystShape, 'curvNeg'), CellSpatialDataTable.cystShape);
 ellipsoidCysts = cellfun(@(cystShape) strcmp(cystShape, 'ellipsoid'), CellSpatialDataTable.cystShape);
+sphereCysts = cellfun(@(cystShape) strcmp(cystShape, 'sphere'), CellSpatialDataTable.cystShape);
 
 oblateCystsTable = CellSpatialDataTable(oblateCysts, :);
 prolateCystsTable = CellSpatialDataTable(prolateCysts, :);
 curvNegCystsTable = CellSpatialDataTable(curvNegCysts, :);
 ellipsoidCystsTable = CellSpatialDataTable(ellipsoidCysts, :);
+sphereCystsTable = CellSpatialDataTable(sphereCysts, :);
 
 %% Filter by range
 
 % oblate
 
-oblateZRange = [oblateCystsTable.normZPos>lowerRangeZ].*[oblateCystsTable.normZPos<higherRangeZ];
-oblateVarRange = [oblateCystsTable.normVariableData>lowerRangeVar].*[oblateCystsTable.normVariableData<higherRangeVar];
+oblateZRange = [oblateCystsTable.normZPos>=lowerRangeZ].*[oblateCystsTable.normZPos<higherRangeZ];
+oblateVarRange = [oblateCystsTable.normVariableData>=lowerRangeVar].*[oblateCystsTable.normVariableData<higherRangeVar];
 oblateRange = logical(oblateVarRange.*oblateZRange);
 
 oblateCystsFiltered = oblateCystsTable(oblateRange, :);
 
 % prolate
-prolateZRange = [prolateCystsTable.normZPos>lowerRangeZ].*[prolateCystsTable.normZPos<higherRangeZ];
-prolateVarRange = [prolateCystsTable.normVariableData>lowerRangeVar].*[prolateCystsTable.normVariableData<higherRangeVar];
+prolateZRange = [prolateCystsTable.normZPos>=lowerRangeZ].*[prolateCystsTable.normZPos<higherRangeZ];
+prolateVarRange = [prolateCystsTable.normVariableData>=lowerRangeVar].*[prolateCystsTable.normVariableData<higherRangeVar];
 prolateRange = logical(prolateVarRange.*prolateZRange);
 
 prolateCystsFiltered = prolateCystsTable(prolateRange, :);
 
 % curvNeg
-curvNegZRange = [curvNegCystsTable.normZPos>lowerRangeZ].*[curvNegCystsTable.normZPos<higherRangeZ];
-curvNegVarRange = [curvNegCystsTable.normVariableData>lowerRangeVar].*[curvNegCystsTable.normVariableData<higherRangeVar];
+curvNegZRange = [curvNegCystsTable.normZPos>=lowerRangeZ].*[curvNegCystsTable.normZPos<higherRangeZ];
+curvNegVarRange = [curvNegCystsTable.normVariableData>=lowerRangeVar].*[curvNegCystsTable.normVariableData<higherRangeVar];
 curvNegRange = logical(curvNegVarRange.*curvNegZRange);
 
 curvNegCystsFiltered = curvNegCystsTable(curvNegRange, :);
 
 % ellipsoid
 
-ellipsoidZRange = [ellipsoidCystsTable.normZPos>lowerRangeZ].*[ellipsoidCystsTable.normZPos<higherRangeZ];
-ellipsoidVarRange = [ellipsoidCystsTable.normVariableData>lowerRangeVar].*[ellipsoidCystsTable.normVariableData<higherRangeVar];
+ellipsoidZRange = [ellipsoidCystsTable.normZPos>=lowerRangeZ].*[ellipsoidCystsTable.normZPos<higherRangeZ];
+ellipsoidVarRange = [ellipsoidCystsTable.normVariableData>=lowerRangeVar].*[ellipsoidCystsTable.normVariableData<higherRangeVar];
 ellipsoidRange = logical(ellipsoidVarRange.*ellipsoidZRange);
 
 ellipsoidCystsFiltered = ellipsoidCystsTable(ellipsoidRange, :);
 
+% sphere
+
+sphereZRange = [sphereCystsTable.normZPos>=lowerRangeZ].*[sphereCystsTable.normZPos<higherRangeZ];
+sphereVarRange = [sphereCystsTable.normVariableData>=lowerRangeVar].*[sphereCystsTable.normVariableData<higherRangeVar];
+sphereRange = logical(sphereVarRange.*sphereZRange);
+
+sphereCystsFiltered = ellipsoidCystsTable(sphereRange, :);
+
 %% Separate by experiment
 
-uniqueExperiments = unique(CellSpatialDataTable.experimentIDs);
+uniqueCysts = unique(CellSpatialDataTable.cystID);
 
-experimentSummaryTable = table();
+cystSummaryTable = table();
 
-for experimentIDx = 1:length(uniqueExperiments)
+for cystIDx = 1:length(uniqueCysts)
     
-    experimentID = uniqueExperiments(experimentIDx);
-    experimentID = experimentID{1};
+    cystID = uniqueCysts(cystIDx);
+    cystID = cystID{1};
 
-    oblateCystFileteredCount = sum(cellfun(@(experimentIDs) strcmp(experimentIDs, experimentID), oblateCystsFiltered.experimentIDs));
-    prolateCystFileteredCount = sum(cellfun(@(experimentIDs) strcmp(experimentIDs, experimentID), prolateCystsFiltered.experimentIDs));
-    curvNegCystFileteredCount = sum(cellfun(@(experimentIDs) strcmp(experimentIDs, experimentID), curvNegCystsFiltered.experimentIDs));
-    ellipsoidCystFileteredCount = sum(cellfun(@(experimentIDs) strcmp(experimentIDs, experimentID), ellipsoidCystsFiltered.experimentIDs));
+    oblateCystFileteredCount = sum(cellfun(@(cystID_) strcmp(cystID_, cystID), oblateCystsFiltered.cystID));
+    prolateCystFileteredCount = sum(cellfun(@(cystID_) strcmp(cystID_, cystID), prolateCystsFiltered.cystID));
+    curvNegCystFileteredCount = sum(cellfun(@(cystID_) strcmp(cystID_, cystID), curvNegCystsFiltered.cystID));
+    ellipsoidCystFileteredCount = sum(cellfun(@(cystID_) strcmp(cystID_, cystID), ellipsoidCystsFiltered.cystID));
+    sphereCystFileteredCount = sum(cellfun(@(cystID_) strcmp(cystID_, cystID), sphereCystsFiltered.cystID));
 
-    oblateCystCount = sum(cellfun(@(experimentIDs) strcmp(experimentIDs, experimentID), oblateCystsTable.experimentIDs));
-    prolateCystCount = sum(cellfun(@(experimentIDs) strcmp(experimentIDs, experimentID), prolateCystsTable.experimentIDs));
-    curvNegCystCount = sum(cellfun(@(experimentIDs) strcmp(experimentIDs, experimentID), curvNegCystsTable.experimentIDs));
-    ellipsoidCystCount = sum(cellfun(@(experimentIDs) strcmp(experimentIDs, experimentID), ellipsoidCystsTable.experimentIDs));
+    oblateCystCount = sum(cellfun(@(cystID_) strcmp(cystID_, cystID), oblateCystsTable.cystID));
+    prolateCystCount = sum(cellfun(@(cystID_) strcmp(cystID_, cystID), prolateCystsTable.cystID));
+    curvNegCystCount = sum(cellfun(@(cystID_) strcmp(cystID_, cystID), curvNegCystsTable.cystID));
+    ellipsoidCystCount = sum(cellfun(@(cystID_) strcmp(cystID_, cystID), ellipsoidCystsTable.cystID));
+    sphereCystCount = sum(cellfun(@(cystID_) strcmp(cystID_, cystID), sphereCystsTable.cystID));
+
+    oblatePercentage = oblateCystFileteredCount/oblateCystCount*100;
+    prolatePercentage = prolateCystFileteredCount/prolateCystCount*100;
+    curvNegPercentage = curvNegCystFileteredCount/curvNegCystCount*100;
+    ellipsoidPercentage = ellipsoidCystFileteredCount/ellipsoidCystCount*100;
+    spherePercentage = sphereCystFileteredCount/sphereCystCount*100;
 
 
-    if experimentIDx == 1
-        experimentSummaryTable = table({experimentID}, oblateCystCount, oblateCystFileteredCount, prolateCystCount, prolateCystFileteredCount, curvNegCystCount, curvNegCystFileteredCount, ellipsoidCystCount, ellipsoidCystFileteredCount);
+
+    if cystIDx == 1
+        cystSummaryTable = table({cystID}, oblateCystCount, oblateCystFileteredCount, oblatePercentage, prolateCystCount, prolateCystFileteredCount, prolatePercentage, curvNegCystCount, curvNegCystFileteredCount, curvNegPercentage, ellipsoidCystCount, ellipsoidCystFileteredCount, ellipsoidPercentage, sphereCystCount, sphereCystFileteredCount, spherePercentage);
     else
-        experimentSummaryTable = [experimentSummaryTable; table({experimentID}, oblateCystCount, oblateCystFileteredCount, prolateCystCount, prolateCystFileteredCount, curvNegCystCount, curvNegCystFileteredCount, ellipsoidCystCount, ellipsoidCystFileteredCount)];
+        cystSummaryTable = [cystSummaryTable; table({cystID}, oblateCystCount, oblateCystFileteredCount, oblatePercentage, prolateCystCount, prolateCystFileteredCount, prolatePercentage, curvNegCystCount, curvNegCystFileteredCount, curvNegPercentage, ellipsoidCystCount, ellipsoidCystFileteredCount, ellipsoidPercentage, sphereCystCount, sphereCystFileteredCount, spherePercentage)];
         
     end
 
 end
 
 %% add table names
-experimentSummaryTable.Properties.VariableNames = [{'experimentID'}, {'oblateCystCount'}, {'oblateCystFilteredCount'}, {'prolateCystCount'}, {'prolateCystFilteredCount'}, {'curvNegCystCount'}, {'curvNegCystFilteredCount'}, {'ellipsoidCystCount'}, {'ellipsoidCystFilteredCount'}]
+cystSummaryTable.Properties.VariableNames = [{'cystID'}, {'oblateCystCount'}, {'oblateCystFilteredCount'}, {'oblatePercentage'}, {'prolateCystCount'}, {'prolateCystFilteredCount'}, {'prolatePercentage'}, {'curvNegCystCount'}, {'curvNegCystFilteredCount'}, {'curvNegPercentage'}, {'ellipsoidCystCount'}, {'ellipsoidCystFilteredCount'}, {'ellipsoidPercentage'},{'sphereCystCount'}, {'sphereCystFilteredCount'}, {'spherePercentage'}]
 
 %% New xls to write // write
 dotInfo = find(tableName == '.', 1, 'last');
 saveName = tableName(1:dotInfo-1);
-saveName = strcat(saveName, '_experimentSummary_', date, '.xls');
+saveName = strcat(saveName, '_cystSummary_', date, '.xls');
 
 disp(strcat('Saving as: ', saveName));
 
 savePath = strcat(tablePath, saveName);
 
-writetable(experimentSummaryTable, savePath)
+writetable(cystSummaryTable, savePath)
 
 disp(strcat('Succesfully saved at: ', tablePath))
