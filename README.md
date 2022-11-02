@@ -15,7 +15,7 @@ Running the code will display some User Interface  so no coding is needed to ext
 Global Features | Polygon Distributions | Mean Cell Features | Std Cell Features
 
 
-[![Demo mainFeaturesExtraction_20x](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/mainFeatureExtraction_20x.gif)]
+![Demo mainFeaturesExtraction_20x](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/mainFeatureExtraction_20x.gif)
 
 ### mainCellFeaturesExtraction_20xCysts
 
