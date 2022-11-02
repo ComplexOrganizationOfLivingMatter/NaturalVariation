@@ -14,6 +14,8 @@ Running the code will display some User Interface  so no coding is needed to ext
 
 Global Features | Polygon Distributions | Mean Cell Features | Std Cell Features
 
+https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/mainFeatureExtraction_20x.gif
+
 ### mainCellFeaturesExtraction_20xCysts
 
 Code for extracting cyst Cell Features.
