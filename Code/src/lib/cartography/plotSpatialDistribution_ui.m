@@ -14,12 +14,11 @@ function plotSpatialDistribution_ui
     % 5.- file save name
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    addpath(genpath('D:\Github\Processing3DSegmentation\'));
-    addpath(genpath('D:\Github\NaturalVariation\'));
+    addpath(genpath('D:\Jesus\tutorial\NaturalVariation-main\'));
 
-    rgStackPath = uigetdir('F:\Carmen\', 'Select rgStack (.tif) path');
-    labelsPath = uigetdir('F:\Carmen\', 'Select labels (.mat or .tif) path');
-    savePath = uigetdir('F:\Carmen\methodology_naturalVariation\allLabelsAndRgCyst95\testEnlargeLumen\3selectedCysts/', 'Select save path');
+    labelsPath = uigetdir('D:\Jesus\tutorial', 'Select label images (.mat or .tif) path');
+    rgStackPath = uigetdir('D:\Jesus\tutorial', 'Select raw images (.tif) path');
+    savePath = uigetdir('D:\Jesus\tutorial', 'Select save path');
 
     %% select variable to plot
     params = ["ID_Cell", "Volume", "EquivDiameter", "PrincipalAxisLength", "ConvexVolume", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "apical_NumNeighs", "apical_Area", "basal_NumNeighs", "basal_Area", "cell_height", "lateral_NumNeighs", "lateral_Area", "average_cell_wall_Area", "std_cell_wall_Area", "scutoids", "apicoBasalTransitions", "surfaceRatio", "betCentrality", "coefCluster", "GRAY"];
