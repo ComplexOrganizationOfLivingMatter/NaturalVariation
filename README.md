@@ -1,6 +1,6 @@
 # NaturalVariation
 
-![Demo RepositoryPresentation](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/repositoryPresentation.mp4)
+![Demo RepositoryPresentation](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/repositoryPresentation.gif)
 
 ## Main features extraction
 
