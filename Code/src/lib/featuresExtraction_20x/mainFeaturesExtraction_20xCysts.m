@@ -17,16 +17,15 @@
 warningCyst= [];
 clear vars
 %% Add paths
-rmpath(genpath('D:\Github\Processing3DSegmentation\'));
-addpath(genpath('D:\Github\NaturalVariation\'));
+addpath(genpath('D:\Jesus\tutorial\NaturalVariation-main\'));
 
 %% mat files of fixed cysts
-fixedCystsPath = 'F:\jesus\';
-fixedCystsPath = uigetdir(fixedCystsPath, 'Select labels (.mat or .tif) path');
+fixedCystsPath = 'D:\Jesus\tutorial\';
+fixedCystsPath = uigetdir(fixedCystsPath, 'Select label images (.mat or .tif) path');
 fixedCystsPath = strcat(fixedCystsPath, '\');
 %% original tif files of rg cysts
-originalImagesPath = 'F:\jesus\';
-originalImagesPath = uigetdir(originalImagesPath, 'Select rgStack (.tif) path');
+originalImagesPath = 'D:\Jesus\tutorial\';
+originalImagesPath = uigetdir(originalImagesPath, 'Select raw images (.tif) path');
 originalImagesPath = strcat(originalImagesPath, '\');
 
 %% path 2 save output
