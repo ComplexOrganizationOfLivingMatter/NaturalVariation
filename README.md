@@ -74,6 +74,7 @@ Some interesting tools can be found inside NaturalVariation/Code/src/lib/proofre
 
 ### bulkCystProofreading
 Main code for semiautomatic curation GUI.
+![Demo bulkCystProofreading](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/bulkCystProofReading.gif)
 
 ### checkingSegmentedCysts
 Code for creating the warning table used by bulkCystProofReading.
