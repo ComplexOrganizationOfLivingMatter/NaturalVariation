@@ -49,6 +49,8 @@ If scutoids just the mean of ZPos (no quartiles)
 ### plotSpatialDistribution_ui
 Plotting "stamps" of single variables
 
+![Demo plotSpatialDistribution_ui](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/plotSpatialDistribution_ui.gif)
+
 ### plotSpatialDistributionBULK_ui
 Plotting "stamps" of all variables
 
