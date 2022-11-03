@@ -56,6 +56,8 @@ Plotting "stamps" of all variables
 For each quartile of selected variable's distribution
 a scatter plot and histogram plot is plotted and saved
 
+![Demo plotGradientBoomerangs](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/plotGradientBoomerangs.gif)
+
 ## Semiautomatic curation | proofreading tools
 
 Some interesting tools can be found inside NaturalVariation/Code/src/lib/proofreading/
