@@ -13,7 +13,7 @@ function plotGradientBoomerangs()
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     %% Read table
-    [fileName, tablePath] = uigetfile('F:\jesus\*.xls', 'Select cellSpatialData table');
+    [fileName, tablePath] = uigetfile('D:\Jesus\tutorial\*.xls', 'Select cellSpatialData table');
     
     cellSpatialData = readtable(strcat(tablePath, fileName));
 
