@@ -39,6 +39,8 @@ that are scutoids.
 
 ### getCellSpatialData_ui
 Function that joins cell's variable info with cell's Z and XY Position
+
+![Demo getCellSpatialData_ui](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/getCellSpatialData_ui.gif)
    
 ### getCellSpatialStatisticsBULKplot_ui [RETURNS TABLE AND TABLE FOR PLOTVIOLIN]
 For each Variable Quartile, calculates mean ZPos of cells in that Quartile.
