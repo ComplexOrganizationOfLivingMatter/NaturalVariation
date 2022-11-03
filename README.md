@@ -2,6 +2,8 @@
 
 ![RepositoryPresentation](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/repositoryPresentation.gif)
 
+---
+
 ## Main features extraction
 
 codes inside: 
@@ -28,6 +30,8 @@ Variables are the same as mainFeaturesExtraction_20xCysts/meanCellFeatures but r
 instead of averaged.
 
 Running the code will display some User Interface  so no coding is needed to extract features.
+
+---
 
 ## Some interesting user interfaces (_ui) for spatial distribution study:
 
@@ -61,6 +65,8 @@ For each quartile of selected variable's distribution
 a scatter plot and histogram plot is plotted and saved
 
 ![Demo plotGradientBoomerangs](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/plotGradientBoomerangs.gif)
+
+---
 
 ## Semiautomatic curation | proofreading tools
 
