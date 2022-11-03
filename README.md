@@ -72,11 +72,17 @@ a scatter plot and histogram plot is plotted and saved
 
 Some interesting tools can be found inside NaturalVariation/Code/src/lib/proofreading/
 
-### bulkCystProofreading
-Main code for semiautomatic curation GUI.
-![Demo bulkCystProofreading](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/bulkCystProofReading.gif)
-
 ### checkingSegmentedCysts
 Code for creating the warning table used by bulkCystProofReading.
 This table contains info of potentially misslabeled cells.
 
+![Demo checkingSegmentedCysts](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/checkingSegmentedCysts.gif)
+
+### saveForValidation
+Code for creating the mat files needed for bulkCystProofreading tool
+
+![Demo checkingSegmentedCysts](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/saveForValidation.gif)
+
+### bulkCystProofreading
+Main code for semiautomatic curation GUI.
+![Demo bulkCystProofreading](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/bulkCystProofReading.gif)
