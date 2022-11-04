@@ -14,22 +14,22 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% add and remove paths that might create conflicts
-addpath(genpath('D:\Github\Processing3DSegmentation'))
-addpath(genpath('D:\Github\NaturalVariation\'))
-rmpath(genpath("C:\Program Files\MATLAB\R2021b\toolbox\signal\signal"))
+addpath(genpath('D:\Jesus\tutorial\NaturalVariation-main\'))
 
 %% Last fixed Cyst.
 lastFixedCyst = []; %Example '7d.1.B.5_3.tif' // all cysts are in the same folder. That's to resume the fixing where you stopped (based on the xls)
 
 %% No-voronoi Warnings table path
-warningsPath = 'F:\jesus\warnings.xls';
+[warningsTableName, warningsPath] = uigetfile('D:\Jesus\tutorial\*.xls', 'Select warnings table');
+warningsPath = strcat(warningsPath, warningsTableName);
 
 %% Fixed cysts file path
-fixedCystsFilePath = 'F:\jesus\fixedCysts\';
+fixedCystsFilePath = uigetdir('D:\Jesus\tutorial\', 'Select save path');
+fixedCystsFilePath = strcat(fixedCystsFilePath, '\');
 
 %% RG image filepath
-
-cystsToFixPath = strcat('F:\jesus\cystsToFix\');
+cystsToFixPath = uigetdir('D:\Jesus\tutorial\', 'Select cysts to fix path');
+cystsToFixPath = strcat(cystsToFixPath, '\');
 
 %% Load table
 warningsTable = readtable(warningsPath);
@@ -44,7 +44,7 @@ cystsToFix = strrep(cystsToFix, '.mat', '');
 validCysts = warningsTable;
 
 %% filter (4 wrong cells or less [user customizable])
-validCysts(strcmp(validCysts.cellsNoBothSurfaces,'OPEN cyst'), :) = [];
+%validCysts(strcmp(validCysts.cellsNoBothSurfaces,'OPEN cyst'), :) = [];
 lengths = cellfun(@(x) length(str2num(x)), validCysts.cellsNoBothSurfaces, 'UniformOutput', false);
 lessThan4 = cellfun(@(x) x, lengths)<=4;
 validCysts = validCysts(lessThan4, :);
@@ -84,4 +84,3 @@ for cyst=startCyst:size(validCysts, 1)
     proofReadingCustomWindow(rgStackImg,labelledImage,lumenImage,apicalLayer,basalLayer,[],notFoundCellsSurfaces,cellOutlier,saveCystPath);
     w = waitforbuttonpress;
 end
-
