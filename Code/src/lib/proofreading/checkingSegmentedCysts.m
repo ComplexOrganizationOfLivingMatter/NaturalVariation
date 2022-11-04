@@ -1,4 +1,6 @@
-pathCysts = dir('/media/pedro/6TB/jesus/NaturalVariation/fixedCysts_CARMEN/validateCysts_17_feb/reducedLumen/*.tiff');
+pathCysts = uigetdir('D:\Jesus\tutorial\proofreadingDataset\', 'Select path to segmented cysts (.tif)');
+
+pathCysts = dir(strcat(string(pathCysts), '\*.tif'));
 
 warning('off','all')
 cystToCheck = cell(size(pathCysts,1),2);
@@ -19,7 +21,7 @@ for nCyst = 1:size(pathCysts,1)
     end
     
     %% Create Voronoi cells from stardist cells
-    [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromPlantSeg(imgRelabel,fullfile(pathCysts(nCyst).folder,strrep(pathCysts(nCyst).name,'_itkws.tiff','.mat')));
+    [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(imgRelabel, '');
 
     %generate warning because possible under-detected cells "holes";
     %multilayer or cells not touching  any surface
@@ -37,7 +39,7 @@ for nCyst = 1:size(pathCysts,1)
         end
     end
     
-    cystToCheck{nCyst,1}=[strrep(splitFolder{end},'_probMap','/'),pathCysts(nCyst).name];            
+    cystToCheck{nCyst,1}=[pathCysts(nCyst).name];            
     cystToCheck{nCyst,2} = kindOfError;
     
 
