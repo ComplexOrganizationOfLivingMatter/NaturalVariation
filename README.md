@@ -53,12 +53,12 @@ For each Variable Quartile, calculates mean ZPos of cells in that Quartile.
 If scutoids just the mean of ZPos (no quartiles)
     
 ### plotSpatialDistribution_ui
-Plotting "stamps" of single variables
+Plotting 3D renders with feature information color-coded
 
 ![Demo plotSpatialDistribution_ui](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/plotSpatialDistribution_ui.gif)
 
 ### plotSpatialDistributionBULK_ui
-Plotting "stamps" of all variables
+Plotting 3D renders with all features information color-coded
 
 ### plotGradientBoomerangs
 For each quartile of selected variable's distribution
