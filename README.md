@@ -38,9 +38,9 @@ Running the code will display some User Interface  so no coding is needed to ext
 Inside NaturalVariation/Code/src/lib/cartography/
 
 ### correlateVariableWithScutoids_ui
-Function that divide cyst in 4 quartiles 
+Function that divide cyst in 4 quartiles (or ranks) 
 using the chosen variable
-then gives the percentage of cells in each quartile
+then gives the percentage of cells in each quartile (or rank) 
 that are scutoids.
 
 ### getCellSpatialData_ui
@@ -61,7 +61,7 @@ Plotting 3D renders with feature information color-coded
 Plotting 3D renders with all features information color-coded
 
 ### plotGradientBoomerangs
-For each quartile of selected variable's distribution
+For each quartile (or rank) of selected variable's distribution
 a scatter plot and histogram plot is plotted and saved
 
 ![Demo plotGradientBoomerangs](https://github.com/ComplexOrganizationOfLivingMatter/NaturalVariation/blob/main/Code/src/lib/tutorials/plotGradientBoomerangs.gif)
