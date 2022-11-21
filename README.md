@@ -37,12 +37,6 @@ Running the code will display some User Interface  so no coding is needed to ext
 
 Inside NaturalVariation/Code/src/lib/cartography/
 
-### correlateVariableWithScutoids_ui
-Function that divide cyst in 4 quartiles (or ranks) 
-using the chosen variable
-then gives the percentage of cells in each quartile (or rank) 
-that are scutoids.
-
 ### getCellSpatialData_ui
 Function that joins cell's variable info with cell's Z and XY Position
 
