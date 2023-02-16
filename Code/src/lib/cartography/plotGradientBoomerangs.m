@@ -120,11 +120,18 @@ function plotGradientBoomerangs()
     ylim([-0.1, 1.1])
     print(gcf,  strcat(savePath, '/', fileName, '_', 'q1','.png'), '-dpng', '-r600')
     close()
-
+    
+    % bin distribution for statistics
+    
+    binDistributionTable = array2table(zeros(0,12));
+        
     % Q1 polar histogram plot 
 
     figure
     pHist = polarhistogram(cell2mat(table2cell(tableForPlottingQ1(:,'polarDistr'))),  10, 'BinLimits',[-pi/2 pi/2], 'FaceColor', '#FFD000', 'EdgeColor', 'black', 'FaceAlpha', 1, 'EdgeAlpha', 0.5);
+    
+    binDistributionTable = [binDistributionTable; cell2table(['1', sum(pHist.BinCounts), num2cell(round(100*pHist.BinCounts/sum(pHist.BinCounts),2))])];
+    
     title('q1')
     maxBinCounts = max(pHist.BinCounts);
     thetaticks([0, 90, 180, 270])
@@ -176,6 +183,9 @@ function plotGradientBoomerangs()
     
     figure
     pHist = polarhistogram(cell2mat(table2cell(tableForPlottingQ2(:,'polarDistr'))),  10, 'BinLimits',[-pi/2 pi/2], 'FaceColor', '#FF5D71', 'EdgeColor', 'black', 'FaceAlpha', 1, 'EdgeAlpha', 0.5);
+
+    binDistributionTable = [binDistributionTable; cell2table(['2', sum(pHist.BinCounts), num2cell(round(100*pHist.BinCounts/sum(pHist.BinCounts),2))])];
+
     title('q2')
     maxBinCounts = max(pHist.BinCounts);
     thetaticks([0, 90, 180, 270])
@@ -235,6 +245,10 @@ function plotGradientBoomerangs()
 
     figure
     pHist = polarhistogram(cell2mat(table2cell(tableForPlottingQ3(:,'polarDistr'))),  10, 'BinLimits',[-pi/2 pi/2], 'FaceColor', '#ED009F', 'EdgeColor', 'black', 'FaceAlpha', 1, 'EdgeAlpha', 0.5);
+    
+    binDistributionTable = [binDistributionTable; cell2table(['3', sum(pHist.BinCounts), num2cell(round(100*pHist.BinCounts/sum(pHist.BinCounts),2))])];
+
+        
     title('q3')
     maxBinCounts = max(pHist.BinCounts);
     thetaticks([0, 90, 180, 270])
@@ -285,6 +299,9 @@ function plotGradientBoomerangs()
     
     figure
     pHist = polarhistogram(cell2mat(table2cell(tableForPlottingQ4(:,'polarDistr'))),  10, 'BinLimits',[-pi/2 pi/2], 'FaceColor', '#710D9B', 'EdgeColor', 'black', 'FaceAlpha', 1, 'EdgeAlpha', 0.5);
+   
+    binDistributionTable = [binDistributionTable; cell2table(['4', sum(pHist.BinCounts), num2cell(round(100*pHist.BinCounts/sum(pHist.BinCounts),2))])];
+
     title('q4')
     maxBinCounts = max(pHist.BinCounts);
     thetaticks([0, 90, 180, 270])
@@ -315,5 +332,9 @@ function plotGradientBoomerangs()
 
     print(gcf,  strcat(savePath, '/', fileName, '_', 'q4_polarScat','.png'), '-dpng', '-r600')
     close()
+    
+    %Save binDistributionTable
+    binDistributionTable.Properties.VariableNames = {'Q', 'numCells', '-90 to -72', '-72 to -54', '-54 to -36', '-36 to -18', '-18 to 0', '0 to 18', '18 to 36', '36 to 54', '54 to 72', '72 to 90'};
+    writetable(binDistributionTable, strcat(savePath, '/', fileName, '_', 'binStats.xls'));
 
 end
