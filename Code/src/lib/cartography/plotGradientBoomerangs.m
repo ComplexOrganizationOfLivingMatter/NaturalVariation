@@ -124,14 +124,32 @@ function plotGradientBoomerangs()
     % bin distribution for statistics
     
     binDistributionTable = array2table(zeros(0,12));
-        
+    cystwiseBinDistributionTable = array2table(zeros(0,13));
+
+
     % Q1 polar histogram plot 
 
     figure
     pHist = polarhistogram(cell2mat(table2cell(tableForPlottingQ1(:,'polarDistr'))),  10, 'BinLimits',[-pi/2 pi/2], 'FaceColor', '#FFD000', 'EdgeColor', 'black', 'FaceAlpha', 1, 'EdgeAlpha', 0.5);
     
+    % bin distribution info
     binDistributionTable = [binDistributionTable; cell2table(['1', sum(pHist.BinCounts), num2cell(round(100*pHist.BinCounts/sum(pHist.BinCounts),2))])];
+        
     
+    % bin distribution for statistics (cystwise)
+    
+    cystwiseInfo = tableForPlottingQ1(:,{'cystID', 'polarDistr'});
+    uniqueCystID = unique(cystwiseInfo.cystID);
+    
+    for cystIx = 1:length(uniqueCystID)
+        infoForBinCount = cystwiseInfo(strcmp(cystwiseInfo.cystID,uniqueCystID(cystIx)), 'polarDistr');
+        counts = histcounts(infoForBinCount.polarDistr,pHist.BinEdges);
+
+        cystwiseBinDistributionTable = [cystwiseBinDistributionTable; cell2table(['Q1', uniqueCystID(cystIx), sum(counts), num2cell(round(100*counts/sum(counts),2))])];
+
+    end
+    
+    % plots
     title('q1')
     maxBinCounts = max(pHist.BinCounts);
     thetaticks([0, 90, 180, 270])
@@ -147,7 +165,7 @@ function plotGradientBoomerangs()
 
     print(gcf,  strcat(savePath, '/', fileName, '_', 'q1_polarhist','.png'), '-dpng', '-r600')
     close()
-
+    
     % Q1 polar scatter plot 
 
     figure
@@ -186,6 +204,21 @@ function plotGradientBoomerangs()
 
     binDistributionTable = [binDistributionTable; cell2table(['2', sum(pHist.BinCounts), num2cell(round(100*pHist.BinCounts/sum(pHist.BinCounts),2))])];
 
+    % bin distribution for statistics (cystwise)
+    
+    cystwiseInfo = tableForPlottingQ2(:,{'cystID', 'polarDistr'});
+    uniqueCystID = unique(cystwiseInfo.cystID);
+    
+    for cystIx = 1:length(uniqueCystID)
+        infoForBinCount = cystwiseInfo(strcmp(cystwiseInfo.cystID,uniqueCystID(cystIx)), 'polarDistr');
+        counts = histcounts(infoForBinCount.polarDistr,pHist.BinEdges);
+
+        cystwiseBinDistributionTable = [cystwiseBinDistributionTable; cell2table(['Q2', uniqueCystID(cystIx), sum(counts), num2cell(round(100*counts/sum(counts),2))])];
+
+    end
+    
+    % plot
+    
     title('q2')
     maxBinCounts = max(pHist.BinCounts);
     thetaticks([0, 90, 180, 270])
@@ -248,7 +281,21 @@ function plotGradientBoomerangs()
     
     binDistributionTable = [binDistributionTable; cell2table(['3', sum(pHist.BinCounts), num2cell(round(100*pHist.BinCounts/sum(pHist.BinCounts),2))])];
 
-        
+    % bin distribution for statistics (cystwise)
+    
+    cystwiseInfo = tableForPlottingQ3(:,{'cystID', 'polarDistr'});
+    uniqueCystID = unique(cystwiseInfo.cystID);
+    
+    for cystIx = 1:length(uniqueCystID)
+        infoForBinCount = cystwiseInfo(strcmp(cystwiseInfo.cystID,uniqueCystID(cystIx)), 'polarDistr');
+        counts = histcounts(infoForBinCount.polarDistr,pHist.BinEdges);
+
+        cystwiseBinDistributionTable = [cystwiseBinDistributionTable; cell2table(['Q3', uniqueCystID(cystIx), sum(counts), num2cell(round(100*counts/sum(counts),2))])];
+
+    end
+    
+    % plot
+    
     title('q3')
     maxBinCounts = max(pHist.BinCounts);
     thetaticks([0, 90, 180, 270])
@@ -302,6 +349,22 @@ function plotGradientBoomerangs()
    
     binDistributionTable = [binDistributionTable; cell2table(['4', sum(pHist.BinCounts), num2cell(round(100*pHist.BinCounts/sum(pHist.BinCounts),2))])];
 
+    % bin distribution for statistics (cystwise)
+    
+    cystwiseInfo = tableForPlottingQ4(:,{'cystID', 'polarDistr'});
+    uniqueCystID = unique(cystwiseInfo.cystID);
+    
+    for cystIx = 1:length(uniqueCystID)
+        infoForBinCount = cystwiseInfo(strcmp(cystwiseInfo.cystID,uniqueCystID(cystIx)), 'polarDistr');
+        counts = histcounts(infoForBinCount.polarDistr,pHist.BinEdges);
+
+        cystwiseBinDistributionTable = [cystwiseBinDistributionTable; cell2table(['Q4', uniqueCystID(cystIx), sum(counts), num2cell(round(100*counts/sum(counts),2))])];
+
+    end
+    
+    % plot
+    
+    
     title('q4')
     maxBinCounts = max(pHist.BinCounts);
     thetaticks([0, 90, 180, 270])
@@ -333,8 +396,11 @@ function plotGradientBoomerangs()
     print(gcf,  strcat(savePath, '/', fileName, '_', 'q4_polarScat','.png'), '-dpng', '-r600')
     close()
     
-    %Save binDistributionTable
+    
+% 
     binDistributionTable.Properties.VariableNames = {'Q', 'numCells', '-90 to -72', '-72 to -54', '-54 to -36', '-36 to -18', '-18 to 0', '0 to 18', '18 to 36', '36 to 54', '54 to 72', '72 to 90'};
     writetable(binDistributionTable, strcat(savePath, '/', fileName, '_', 'binStats.xls'));
 
+    cystwiseBinDistributionTable.Properties.VariableNames = {'Q', 'cystID', 'numCells', '-90 to -72', '-72 to -54', '-54 to -36', '-36 to -18', '-18 to 0', '0 to 18', '18 to 36', '36 to 54', '54 to 72', '72 to 90'};
+    writetable(cystwiseBinDistributionTable, strcat(savePath, '/', fileName, '_', 'cystwiseBinStats.xls'));
 end
