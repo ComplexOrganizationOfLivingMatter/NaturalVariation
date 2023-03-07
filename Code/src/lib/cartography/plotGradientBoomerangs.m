@@ -31,21 +31,6 @@ function plotGradientBoomerangs()
     
     chosenNumericVariable = 'normVariableData';
     
-    %% quantile distribution
-    
-    cystDataForQuantile = cellSpatialData(:, chosenNumericVariable);
-    cystDataForQuantile = cell2mat(table2cell(cystDataForQuantile));
-
-    maxValue = max(cystDataForQuantile);
-    minValue = min(cystDataForQuantile);
-
-    Q1 = quantile(cystDataForQuantile, 0.25);
-    Q2 = quantile(cystDataForQuantile, 0.50);
-    Q3 = quantile(cystDataForQuantile, 0.75);
-
-%     Q1 = 0.25;
-%     Q2 = 0.5;
-%     Q3 = 0.75;
 
     %% asign colors
     tableForPlotting = table();
@@ -55,6 +40,19 @@ function plotGradientBoomerangs()
         cystID = uniqueCysts(cystIx);
         cystData = cellSpatialData(strcmp(cellSpatialData.cystID,cystID), chosenNumericVariable);
         cystData = cell2mat(table2cell(cystData));
+        
+        %% quantile distribution
+
+        maxValue = max(cystData);
+        minValue = min(cystData);
+
+        Q1 = quantile(cystData, 0.25);
+        Q2 = quantile(cystData, 0.50);
+        Q3 = quantile(cystData, 0.75);
+
+    %     Q1 = 0.25;
+    %     Q2 = 0.5;
+    %     Q3 = 0.75;
         
         quantiles = cystData;
         quantiles(cystData<=Q1) = 1;
@@ -130,6 +128,7 @@ function plotGradientBoomerangs()
     print(gcf,  strcat(savePath, '/', fileName, '_', 'q1','.png'), '-dpng', '-r600')
     close()
     
+    disp(strcat("Q1 cells:", num2str(size(tableForPlottingQ1,1))));
     % bin distribution for statistics
     
     binDistributionTable = array2table(zeros(0,12));
@@ -205,6 +204,8 @@ function plotGradientBoomerangs()
     ylim([-0.1, 1.1])
     print(gcf,  strcat(savePath, '/', fileName, '_', 'q2','.png'), '-dpng', '-r600')   
     close()
+
+    disp(strcat("Q2 cells:", num2str(size(tableForPlottingQ2,1))));
 
     % Q2 polar histogram
     
@@ -283,6 +284,8 @@ function plotGradientBoomerangs()
     print(gcf,  strcat(savePath, '/', fileName, '_', 'q3','.png'), '-dpng', '-r600')
     close()
     
+    disp(strcat("Q3 cells:", num2str(size(tableForPlottingQ3,1))));
+
     % Q3 polar histogram
 
     figure
@@ -350,6 +353,8 @@ function plotGradientBoomerangs()
     ylim([-0.1, 1.1])
     print(gcf,  strcat(savePath, '/', fileName, '_', 'q4','.png'), '-dpng', '-r600')
     close()
+
+    disp(strcat("Q4 cells:", num2str(size(tableForPlottingQ4,1))));
 
     % Q4 polar histogram
     
