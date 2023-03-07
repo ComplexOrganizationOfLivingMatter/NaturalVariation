@@ -30,6 +30,22 @@ function plotGradientBoomerangs()
     xyposVariable = 'normXYPos';
     
     chosenNumericVariable = 'normVariableData';
+    
+    %% quantile distribution
+    
+    cystDataForQuantile = cellSpatialData(:, chosenNumericVariable);
+    cystDataForQuantile = cell2mat(table2cell(cystDataForQuantile));
+
+    maxValue = max(cystDataForQuantile);
+    minValue = min(cystDataForQuantile);
+
+    Q1 = quantile(cystDataForQuantile, 0.25);
+    Q2 = quantile(cystDataForQuantile, 0.50);
+    Q3 = quantile(cystDataForQuantile, 0.75);
+
+%     Q1 = 0.25;
+%     Q2 = 0.5;
+%     Q3 = 0.75;
 
     %% asign colors
     tableForPlotting = table();
@@ -39,13 +55,6 @@ function plotGradientBoomerangs()
         cystID = uniqueCysts(cystIx);
         cystData = cellSpatialData(strcmp(cellSpatialData.cystID,cystID), chosenNumericVariable);
         cystData = cell2mat(table2cell(cystData));
-        
-        maxValue = max(cystData);
-        minValue = min(cystData);
-        
-        Q1 = 0.25;
-        Q2 = 0.5;
-        Q3 = 0.75;
         
         quantiles = cystData;
         quantiles(cystData<=Q1) = 1;
