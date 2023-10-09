@@ -38,6 +38,8 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
     zPosCentroidArray = [];
     polarDistrArray = [];
     polarDistArray = [];
+    variableMeanArray = [];
+    normVariableMeanArray = [];
     
     for cyst=1:length(fixedCystsDir)
 
@@ -130,11 +132,12 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
         cystShape = clasifyCyst(tissue3dFeatures.PrincipalAxisLength, 0.1);
         negativeCurvature = {evaluateCurvNeg(tissue3dFeatures.Solidity, 0.9)};
 
-
         cystIDArray = [cystIDArray; repmat({cystName}, [size(normZPos,2), 1])];
         cystShapeArray = [cystShapeArray; repmat({cystShape}, [size(normZPos,2), 1])];
         negativeCurvatureArray = [negativeCurvatureArray; repmat({negativeCurvature}, [size(normZPos,2), 1])];
         nCellsArray = [nCellsArray; repmat({length(validCells)}, [size(normZPos,2), 1])];
+        variableMeanArray = [variableMeanArray; repmat({mean(variableData)}, [size(normZPos,2), 1])];
+        normVariableMeanArray = [normVariableMeanArray; repmat({mean(normVariableData)}, [size(normZPos,2), 1])];
 
         cellIDsArray = [cellIDsArray, cellIDArray'];
         normZPosArray = [normZPosArray, normZPos];      
@@ -148,8 +151,9 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
         polarDistrArray = [polarDistrArray, polarDistr];
 
 
-    end
-    
+
+end
+
     spatialDataTable.cystID = cellfun(@(x) string(x), cystIDArray);
     spatialDataTable.cellID = cellIDsArray';
     spatialDataTable.cystShape = cellfun(@(x) string(x), cystShapeArray);
@@ -160,14 +164,22 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
     spatialDataTable.zPosCentroid = zPosCentroidArray';
     spatialDataTable.normXYPos = normXYPosArray';
     spatialDataTable.xyPos = xyPosArray';
-    spatialDataTable.normVariableData = normVariableDataArray';
-    spatialDataTable.variableData = variableDataArray';
     spatialDataTable.polarDist = polarDistArray';
     spatialDataTable.polarDistr = polarDistrArray';
+    spatialDataTable.variableData = variableDataArray';
+    spatialDataTable.variableDataMean = variableMeanArray;
+    spatialDataTable.normVariableData = normVariableDataArray';
+    spatialDataTable.normVariableDataMean = normVariableMeanArray;
+
 
     spatialDataTable = struct2table(spatialDataTable);
-    
+    spatialDataTable.Properties.VariableNames{'variableData'} = char(variable);
+    spatialDataTable.Properties.VariableNames{'normVariableData'} = char(strcat(variable, '_norm'));
+    spatialDataTable.Properties.VariableNames{'variableDataMean'} = char(strcat(variable, '_mean'));
+    spatialDataTable.Properties.VariableNames{'normVariableDataMean'} = char(strcat(variable, '_mean_norm'));
+
     fileName = strcat(savePath, saveName, '_', variable, '_spatialData.xls');
-    writetable(spatialDataTable,fileName{1});
+    writetable(spatialDataTable,fileName);
+    
 
 end
