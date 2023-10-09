@@ -26,5 +26,23 @@ function getCellSpatialData_allVars_ui()
         variable = params(variableIx);
         getCellSpatialDataBulk(rgStackPath, labelsPath, variable, savePath, saveName)
     end
-        
+    
+    %JOIN TABLES
+    for variableIx=1:length(params)
+        if variableIx == 1
+            variable = params(variableIx);
+            allVarsTable = readtable(strcat(savePath, saveName, '_', variable, '_spatialData.xls'));
+        else
+            variable = params(variableIx);
+            auxTable = readtable(strcat(savePath, saveName, '_', variable, '_spatialData.xls'));
+            auxTable = auxTable(strcmp(auxTable.cystID, allVarsTable.cystID),  {char(variable), char(strcat(variable, '_norm')), char(strcat(variable, '_mean')), char(strcat(variable, '_mean_norm'))});
+            allVarsTable(:, size(allVarsTable, 2)+1:size(allVarsTable, 2)+4) = auxTable;
+            allVarsTable.Properties.VariableNames = [allVarsTable.Properties.VariableNames(1:size(allVarsTable,2)-4), auxTable.Properties.VariableNames];
+        end
+
+    fileName = strcat(savePath, saveName, '_allVars_spatialData.xls');
+    writetable(allVarsTable,fileName);
+    
+    end
+
 end
