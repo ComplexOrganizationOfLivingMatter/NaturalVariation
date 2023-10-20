@@ -25,7 +25,7 @@ function paint3D(varargin)
         radiusSmooth = varargin{5};
     else
         labelledImage=varargin{1};
-        showingCells = (1:max(labelledImage(:)))';
+        showingCells = varargin{2};
         colours = colorcube(double(max(labelledImage(:))));
         colours = colours(randperm(max(labelledImage(:))), :);
         prettyGraphics = 0;
