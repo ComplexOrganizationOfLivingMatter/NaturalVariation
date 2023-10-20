@@ -11,8 +11,8 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
     % savePath: path to save table (unused)
     % saveName: name to save table (unused)
     
-    rgStackPath = strcat(rgStackPath, '\');
-    labelsPath = strcat(labelsPath, '\');
+    rgStackPath = strcat(rgStackPath, '/');
+    labelsPath = strcat(labelsPath, '/');
   
     %% Directory
     labelsDir = dir(strcat(labelsPath, '*.mat'));
@@ -82,6 +82,14 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
         %% At least the 0.5% of lateral membrane contacting with other cell to be1 considered as neighbor.
         contactThreshold = 0.5;
         dilatedVx = 2;
+        
+        validCells = find(table2array(regionprops3(labelledImage,'Volume'))>0);
+        noValidCells = [];
+        
+        validCells_size = find(table2array(regionprops3(labelledImage,'Volume'))>0);
+        validCells_apicoBasal = intersect(unique(apicalLayer),unique(basalLayer));
+        validCells = intersect(unique(validCells_size), unique(validCells_apicoBasal));
+        noValidCells = setdiff(unique(labelledImage), validCells);
 
         if isempty(validCells)
             validCells = find(table2array(regionprops3(labelledImage,'Volume'))>0);
@@ -107,55 +115,96 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             minValue = 0;
             scu = 0;
             uniqueLabels = unique(labelledImage);
-            for cellIx = 1:size(cells3dFeatures, 1)
-                if cells3dFeatures.scutoids(cellIx) == 1
-                    scu = scu + 1;
-                    colours = [colours; [0.3,0.3,0.3]];
+            uniqueLabels = uniqueLabels(uniqueLabels~=0);
+            for cellIx = 1:size(uniqueLabels, 1)
+                cellId = uniqueLabels(cellIx);
+                
+                if ismember(cellId, validCells)
+                    cellId_cells3dFeatures = strcat('cell_', num2str(cellId));
+                    if cells3dFeatures(strcmp(cells3dFeatures.ID_Cell,cellId_cells3dFeatures), 'scutoids').scutoids == 1
+                        scu = scu + 1;
+                        colours = [colours; [1 0.84 0.150]];
+                    else
+                        colours = [colours; [0.41 0.28 0.55]];
+                    end
                 else
-                    colours = [colours; [0.9, 0.9, 0.9]];
+                    colours = [colours; [0.9 0.9 0.9]];
                 end
+
             end
             disp(strcat('scutoids: ', num2str(scu/size(cells3dFeatures, 1))));
         elseif variable == "surfaceRatio"
+            uniqueLabels = unique(labelledImage);
+            uniqueLabels = uniqueLabels(uniqueLabels~=0);
             surfaceRatio = cells3dFeatures(:, "basal_Area").Variables./cells3dFeatures(:, "apical_Area").Variables;
+%                            
             colours = [];
-            for cellIx = 1:size(cells3dFeatures, 1)
+            for cellIx = 1:size(uniqueLabels, 1)
+                cellId = uniqueLabels(cellIx);
+                
                 maxValue = max(surfaceRatio);
                 minValue = min(surfaceRatio);
 
-             cMap1 = interp1([0;0.5],[1 0.84 0.150; 1 0.28 0.65],linspace(0,0.5,50));
-             cMap2 = interp1([0.5;1],[1 0.28 0.6; 0.41 0.28 0.55],linspace(0.5,1,50));
+                cMap1 = interp1([0;0.5],[1 0.84 0.150; 1 0.28 0.65],linspace(0,0.5,50));
+                cMap2 = interp1([0.5;1],[1 0.28 0.6; 0.41 0.28 0.55],linspace(0.5,1,50));
                 cMap = [cMap1; cMap2];
-                cMapIndex = round(100*(surfaceRatio(cellIx)-minValue)/(maxValue-minValue));
-                if cMapIndex == 0 || isnan(cMapIndex)
-                    cMapIndex = 1;
+                
+                if ismember(cellId, validCells)
+                    
+                    cellId_cells3dFeatures = strcat('cell_', num2str(cellId));
+                    currentSurfaceRatio = cells3dFeatures(strcmp(cells3dFeatures.ID_Cell,cellId_cells3dFeatures), 'basal_Area').basal_Area./cells3dFeatures(strcmp(cells3dFeatures.ID_Cell,cellId_cells3dFeatures), 'apical_Area').apical_Area;
+                
+                    cMapIndex = round(100*(currentSurfaceRatio-minValue)/(maxValue-minValue));
+                    if cMapIndex == 0 || isnan(cMapIndex)
+                        cMapIndex = 1;
+                    end
+                    colours = [colours; cMap(cMapIndex, :)];
+                else
+                    colours = [colours; [0.9 0.9 0.9]];
                 end
-                colours = [colours; cMap(cMapIndex, :)];
             end
         elseif variable == "betCentrality"
             colours = [];
-            for cellIx = 1:size(cells3dFeatures, 1)
+            uniqueLabels = unique(labelledImage);
+            uniqueLabels = uniqueLabels(uniqueLabels~=0);
+            for cellIx = 1:size(uniqueLabels, 1)
+                cellId = uniqueLabels(cellIx);
                 maxValue = max(betweennessCentrality);
                 minValue = min(betweennessCentrality);
 
                 cMap1 = interp1([0;0.5],[0 1 0; 1 1 0],linspace(0,0.5,50));
                 cMap2 = interp1([0.5;1],[1 1 0; 1 0 0],linspace(0.5,1,50));
                 cMap = [cMap1; cMap2];
-                cMapIndex = round(100*(betweennessCentrality(cellIx)-minValue)/(maxValue-minValue));
-                if cMapIndex == 0 || isnan(cMapIndex)
-                    cMapIndex = 1;
+                
+                if ismember(cellId, validCells)
+                    cellId_cells3dFeatures = strcat('cell_', num2str(cellId));
+                    currentBetweennessCentrality = cells3dFeatures(strcmp(cells3dFeatures.ID_Cell,cellId_cells3dFeatures), 'betCentrality').betCentrality;
+                    cMapIndex = round(100*(currentBetweennessCentrality-minValue)/(maxValue-minValue));
+                    if cMapIndex == 0 || isnan(cMapIndex)
+                        cMapIndex = 1;
+                    end
+                    colours = [colours; cMap(cMapIndex, :)];
+                else
+                    colours = [colours; [0.9 0.9 0.9]];
                 end
-                colours = [colours; cMap(cMapIndex, :)];
+                
             end
         elseif variable == "coefCluster"
             colours = [];
-            for cellIx = 1:size(cells3dFeatures, 1)
+            uniqueLabels = unique(labelledImage);
+            uniqueLabels = uniqueLabels(uniqueLabels~=0);
+            for cellIx = 1:size(uniqueLabels, 1)
+                cellId = uniqueLabels(cellIx);
                 maxValue = max(coefCluster);
                 minValue = min(coefCluster);
 
                 cMap1 = interp1([0;0.5],[0 0 1; 1 1 0],linspace(0,0.5,50));
                 cMap2 = interp1([0.5;1],[1 1 0; 1 0 0],linspace(0.5,1,50));
-                cMap = [cMap1; cMap2];                cMapIndex = round(100*(coefCluster(cellIx)-minValue)/(maxValue-minValue));
+                cMap = [cMap1; cMap2];                
+            
+                cellId_cells3dFeatures = strcat('cell_', num2str(cellId));
+                currentCoefCluster = cells3dFeatures(strcmp(cells3dFeatures.ID_Cell,cellId_cells3dFeatures), 'coefCluster').coefCluster;
+                cMapIndex = round(100*(currentCoefCluster-minValue)/(maxValue-minValue));
                 if cMapIndex == 0 || isnan(cMapIndex)
                     cMapIndex = 1;
                 end
@@ -163,24 +212,35 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             end
         elseif variable == "GRAY"
             colours = [];
-            for cellIx = 1:size(cells3dFeatures, 1)
+            for cellIx = 1:size(uniqueLabels, 1)
                 colours = [colours; [0.9,0.9,0.9]];
             end
         else
             colours = [];
-            for cellIx = 1:size(cells3dFeatures, 1)
+            uniqueLabels = unique(labelledImage);
+            uniqueLabels = uniqueLabels(uniqueLabels~=0);
+            for cellIx = 1:size(uniqueLabels, 1)
+                cellId = uniqueLabels(cellIx);
                 maxValue = max(cells3dFeatures(:, variable).Variables);
                 minValue = min(cells3dFeatures(:, variable).Variables);
 
                 
-        cMap1 = interp1([0;0.5],[1 0.84 0.150; 1 0.28 0.65],linspace(0,0.5,50));
-        cMap2 = interp1([0.5;1],[1 0.28 0.6; 0.41 0.28 0.55],linspace(0.5,1,50));
+                cMap1 = interp1([0;0.5],[1 0.84 0.150; 1 0.28 0.65],linspace(0,0.5,50));
+                cMap2 = interp1([0.5;1],[1 0.28 0.6; 0.41 0.28 0.55],linspace(0.5,1,50));
 
-                cMap = [cMap1; cMap2];                cMapIndex = round(100*(cells3dFeatures(cellIx, variable).Variables-minValue)/(maxValue-minValue));
-                if cMapIndex == 0 || isnan(cMapIndex)
-                    cMapIndex = 1;
+                cMap = [cMap1; cMap2];    
+                
+                if ismember(cellId, validCells)
+                    cellId_cells3dFeatures = strcat('cell_', num2str(cellId));
+                    currentCellFeature = cells3dFeatures(strcmp(cells3dFeatures.ID_Cell,cellId_cells3dFeatures), variable).Variables;
+                    cMapIndex = round(100*(currentCellFeature-minValue)/(maxValue-minValue));
+                    if cMapIndex == 0 || isnan(cMapIndex)
+                        cMapIndex = 1;
+                    end
+                    colours = [colours; cMap(cMapIndex, :)];
+                else
+                    colours = [colours; [0.9 0.9 0.9]];
                 end
-                colours = [colours; cMap(cMapIndex, :)];
             end
         end
         
@@ -196,7 +256,7 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
         end
         
         
-        paint3D(labelledImage, validCells, colours, 3, 2);
+        paint3D(labelledImage, uniqueLabels, colours, 3, 2);
         material([0.5 0.2 0.0 10 1])
         fig = get(groot,'CurrentFigure');
         fig.Color = [1 1 1];
