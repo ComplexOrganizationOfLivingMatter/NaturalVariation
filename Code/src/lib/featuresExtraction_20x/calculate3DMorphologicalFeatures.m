@@ -34,6 +34,15 @@ function [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetwo
     
     if (~exist(fullfile(path2save, 'global_3dFeatures.mat'),'file') || isempty(path2save))
         %defining all cells as valid cells
+        
+        validCells = find(table2array(regionprops3(labelledImage,'Volume'))>0);
+        noValidCells = [];
+        
+        validCells_size = find(table2array(regionprops3(labelledImage,'Volume'))>0);
+        validCells_apicoBasal = intersect(unique(apicalLayer),unique(basalLayer));
+        validCells = intersect(unique(validCells_size), unique(validCells_apicoBasal));
+        noValidCells = setdiff(unique(labelledImage), validCells);
+        
         if isempty(validCells)
             validCells = find(table2array(regionprops3(labelledImage,'Volume'))>0);
             noValidCells = [];
