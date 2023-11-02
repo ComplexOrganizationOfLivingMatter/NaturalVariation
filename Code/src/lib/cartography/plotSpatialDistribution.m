@@ -51,6 +51,15 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
 
         [rgStackImg, imgInfo] = readStackTif(strcat(rgStackPath, cystName, '.tif'));
 
+        %% RELABEL from 0 to #uniqueCells
+        idLabels = unique(labelledImage);
+        imgRelabel = zeros(size(labelledImage));
+        for id = 1:length(idLabels)-1
+            imgRelabel(labelledImage==idLabels(id+1))= id;
+        end
+        labelledImage = imgRelabel;
+        %%
+        
         validCells = [];
         cystName = imgInfo(1).Filename;
         %% Extract pixel-micron relation
@@ -210,6 +219,44 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
                 end
                 colours = [colours; cMap(cMapIndex, :)];
             end
+        elseif variable == "apical_NumNeighs"
+            colours = [];
+            uniqueLabels = unique(labelledImage);
+            uniqueLabels = uniqueLabels(uniqueLabels~=0);
+            apicalCells = unique(apicalLayer);
+            apicalCells = apicalCells(apicalCells~=0);
+            
+            for cellIx = 1:size(uniqueLabels, 1)
+                cellId = uniqueLabels(cellIx);
+                maxValue = 8;
+                minValue = 4;
+
+                cMap1 = interp1([0;0.5],[1 0.84 0.150; 1 0.28 0.65],linspace(0,0.5,50));
+                cMap2 = interp1([0.5;1],[1 0.28 0.6; 0.41 0.28 0.55],linspace(0.5,1,50));
+                cMap = [cMap1; cMap2];                
+
+                if ismember(cellId, validCells)
+                    cellId_cells3dFeatures = strcat('cell_', num2str(cellId));
+                    currentNeighs = cells3dFeatures(strcmp(cells3dFeatures.ID_Cell,cellId_cells3dFeatures), 'apical_NumNeighs').apical_NumNeighs;
+                    cMapIndex = round(100*(currentNeighs-minValue)/(maxValue-minValue));
+                    if cMapIndex>100
+                        cMapIndex = 100;
+                    elseif cMapIndex<1
+                        cMapIndex = 1;
+                    end
+                    if cMapIndex == 0 || isnan(cMapIndex)
+                        cMapIndex = 1;
+                    end
+                    if ismember(cellId, apicalCells)
+                        colours = [colours; cMap(cMapIndex, :)];
+                    end
+                else
+                    if ismember(cellId, apicalCells)
+                        colours = [colours; [0.9 0.9 0.9]];
+                    end
+                end
+            end
+            
         elseif variable == "GRAY"
             colours = [];
             for cellIx = 1:size(uniqueLabels, 1)
@@ -255,8 +302,16 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             units = "";
         end
         
-        
-        paint3D(labelledImage, uniqueLabels, colours, 3, 2);
+        if variable == "apical_NumNeighs"
+            se = strel('sphere', 1);
+            apicalLayerToDraw = imdilate(apicalLayer, se);
+            apicalCellsToDraw = unique(apicalLayer);
+            apicalCellsToDraw = apicalCellsToDraw(apicalCellsToDraw~=0);
+            
+            paint3D(apicalLayerToDraw, 1:length(apicalCellsToDraw), colours, 2);
+        else
+            paint3D(labelledImage, uniqueLabels, colours, 3, 2);
+        end
         material([0.5 0.2 0.0 10 1])
         fig = get(groot,'CurrentFigure');
         fig.Color = [1 1 1];
