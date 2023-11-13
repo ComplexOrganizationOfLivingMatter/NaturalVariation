@@ -37,11 +37,11 @@ function plotSpatialDistributionByRanges_ui
         
     %% Find global min/max values
     % exist min/max values? if not, calculate 'em
-    if isfile(strcat(data{1}, 'allStages', '_', variable{1}, '_spatialData.xls'))
-        dataTable = readtable(strcat(data{1}, 'allStages', '_', variable{1}, '_spatialData.xls'));
+    if isfile(strcat(data{1}, '/allStages', '_', variable{1}, '_spatialData.xls'))
+        dataTable = readtable(strcat(data{1}, '/allStages', '_', variable{1}, '_spatialData.xls'));
     else
-        getCellSpatialDataBulk(strcat(data{1}, 'raw/'), strcat(data{1}, 'labels/'), variable, data{1}, strcat('allStages'))
-        dataTable = readtable(strcat(data{1}, 'allStages', '_', variable{1}, '_spatialData.xls'));
+        getCellSpatialDataBulk(strcat(data{1}, '/raw/'), strcat(data{1}, '/labels/'), variable, strcat(data{1}, '/'), strcat('allStages'))
+        dataTable = readtable(strcat(data{1}, '/allStages', '_', variable{1}, '_spatialData.xls'));
     end
     
     %% separate by stages
@@ -60,11 +60,11 @@ function plotSpatialDistributionByRanges_ui
     stages = unique(dataTable.stage);
     
     for stage=stages
-        min = min(dataTable(strcmp(dataTable.stage, stage{1}), 'nCells'));
-        max = max(dataTable(strcmp(dataTable.stage, stage{1}), 'nCells'));
+        minimum = min(dataTable(strcmp(dataTable.stage, stage{1}), variable).Variables);
+        maximum = max(dataTable(strcmp(dataTable.stage, stage{1}),  variable).Variables);
         
-        plotSpatialDistribution(rgStackPath, labelsPath, variable{1}, savePath, strcat(saveName, '_normByStage'), [min max])
-        plotSpatialDistribution(rgStackPath, labelsPath, variable{1}, savePath, strcat(saveName, '_normByEgg'), [])
+        plotSpatialDistribution(strcat(data{1}, '/raw/'), strcat(data{1}, '/labels/'), variable{1}, strcat(data{2}, '/'), strcat(saveName, '_normByStage'), [minimum maximum])
+        plotSpatialDistribution(strcat(data{1}, '/raw/'), strcat(data{1}, '/labels/'), variable{1}, strcat(data{2}, '/'), strcat(saveName, '_normByEgg'), [])
     end
     
     
