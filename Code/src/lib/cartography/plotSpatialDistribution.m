@@ -1,4 +1,4 @@
-function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, saveName)
+function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, saveName, minMaxRanges)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % plotSpatialDistribution
     % Plotting cysts stamps
@@ -151,8 +151,13 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             for cellIx = 1:size(uniqueLabels, 1)
                 cellId = uniqueLabels(cellIx);
                 
-                maxValue = max(surfaceRatio);
-                minValue = min(surfaceRatio);
+                if isempty(minMaxRanges)
+                    maxValue = max(surfaceRatio);
+                    minValue = min(surfaceRatio);
+                else
+                    maxValue = minMaxRanges(1);
+                    minValue = minMaxRanges(2);
+                end
 
                 cMap1 = interp1([0;0.5],[1 0.84 0.150; 1 0.28 0.65],linspace(0,0.5,50));
                 cMap2 = interp1([0.5;1],[1 0.28 0.6; 0.41 0.28 0.55],linspace(0.5,1,50));
@@ -178,8 +183,14 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             uniqueLabels = uniqueLabels(uniqueLabels~=0);
             for cellIx = 1:size(uniqueLabels, 1)
                 cellId = uniqueLabels(cellIx);
-                maxValue = max(betweennessCentrality);
-                minValue = min(betweennessCentrality);
+                
+                if isempty(minMaxRanges)
+                    maxValue = max(betweennessCentrality);
+                    minValue = min(betweennessCentrality);
+                else
+                    maxValue = minMaxRanges(1);
+                    minValue = minMaxRanges(2);
+                end
 
                 cMap1 = interp1([0;0.5],[0 1 0; 1 1 0],linspace(0,0.5,50));
                 cMap2 = interp1([0.5;1],[1 1 0; 1 0 0],linspace(0.5,1,50));
@@ -204,8 +215,14 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             uniqueLabels = uniqueLabels(uniqueLabels~=0);
             for cellIx = 1:size(uniqueLabels, 1)
                 cellId = uniqueLabels(cellIx);
-                maxValue = max(coefCluster);
-                minValue = min(coefCluster);
+                
+                if isempty(minMaxRanges)
+                    maxValue = max(coefCluster);
+                    minValue = min(coefCluster);
+                else
+                    maxValue = minMaxRanges(1);
+                    minValue = minMaxRanges(2);
+                end
 
                 cMap1 = interp1([0;0.5],[0 0 1; 1 1 0],linspace(0,0.5,50));
                 cMap2 = interp1([0.5;1],[1 1 0; 1 0 0],linspace(0.5,1,50));
@@ -268,9 +285,14 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             uniqueLabels = uniqueLabels(uniqueLabels~=0);
             for cellIx = 1:size(uniqueLabels, 1)
                 cellId = uniqueLabels(cellIx);
-                maxValue = max(cells3dFeatures(:, variable).Variables);
-                minValue = min(cells3dFeatures(:, variable).Variables);
-
+                
+                if isempty(minMaxRanges)
+                    maxValue = max(cells3dFeatures(:, variable).Variables);
+                    minValue = min(cells3dFeatures(:, variable).Variables);
+                else
+                    minValue = minMaxRanges(1);
+                    maxValue = minMaxRanges(2);
+                end
                 
                 cMap1 = interp1([0;0.5],[1 0.84 0.150; 1 0.28 0.65],linspace(0,0.5,50));
                 cMap2 = interp1([0.5;1],[1 0.28 0.6; 0.41 0.28 0.55],linspace(0.5,1,50));
