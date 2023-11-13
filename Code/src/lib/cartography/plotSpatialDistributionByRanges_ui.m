@@ -7,7 +7,7 @@ function plotSpatialDistributionByRanges_ui
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     data = inputdlg({'Directory with "raw" and "labels" folders', 'Saving path', 'Range e.g [0,25,50,75,100]'},...
-                  'Input data', [1 50;1 50; 1 50], {pwd, pwd, '[0,20,30,40]'}); 
+                  'Input data', [1 50;1 50; 1 50], {pwd, pwd, '[0,150,300,500]'}); 
 
          
     %% select variable to plot
