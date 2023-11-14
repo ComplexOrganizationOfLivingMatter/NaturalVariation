@@ -59,13 +59,37 @@ function plotSpatialDistributionByRanges_ui
     
     stages = unique(dataTable.stage);
     
-    for stage=stages
-        minimum = min(dataTable(strcmp(dataTable.stage, stage{1}), variable).Variables);
-        maximum = max(dataTable(strcmp(dataTable.stage, stage{1}),  variable).Variables);
-        
-        plotSpatialDistribution(strcat(data{1}, '/raw/'), strcat(data{1}, '/labels/'), variable{1}, strcat(data{2}, '/'), strcat(saveName, '_normByStage'), [minimum maximum])
-        plotSpatialDistribution(strcat(data{1}, '/raw/'), strcat(data{1}, '/labels/'), variable{1}, strcat(data{2}, '/'), strcat(saveName, '_normByEgg'), [])
+
+    for stageIx = 1:length(stages)
+        disp('Rearanging your data ...')
+        stage = stages(stageIx);
+        if ~exist(strcat(data{1}, '/stage_', num2str(stage{1}),'_raw/'), 'dir')
+            disp('stage ', num2str(stage{1}))
+            mkdir(strcat(data{1}, '/stage_', num2str(stage{1}),'_raw/'))
+            mkdir(strcat(data{1}, '/stage_', num2str(stage{1}),'_labels/'))
+
+            eggChambers = unique(dataTable(strcmp(dataTable.stage, stage{1}), 'cystID').cystID);
+            for eggChamberIx = 1:length(eggChambers)
+                eggChamberID = eggChambers{eggChamberIx};
+                copyfile(strcat(data{1},'/raw/',eggChamberID,'.tif'), strcat(data{1}, '/stage_', num2str(stage{1}),'_raw/',eggChamberID,'.tif'))
+                copyfile(strcat(data{1},'/labels/',eggChamberID,'.tif'), strcat(data{1}, '/stage_', num2str(stage{1}),'_labels/',eggChamberID,'.tif'))
+            end
+        end
     end
+    disp('Everything is arranged now!')
+
+    disp('plotting ...')
+    for stageIx = 1:length(stages)
+        stage = stages{stageIx};
+        disp(strcat('stage ', stage, ' eggs'))
+        minimum = min(dataTable(strcmp(dataTable.stage, stage), variable).Variables);
+        maximum = max(dataTable(strcmp(dataTable.stage, stage),  variable).Variables);
     
+        disp('plotting norm by stage')
+        plotSpatialDistribution(strcat(data{1}, '/stage_', num2str(stage),'_raw/'), strcat(data{1}, '/stage_', num2str(stage),'_labels/'), variable{1}, strcat(data{2}, '/'), strcat(saveName,'_', num2str(stage), '_normByStage'), [minimum maximum])
+        disp('plotting norm by egg')
+        plotSpatialDistribution(strcat(data{1}, '/stage_', num2str(stage),'_raw/'), strcat(data{1}, '/stage_', num2str(stage),'_labels/'), variable{1}, strcat(data{2}, '/'), strcat(saveName,'_', num2str(stage), '_normByEgg'), [])
+    end
+
     
 end
