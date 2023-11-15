@@ -1,9 +1,8 @@
-function newScutoids_cells = filterScutoids(apical3dInfo, basal3dInfo, lateral3dInfo_total, validCells)
+function [newScutoids_cells,apical3dInfo,basal3dInfo,lateral3dInfo_total] = filterScutoids(apical3dInfo, basal3dInfo, lateral3dInfo_total, oldScutoids_cells)
 
     %% Re-calculate scutoids (as done in calcualte_CellularFeatures.m
     scutoids_cells=cellfun(@(x,y) double(~isequal(x,y)), apical3dInfo,basal3dInfo);
     newScutoids_cells = zeros(size(scutoids_cells));
-    newScutoids_cells_ = zeros(size(scutoids_cells));
 
     %% Get ids of scutoids
     cellIds = linspace(1,length(scutoids_cells),length(scutoids_cells));
@@ -37,5 +36,18 @@ function newScutoids_cells = filterScutoids(apical3dInfo, basal3dInfo, lateral3d
         end
     end
      
+    wrongScutoids=arrayfun(@(x, y) setdiff(x,y), oldScutoids_cells, newScutoids_cells, 'UniformOutput', false);
+    
+    for scuIx=1:length(wrongScutoids)
+        if wrongScutoids{scuIx}==1
+           if size(apical3dInfo{scuIx},1) < size(basal3dInfo{scuIx},1)
+               basal3dInfo{scuIx}=apical3dInfo{scuIx};
+               lateral3dInfo_total{scuIx}=apical3dInfo{scuIx};
+           else
+               apical3dInfo{scuIx}=basal3dInfo{scuIx};
+               lateral3dInfo_total{scuIx}=basal3dInfo{scuIx};
+           end
+        end
+    end
 %     newScutoids_cells = newScutoids_cells(validCells);
 end
