@@ -142,6 +142,67 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
 
             end
             disp(strcat('scutoids: ', num2str(scu/size(cells3dFeatures, 1))));
+                elseif contains(variable,"NumNeighs")
+            colours = [];
+            maxValue = 9;
+            minValue = 3;
+            cMap = [1 0 0;254/255,101/255,0; 0, 152/255, 0;52/255,102/255,254/255;128/255,0,128/255;1/255,108/255,127/255;0 0 0];
+            cellsVariableFeatures = cells3dFeatures.(variable);
+            for cellIx = 1:size(cells3dFeatures, 1)
+                if cellsVariableFeatures(cellIx) == 4
+                    colours = [colours; [254/255,101/255,0]];
+                elseif cellsVariableFeatures(cellIx) == 5
+                    colours = [colours; [0, 152/255, 0]];
+                elseif cellsVariableFeatures(cellIx) == 6
+                    colours = [colours; [52/255,102/255,254/255]];
+                elseif cellsVariableFeatures(cellIx) == 7
+                    colours = [colours; [128/255,0,128/255]];
+                elseif cellsVariableFeatures(cellIx) == 8
+                    colours = [colours; [1/255,108/255,127/255]];
+                elseif cellsVariableFeatures(cellIx) > 8 
+                    colours = [colours; [0 0 0]];
+                    warning('The cell %d has %d neighbours',cellIx,cellsVariableFeatures(cellIx));
+                elseif cellsVariableFeatures(cellIx) < 4
+                    colours = [colours; [1 0 0]];
+                    warning('The cell %d has %d neighbours',cellIx,cellsVariableFeatures(cellIx));
+                end
+            end
+        elseif variable == "apicoBasalTransitions"
+            colours = [];
+
+            maxValue = 3;
+            minValue = 0;
+
+            cMap = [1 0.84 0.150; 1 0.28 0.6;0.71 0.28 0.55;0.41 0.28 0.55];
+            cellsVariableFeatures = cells3dFeatures.(variable);
+            for cellIx = 1:size(cells3dFeatures, 1)
+                if cellsVariableFeatures(cellIx) == 0
+                    colours = [colours; [1 0.84 0.150]];
+                elseif cellsVariableFeatures(cellIx) == 1
+                    colours = [colours; [1 0.28 0.6]];
+                elseif cellsVariableFeatures(cellIx) == 2
+                    colours = [colours; [0.71 0.28 0.55]];
+                elseif cellsVariableFeatures(cellIx) > 2
+                    colours = [colours; [0.41 0.28 0.55]];
+                end
+            end
+        elseif variable == "apicoBasalTransitions"
+            colours = [];
+            maxValue = max(cells3dFeatures(:, variable).Variables);
+            minValue = min(cells3dFeatures(:, variable).Variables);
+            cMap = [1 0.84 0.150; 1 0.28 0.6;0.71 0.28 0.55;0.41 0.28 0.55];
+            cellsVariableFeatures = cells3dFeatures.(variable);
+            for cellIx = 1:size(cells3dFeatures, 1)
+                if cellsVariableFeatures(cellIx) == 0
+                    colours = [colours; [1 0.84 0.150]];
+                elseif cellsVariableFeatures(cellIx) == 1
+                    colours = [colours; [1 0.28 0.6]];
+                elseif cellsVariableFeatures(cellIx) == 2
+                    colours = [colours; [0.71 0.28 0.55]];
+                elseif cellsVariableFeatures(cellIx) > 2
+                    colours = [colours; [0.41 0.28 0.55]];
+                end
+            end
         elseif variable == "surfaceRatio"
             uniqueLabels = unique(labelledImage);
             uniqueLabels = uniqueLabels(uniqueLabels~=0);
@@ -349,6 +410,19 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             colorbarHandler=colorbar;
             title(colorbarHandler, units);
             colorbarHandler.Label.String = strrep(variable, "_", " ");
+        end
+       
+        
+        if contains(variable,"NumNeighs")
+           caxis([(minValue-0.5),(maxValue+0.5)])
+           colorbarHandler.TickLabels=["<4" "4" "5" "6" "7" "8" ">8"];
+           colorbarHandler.Ticks=[3 4 5 6 7 8 9]; 
+        end
+        
+        if strcmp(variable,"apicoBasalTransitions")
+            caxis([(minValue-0.5),(maxValue+0.5)])
+            colorbarHandler.TickLabels=["0" "1", "2", ">2"];
+            colorbarHandler.Ticks=[0 1 2 3];
         end
         
         %first render
