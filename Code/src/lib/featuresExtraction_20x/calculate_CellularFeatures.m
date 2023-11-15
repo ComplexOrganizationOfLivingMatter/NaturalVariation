@@ -39,15 +39,19 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
 %             end
 %         end
 %     end
+    %%  Determine if a cell is a scutoid or not
+    apicoBasalTransitions = cellfun(@(x, y) length(unique(vertcat(setdiff(y,x), setdiff(x,y)))), apical3dInfo,basal3dInfo);
+    scutoids_cells = double(apicoBasalTransitions>0);
+    
+    %% Filter Scutoids
+    [scutoids_cells,apical3dInfo,basal3dInfo,lateral3dInfo] = filterScutoids(apical3dInfo, basal3dInfo, lateral3dInfo, scutoids_cells);
+    
+    %% Correct apicoBasalTransitions
+    apicoBasalTransitions = apicoBasalTransitions.*scutoids_cells;
 
-    %% Calculate polygon distribution
-    [polygon_distribution_Apical] = calculate_polygon_distribution(cellfun(@length, apical3dInfo), validCells);
-    [polygon_distribution_Basal] = calculate_polygon_distribution(cellfun(@length, basal3dInfo), validCells);
-    [polygon_distribution_Lateral] = calculate_polygon_distribution(cellfun(@length, lateral3dInfo), validCells);
+
     neighbours_data = table(apical3dInfo, basal3dInfo, lateral3dInfo);
-    polygon_distribution = table(polygon_distribution_Apical, polygon_distribution_Basal,polygon_distribution_Lateral);
     neighbours_data.Properties.VariableNames = {'Apical','Basal','Lateral'};
-    polygon_distribution.Properties.VariableNames = {'Apical','Basal','Lateral'};
 
     %%  Calculate number of neighbours of each cell
     number_neighbours = table(cellfun(@length,(apical3dInfo)),cellfun(@length,(basal3dInfo)),cellfun(@length,(lateral3dInfo)));
@@ -68,15 +72,12 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
     %%  Calculate volume cells
     volume_cells=table2array(regionprops3(labelledImage,'Volume'));
 
-    %%  Determine if a cell is a scutoid or not
-    apicoBasalTransitions = cellfun(@(x, y) length(unique(vertcat(setdiff(y,x), setdiff(x,y)))), neighbours_data.Apical,neighbours_data.Basal);
-    scutoids_cells = double(apicoBasalTransitions>0);
-    
-    %% Filter Scutoids
-    scutoids_cells = filterScutoids(apical3dInfo, basal3dInfo, lateral3dInfo, validCells);
-    
-    %% Correct apicoBasalTransitions
-    apicoBasalTransitions = apicoBasalTransitions.*scutoids_cells;
+    %% Calculate polygon distribution
+    [polygon_distribution_Apical] = calculate_polygon_distribution(cellfun(@length, apical3dInfo), validCells);
+    [polygon_distribution_Basal] = calculate_polygon_distribution(cellfun(@length, basal3dInfo), validCells);
+    [polygon_distribution_Lateral] = calculate_polygon_distribution(cellfun(@length, lateral3dInfo), validCells);
+    polygon_distribution = table(polygon_distribution_Apical, polygon_distribution_Basal,polygon_distribution_Lateral);
+    polygon_distribution.Properties.VariableNames = {'Apical','Basal','Lateral'};
     
     %% Calculate cell height
     cell_heights = calculateCellHeight(apicalLayer, basalLayer);
@@ -88,4 +89,3 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
 
     CellularFeaturesValidCells = CellularFeaturesAllCells(validCells,:);
 end
-
