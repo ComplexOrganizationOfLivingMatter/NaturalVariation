@@ -1,4 +1,4 @@
-function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatures, polygon_distribution_apical, polygon_distribution_basal, polygon_distribution_lateral, numValidCells,numTotalCells, surfaceRatio3D, validCells, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,path2save,contactThreshold, dilatedVx)
+function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatures, polygon_distribution_apical, polygon_distribution_basal, polygon_distribution_lateral, numValidCells,numTotalCells, surfaceRatio3D, validCells, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,path2save,fileName,contactThreshold, dilatedVx)
 
     if ~exist(fullfile(path2save, 'morphological3dFeatures.mat'),'file') || isempty(path2save)
        
@@ -8,34 +8,17 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         end
         
         [lateral3dInfo_total,totalLateralCellsArea,absoluteLateralContacts] = getLateralContacts(lateralLayer,dilatedVx,contactThreshold);
-        
+
         %lateral3dInfo = lateral3dInfo.neighbourhood';
-        %% apical/basal info from Antonio
-        %% Cellular features
+
+        %% Cellular features 
         [apical3dInfo] = calculateNeighbours3D(apicalLayer, dilatedVx, apicalLayer == 0);
-        if size(apical3dInfo.neighbourhood,1) < size(lateral3dInfo_total',1)
-            for nCell=size(apical3dInfo.neighbourhood,1)+1:size(lateral3dInfo_total',1)
-                apical3dInfo.neighbourhood{nCell}=[];
-
-            end
-        elseif size(apical3dInfo.neighbourhood,1) > size(lateral3dInfo_total',1)
-            apical3dInfo.neighbourhood=apical3dInfo.neighbourhood(1:size(lateral3dInfo_total,2),1);
-        end
-        apical3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo_total,apical3dInfo.neighbourhood','UniformOutput',false);
-
-        [basal3dInfo] = calculateNeighbours3D(basalLayer, dilatedVx, basalLayer == 0);
-        if size(basal3dInfo.neighbourhood,1) < size(lateral3dInfo_total',1)
-            for nCell=size(basal3dInfo.neighbourhood,1)+1:size(lateral3dInfo_total',1)
-                basal3dInfo.neighbourhood{nCell}=[];
-            end
-
-        elseif size(basal3dInfo.neighbourhood,1) > size(lateral3dInfo_total',1)
-            basal3dInfo.neighbourhood=basal3dInfo.neighbourhood(1:size(lateral3dInfo_total,2),1);
-        end
-        basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo_total,basal3dInfo.neighbourhood','UniformOutput',false);
-
+         apical3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo_total,apical3dInfo.neighbourhood','UniformOutput',false);
         
-        %% 
+        [basal3dInfo] = calculateNeighbours3D(basalLayer, dilatedVx, basalLayer == 0);
+        basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo_total,basal3dInfo.neighbourhood','UniformOutput',false);
+        
+                
         lateralLayerAux = lateralLayer;
         lateralLayerAux(labelledImage==0)=0;
         if ~isequal(lateralLayer, lateralLayerAux)
@@ -43,7 +26,7 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
             [lateral3dInfoAux,totalLateralCellsArea,absoluteLateralContacts] = getLateralContacts(lateralLayerAux,dilatedVx,0);
             lateral3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo_total,lateral3dInfoAux,'UniformOutput',false);
         else
-            lateral3dInfo = lateral3dInfo_total;
+            lateral3dInfo = cellfun(@(x,y)(unique(vertcat(x,y))), apical3dInfo, basal3dInfo, 'UniformOutput',false);
             clearvars lateral3dInfo_total lateralLayerAux
         end
 
@@ -99,11 +82,10 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         cells3dFeatures = horzcat(cells3dFeatures, cellAreaNeighsInfo,table(cellularFeaturesValidCells.Scutoids, cellularFeaturesValidCells.apicoBasalTransitions,'VariableNames',{'scutoids','apicoBasalTransitions'}));
 
         %% Save variables
-        if ~isempty(isempty(path2save))
-            save(fullfile(path2save, 'morphological3dFeatures.mat'), 'cells3dFeatures', 'tissue3dFeatures', 'lumen3dFeatures', 'polygon_distribution_apical', 'polygon_distribution_basal','polygon_distribution_lateral', 'cellularFeaturesValidCells', 'numValidCells','numTotalCells', 'surfaceRatio3D', 'polygon_distribution_lateral','apicoBasalNeighs', 'hollowTissue3dFeatures','apical3dInfo','basal3dInfo','lateral3dInfo');
-        end
+%         if ~isempty(isempty(path2save))
+%             save(fullfile(path2save, strcat(fileName,'_morphological3dFeatures.mat')), 'cells3dFeatures', 'tissue3dFeatures', 'lumen3dFeatures', 'polygon_distribution_apical', 'polygon_distribution_basal','polygon_distribution_lateral', 'cellularFeaturesValidCells', 'numValidCells','numTotalCells', 'surfaceRatio3D', 'polygon_distribution_lateral','apicoBasalNeighs', 'hollowTissue3dFeatures','apical3dInfo','basal3dInfo','lateral3dInfo');
+%         end
     else
         load(fullfile(path2save, 'morphological3dFeatures.mat'), 'cells3dFeatures', 'tissue3dFeatures', 'lumen3dFeatures', 'polygon_distribution_apical', 'polygon_distribution_basal','polygon_distribution_lateral', 'cellularFeaturesValidCells', 'numValidCells','numTotalCells', 'surfaceRatio3D', 'polygon_distribution_lateral','apicoBasalNeighs', 'hollowTissue3dFeatures','apical3dInfo','basal3dInfo','lateral3dInfo');
     end
 end
-
