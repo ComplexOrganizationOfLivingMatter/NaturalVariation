@@ -12,9 +12,9 @@ function [voronoiCyst] = getSynthethicCyst(principalAxis1, principalAxis2, princ
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     % full cyst axis
-    principalAxis1 = round(principalAxis1/2);
-    principalAxis2 = round(principalAxis2/2);
-    principalAxis3 = round(principalAxis3/2);
+    principalAxis1 = round(principalAxis1);
+    principalAxis2 = round(principalAxis2);
+    principalAxis3 = round(principalAxis3);
 
     % lumen axis
 
