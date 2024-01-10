@@ -30,6 +30,15 @@ for currentIter=1:iters
     currentVoronoiCyst = imdilate(centroidSeeds,se);
     currentVoronoiCyst = VoronoizateCells(voronoiCyst>0, currentVoronoiCyst);
     
+    disp(strcat('Number of Cells iter ',  num2str(currentIter),  ' : ' ,num2str(length(unique(currentVoronoiCyst))-1)));
+    [apicalLayer,basalLayer,~,~] = getApicalBasalLateralAndLumenFromCyst(currentVoronoiCyst, '');
+    
+    if all(unique(apicalLayer)==unique(basalLayer))
+        disp('all cells contact basal and apical layer');
+    else
+        warning('some cells are not touching apical or basal layer');
+    end
+    
     writeStackTif(double(currentVoronoiCyst./255), strcat(savePath, saveName, '_', num2str(currentIter), '.tif'));
     
 end
