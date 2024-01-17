@@ -9,6 +9,8 @@ disp(strcat('radiusThreshold: ', num2str(radiusThreshold)));
 disp(strcat('minimumSeparation: ', num2str(minimumSeparation)));
 disp(strcat('totalIter: ', num2str(iters)));
 
+writeStackTif(double(voronoiCyst./255), strcat(savePath, saveName, '_', num2str(1), '.tif'));
+
 currentVoronoiCyst = voronoiCyst;
 for currentIter=1:iters
     disp(strcat('Iteration #', num2str(currentIter)));
@@ -39,6 +41,6 @@ for currentIter=1:iters
         warning('some cells are not touching apical or basal layer');
     end
     
-    writeStackTif(double(currentVoronoiCyst./255), strcat(savePath, saveName, '_', num2str(currentIter), '.tif'));
+    writeStackTif(double(currentVoronoiCyst./255), strcat(savePath, saveName, '_', num2str(currentIter+1), '.tif'));
     
 end
