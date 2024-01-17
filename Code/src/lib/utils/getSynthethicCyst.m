@@ -12,9 +12,9 @@ function [voronoiCyst] = getSynthethicCyst(principalAxis1, principalAxis2, princ
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     % full cyst axis
-    principalAxis1 = round(principalAxis1);
-    principalAxis2 = round(principalAxis2);
-    principalAxis3 = round(principalAxis3);
+    principalAxis1 = round(principalAxis1/2);
+    principalAxis2 = round(principalAxis2/2);
+    principalAxis3 = round(principalAxis3/2);
 
     % lumen axis
 
@@ -52,12 +52,12 @@ function [voronoiCyst] = getSynthethicCyst(principalAxis1, principalAxis2, princ
                 continue
             else
                 seeds = [seeds;seed_new];
-                seedMatrix(round((x+255)),round((y+255)),round((z+255)))=1;
+                seedMatrix(round((y+255)),round((x+255)),round((z+255)))=1;  %!! DO NOT CHANGE Y X Z IS CORRECT
             end
             
         end
     
-        if size(seeds,1) == nCells+1
+        if size(seeds,1) == nCells
             break
         end
     end
@@ -65,7 +65,7 @@ function [voronoiCyst] = getSynthethicCyst(principalAxis1, principalAxis2, princ
     %%
     
     voronoiSpaceCyst = zeros([512, 512, 512]);
-    [meshX,meshY,meshZ] = meshgrid(-255:256, -255:256, -255:256);
+    [meshX,meshY,meshZ] = meshgrid(-255:256);
 
     cystSphere = (meshX./principalAxis1).^2 + (meshY./principalAxis2).^2 + (meshZ./principalAxis3).^2 <= 1;
     voronoiSpaceCyst(cystSphere) = 1; % set to zero
@@ -85,7 +85,7 @@ function [voronoiCyst] = getSynthethicCyst(principalAxis1, principalAxis2, princ
     
     
     %resize and save
-    voronoiCyst = imresize3(voronoiCyst, [255, 255, 255], 'nearest');
+%     voronoiCyst = imresize3(voronoiCyst, [255, 255, 255], 'nearest');
     
 %     writeStackTif(voronoiCyst, '/media/pedro/6TB/jesus/voronoiBasedGenerativeModel/voronoiModelCyst.tif')
 %     
