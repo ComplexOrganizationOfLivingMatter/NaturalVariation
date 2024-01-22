@@ -98,7 +98,7 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
         noValidCells = [];
 
         try
-            [cells3dFeatures, tissue3dFeatures, ~,~, ~, ~,~, ~,~, ~, ~, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,'',contactThreshold, dilatedVx);
+            [cells3dFeatures, tissue3dFeatures, ~,~, ~, ~,~, ~,~, ~, ~, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,'','',contactThreshold, dilatedVx);
             %% Calculate Network features            
             [~ ,coefCluster,betweennessCentrality] = obtainNetworksFeatures(apicoBasalNeighs,validCells, '');
             
@@ -116,6 +116,10 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
             data = betweennessCentrality;
         elseif strcmp(variable, "surfaceRatio")
             data = cells3dFeatures(:, "basal_Area").Variables./cells3dFeatures(:, "apical_Area").Variables;
+        elseif strcmp(variable, "totalBasalArea")
+            data = repmat(sum(cells3dFeatures.basal_Area),size(cells3dFeatures,1),1);
+        elseif strcmp(variable, "totalApicalArea")
+            data = repmat(sum(cells3dFeatures.apical_Area),size(cells3dFeatures,1),1);
         else
             data = cells3dFeatures(:, variable).Variables;
         end
