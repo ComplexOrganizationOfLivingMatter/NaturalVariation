@@ -119,6 +119,10 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
             data = betweennessCentrality;
         elseif strcmp(variable, "surfaceRatio")
             data = cells3dFeatures(:, "basal_Area").Variables./cells3dFeatures(:, "apical_Area").Variables;
+        elseif strcmp(variable, "totalBasalArea")
+            data = repmat(sum(cells3dFeatures.basal_Area),size(cells3dFeatures,1),1);
+        elseif strcmp(variable, "totalApicalArea")
+            data = repmat(sum(cells3dFeatures.apical_Area),size(cells3dFeatures,1),1);
         else
             data = cells3dFeatures(:, variable).Variables;
         end
