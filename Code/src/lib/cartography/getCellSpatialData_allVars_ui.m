@@ -4,14 +4,14 @@ function getCellSpatialData_allVars_ui()
 
     %ui get path rgStack
     rgStackPath = uigetdir('F:\jesus', 'Select rgStack (.tif) path');
-    rgStackPath = strcat(rgStackPath, '/');
+    rgStackPath = strcat(rgStackPath, '\');
     %ui get path labels
     labelsPath = uigetdir('F:\jesus', 'Select labels (.mat) path');
-    labelsPath = strcat(labelsPath, '/');
+    labelsPath = strcat(labelsPath, '\');
 
     %ui get path to save
     savePath = uigetdir('F:\jesus', 'Select save path');
-    savePath = strcat(savePath, '/');
+    savePath = strcat(savePath, '\');
 
     %% select variable to plot
     params = ["Volume", "PrincipalAxisLength", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "apical_NumNeighs", "apical_Area", "basal_NumNeighs", "basal_Area", "cell_height", "lateral_NumNeighs", "lateral_Area", "apicalPerimeters", "basalPerimeters", "apicalNeighsOfNeighs", "basalNeighsOfNeighs", "lateralNeighsOfNeighs","average_cell_wall_Area", "std_cell_wall_Area", "scutoids", "apicoBasalTransitions", "surfaceRatio","totalApicalArea","totalBasalArea"];
