@@ -96,6 +96,11 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
 
         validCells = find(table2array(regionprops3(labelledImage,'Volume'))>0);
         noValidCells = [];
+        
+        validCells_size = find(table2array(regionprops3(labelledImage,'Volume'))>0);
+        validCells_apicoBasal = intersect(unique(apicalLayer),unique(basalLayer));
+        validCells = intersect(unique(validCells_size), unique(validCells_apicoBasal));
+        noValidCells = setdiff(unique(labelledImage), validCells);
 
         try
             [cells3dFeatures, tissue3dFeatures, ~,~, ~, ~,~, ~,~, ~, ~, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,'','',contactThreshold, dilatedVx);
@@ -108,18 +113,12 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
             continue
         end
         
-        
-        
         if strcmp(variable, "coefCluster")
             data = coefCluster;
         elseif strcmp(variable, "betCentrality")
             data = betweennessCentrality;
         elseif strcmp(variable, "surfaceRatio")
             data = cells3dFeatures(:, "basal_Area").Variables./cells3dFeatures(:, "apical_Area").Variables;
-        elseif strcmp(variable, "totalBasalArea")
-            data = repmat(sum(cells3dFeatures.basal_Area),size(cells3dFeatures,1),1);
-        elseif strcmp(variable, "totalApicalArea")
-            data = repmat(sum(cells3dFeatures.apical_Area),size(cells3dFeatures,1),1);
         else
             data = cells3dFeatures(:, variable).Variables;
         end
