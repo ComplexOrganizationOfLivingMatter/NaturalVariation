@@ -14,7 +14,7 @@ function getCellSpatialData_allVars_ui()
     savePath = strcat(savePath, '\');
 
     %% select variable to plot
-    params = ["Volume", "PrincipalAxisLength", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "apical_NumNeighs", "apical_Area", "basal_NumNeighs", "basal_Area", "cell_height", "lateral_NumNeighs", "lateral_Area", "apicalPerimeters", "basalPerimeters", "apicalNeighsOfNeighs", "basalNeighsOfNeighs", "lateralNeighsOfNeighs","average_cell_wall_Area", "std_cell_wall_Area", "scutoids", "apicoBasalTransitions", "surfaceRatio","totalApicalArea","totalBasalArea"];
+    params = ["Volume", "PrincipalAxisLength", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "apical_NumNeighs", "apical_Area", "basal_NumNeighs", "basal_Area", "cell_height", "lateral_NumNeighs", "lateral_Area", "apicalPerimeterLength", "basalPerimeterLength", "apicalNeighsOfNeighs", "basalNeighsOfNeighs", "lateralNeighsOfNeighs","average_cell_wall_Area", "std_cell_wall_Area", "scutoids", "apicoBasalTransitions", "surfaceRatio","totalApicalArea","totalBasalArea"];
 
     for idx = 1:length(params) 
        param = params{idx};
