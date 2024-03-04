@@ -1,11 +1,11 @@
 function parallelVoronoi()
 
-savePath = '/media/pedro/6TB/jesus/NaturalVariation/voronoiModel_5/';
-cells = [20, 100, 500, 1000, 2000];
+savePath = '/media/pedro/6TB/jesus/NaturalVariation/voronoiModel_9/';
+cells = [500, 750, 1000];
 axis1 = [75, 100];
 lloyd = 5;
-runs = [1, 2];
-numLayer = 4;
+runs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+numLayer = 0;
 cellHeight = 40;
 
 
