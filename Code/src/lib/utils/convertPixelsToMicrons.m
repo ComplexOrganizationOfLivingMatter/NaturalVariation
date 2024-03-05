@@ -5,6 +5,7 @@ function [meanFeatures,stdFeatures, tissue3dFeatures, lumen3dFeatures,hollowTiss
     areaSubstring={'Area', 'area'};
     lengthSubstring={'length','Length'};
     heightSubstring={'height','Height'};
+    perimeterSubstring={'perimeter','Perimeter'};
 
 
     %% VolumeFeatures
@@ -41,6 +42,13 @@ function [meanFeatures,stdFeatures, tissue3dFeatures, lumen3dFeatures,hollowTiss
     tissue3dFeatures(:,TissueFeaturesLengthIndexs) = table(table2array(tissue3dFeatures(:,TissueFeaturesLengthIndexs)) * pixelScale);
     lumen3dFeatures(:,TissueFeaturesLengthIndexs) = table(table2array(lumen3dFeatures(:,TissueFeaturesLengthIndexs)) * pixelScale);
     hollowTissue3dFeatures(:,TissueFeaturesLengthIndexs) = table(table2array(hollowTissue3dFeatures(:,TissueFeaturesLengthIndexs)) * pixelScale);
+    
+    %% Perimeter Features
+    CellsFeaturesPerimeterIndexs = contains(meanFeatures.Properties.VariableNames,perimeterSubstring);
+
+    meanFeatures(:,CellsFeaturesPerimeterIndexs) = splitvars(table(table2array(meanFeatures(:,CellsFeaturesPerimeterIndexs)) * pixelScale));
+    stdFeatures(:,CellsFeaturesPerimeterIndexs) = splitvars(table(table2array(stdFeatures(:,CellsFeaturesPerimeterIndexs)) * pixelScale));
+
 
 end
 
