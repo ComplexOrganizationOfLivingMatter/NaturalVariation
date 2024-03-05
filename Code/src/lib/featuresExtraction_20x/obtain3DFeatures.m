@@ -35,7 +35,7 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,basal3dInfo.neighbourhood','UniformOutput',false);
         
         %% perimeters and meanNeighs
-        [apicalPerimeterLength, basalPerimeterLength, apicalNeighsOfNeighs, basalNeighsOfNeighs, lateralNeighsOfNeighs] = calculatePerimeters(validCells, apicalLayer, apical3dInfo, basalLayer, basal3dInfo, lateralLayer, lateral3dInfo);
+        [apicalPerimeter, basalPerimeter, apicalNeighsOfNeighs, basalNeighsOfNeighs, lateralNeighsOfNeighs] = calculatePerimeters(validCells, apicalLayer, apical3dInfo, basalLayer, basal3dInfo, lateralLayer, lateral3dInfo);
         
         %%
                 
@@ -98,7 +98,7 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         lateralAreas = cells3dFeatures.SurfaceArea - (cellularFeaturesValidCells.Apical_area./refactorApicalAreas) - (cellularFeaturesValidCells.Basal_area./refactorBasalAreas);
         refactorLateralAreas = cellularFeaturesValidCells.Lateral_area./lateralAreas;
         
-        perimeterAndNeighsOfNeighsTable = table(apicalPerimeterLength, basalPerimeterLength, apicalNeighsOfNeighs, basalNeighsOfNeighs, lateralNeighsOfNeighs);
+        perimeterAndNeighsOfNeighsTable = table(apicalPerimeter, basalPerimeter, apicalNeighsOfNeighs, basalNeighsOfNeighs, lateralNeighsOfNeighs);
 
         cellAreaNeighsInfo = table(cellularFeaturesValidCells.Apical_sides, cellularFeaturesValidCells.Apical_area./refactorApicalAreas,cellularFeaturesValidCells.Basal_sides, cellularFeaturesValidCells.Basal_area./refactorBasalAreas,cellularFeaturesValidCells.Cell_height,cellularFeaturesValidCells.Lateral_sides, cellularFeaturesValidCells.Lateral_area./refactorLateralAreas,cellularFeaturesValidCells.Average_cell_wall_area./refactorLateralAreas,cellularFeaturesValidCells.Std_cell_wall_area./refactorLateralAreas,'VariableNames',{'apical_NumNeighs','apical_Area','basal_NumNeighs','basal_Area','cell_height','lateral_NumNeighs','lateral_Area','average_cell_wall_Area','std_cell_wall_Area'});
         cells3dFeatures = horzcat(cells3dFeatures, cellAreaNeighsInfo,table(cellularFeaturesValidCells.Scutoids, cellularFeaturesValidCells.apicoBasalTransitions,'VariableNames',{'scutoids','apicoBasalTransitions'}));
