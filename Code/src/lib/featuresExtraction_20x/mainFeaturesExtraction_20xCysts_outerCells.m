@@ -101,7 +101,8 @@ for cyst=1:length(fixedCystsDir)
     numSlices = round(shape(3)*(z_pixel/x_pixel));
     
     labelledImage = imresize3(labelledImage, [numRows, numCols, numSlices], 'nearest');
-    
+    nCells_wholeTissue = size(unique(labelledImage),1)-1;
+
     %% Pixel scale
     pixelScale = x_pixel;
 
@@ -165,7 +166,7 @@ for cyst=1:length(fixedCystsDir)
     %% build and write table
 %     aux_table = [allGeneralInfo, allTissues, allHollowTissue3dFeatures, allLumens, allNetworkFeatures, totalMeanCellsFeatures, totalStdCellsFeatures, cystShape, negativeCurvature, perCell, percentageLumenSpace];
     
-    aux_table = [allGeneralInfo.ID_Cysts, allGeneralInfo.NCells_total, allTissues.tissue_PrincipalAxisLength, allTissues.tissue_SurfaceArea, totalMeanCellsFeatures.mean_cell_basal_NumNeighs, allTissues.tissue_basal_triangles, allTissues.tissue_basal_squares, allTissues.tissue_basal_pentagons, allTissues.tissue_basal_hexagons, allTissues.tissue_basal_heptagons, allTissues.tissue_basal_octogons, allTissues.tissue_basal_nonagons, totalMeanCellsFeatures.mean_cell_basal_Area, totalMeanCellsFeatures.mean_cell_basalPerimeter];
+    aux_table = [allGeneralInfo.ID_Cysts, nCells_wholeTissue, allGeneralInfo.NCells_total, allTissues.tissue_PrincipalAxisLength, allTissues.tissue_SurfaceArea, totalMeanCellsFeatures.mean_cell_basal_NumNeighs, allTissues.tissue_basal_triangles, allTissues.tissue_basal_squares, allTissues.tissue_basal_pentagons, allTissues.tissue_basal_hexagons, allTissues.tissue_basal_heptagons, allTissues.tissue_basal_octogons, allTissues.tissue_basal_nonagons, totalMeanCellsFeatures.mean_cell_basal_Area, totalMeanCellsFeatures.mean_cell_basalPerimeter];
     cell2table(aux_table);
     dataTable = [dataTable; aux_table];
     
@@ -173,7 +174,7 @@ end
 
 % writetable(dataTable,tablePath); 
 
-dataTable.Properties.VariableNames = {'ID_Cysts', 'nCells', 'principalAxisLenght', 'tissue_SurfaceArea', 'meanNeighs','tissue_basal_triangles', 'tissue_basal_squares', 'tissue_basal_pentagons', 'tissue_basal_hexagons', 'tissue_basal_heptagons', 'tissue_basal_octogons',   'tissue_basal_nonagons', 'mean_cell_basal_Area', 'mean_cell_basalPerimeter'};
+dataTable.Properties.VariableNames = {'ID_Cysts', 'nCells_wholeTissue','nCells', 'principalAxisLenght', 'tissue_SurfaceArea', 'meanNeighs','tissue_basal_triangles', 'tissue_basal_squares', 'tissue_basal_pentagons', 'tissue_basal_hexagons', 'tissue_basal_heptagons', 'tissue_basal_octogons',   'tissue_basal_nonagons', 'mean_cell_basal_Area', 'mean_cell_basalPerimeter'};
 % dataTable_sheet_1 = dataTable_1(:, {'ID_Cysts', 'nCells', 'tissue_SurfaceArea', 'tissue_basal_triangles', 'tissue_basal_squares', 'tissue_basal_pentagons', 'tissue_basal_hexagons', 'tissue_basal_heptagons', 'tissue_basal_octogons',   'tissue_basal_nonagons', 'mean_cell_basal_Area', 'mean_cell_basalPerimeter'});
 writetable(dataTable,tablePath,'Sheet','basalInfo');
 % dataTable_sheet_2 = dataTable(:, {'ID_Cysts', 'tissue_apical_triangles', 'tissue_apical_squares', 'tissue_apical_pentagons', 'tissue_apical_hexagons', 'tissue_apical_heptagons', 'tissue_apical_octogons', 'tissue_apical_nonagons', 'tissue_apical_decagons', 'tissue_basal_triangles', 'tissue_basal_squares', 'tissue_basal_pentagons', 'tissue_basal_hexagons', 'tissue_basal_heptagons', 'tissue_basal_octogons', 'tissue_basal_nonagons', 'tissue_basal_decagons', 'tissue_lateral_triangles', 'tissue_lateral_squares', 'tissue_lateral_pentagons', 'tissue_lateral_hexagons', 'tissue_lateral_heptagons', 'tissue_lateral_octogons', 'tissue_lateral_nonagons', 'tissue_lateral_decagons'});
