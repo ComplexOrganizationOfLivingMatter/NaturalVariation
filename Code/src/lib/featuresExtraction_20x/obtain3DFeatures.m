@@ -33,11 +33,6 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
             basal3dInfo.neighbourhood=basal3dInfo.neighbourhood(1:size(lateral3dInfo,2),1);
         end
         basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,basal3dInfo.neighbourhood','UniformOutput',false);
-        
-        %% perimeters and meanNeighs
-        [apicalPerimeter, basalPerimeter, apicalNeighsOfNeighs, basalNeighsOfNeighs, lateralNeighsOfNeighs] = calculatePerimeters(validCells, apicalLayer, apical3dInfo, basalLayer, basal3dInfo, lateralLayer, lateral3dInfo);
-        
-        %%
                 
         lateralLayerAux = lateralLayer;
         lateralLayerAux(labelledImage==0)=0;
@@ -62,7 +57,11 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         end
         noValidCells(ismember(noValidCells,missingCells))=[];
         numValidCells = length(validCells);
-
+        
+        %% perimeters and meanNeighs
+        [apicalPerimeter, basalPerimeter, apicalNeighsOfNeighs, basalNeighsOfNeighs, lateralNeighsOfNeighs] = calculatePerimeters(validCells, apicalLayer, apical3dInfo, basalLayer, basal3dInfo, lateralLayer, lateral3dInfo);
+        
+        %%
         
         %% Obtain cells descriptors
         % get apical, basal and lateral sides cells. Areas and cell Volume
