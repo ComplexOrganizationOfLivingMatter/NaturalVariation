@@ -1,4 +1,4 @@
-function voronoiModel(ellipsoidAxis1, ellipsoidAxis2, ellipsoidAxis3, nDots, nSeeds, lloydIter, plotBool, savePath, runId, numLayers, cellHeight)
+function voronoiModel(ellipsoidAxis1, ellipsoidAxis2, ellipsoidAxis3, nDots, nSeeds, lloydIter, plotBool, savePath, runId, numLayers, surfaceRatio)
 
 %     voronoiModel(100, 50, 75, 100, 10, 1, false, '')
     tic
@@ -69,10 +69,7 @@ function voronoiModel(ellipsoidAxis1, ellipsoidAxis2, ellipsoidAxis3, nDots, nSe
     % [Qexact,DQ, voronoi_edges, edges_id, lambda, Djj]
     options.voronoi_edges = voronoi_edges;
     
-    %% lloyd iterations
-    for lloidIterIx = 1:lloydIter
-        pstarts = perform_lloyd_mesh(vertex,faces, pstarts, options);
-    end
+    %% VORONOI LLOYD 0
     
     [D,S,Q] = perform_fast_marching_mesh(vertex, faces, pstarts, options);
     [Qexact,DQ, voronoi_edges, edges_id, lambda, Djj] = compute_voronoi_mesh(vertex, faces, pstarts, options);
@@ -85,52 +82,113 @@ function voronoiModel(ellipsoidAxis1, ellipsoidAxis2, ellipsoidAxis3, nDots, nSe
     uniqueVe = unique(ve, 'rows');
     veInVertexBool = ismember(vertex', ve(1:3,:)', 'rows');
     neighs = SortedDjjIndices(veInVertexBool, 1:2);
-    
+
     neighsmat = neighs;
-    
+
     numNeighs = [];
     neighsArray = [];
     labels  = unique(pstarts, 'stable');
     for cellIx = 1:length(labels)
-        cellId = cellIx;
-        numNeighs = [numNeighs; length(unique([(unique(neighsmat(neighsmat(:, 1)==cellId, 2))); unique(neighsmat(neighsmat(:, 2)==cellId, 1))]))];
-        neighsArray = [neighsArray, {unique([(unique(neighsmat(neighsmat(:, 1)==cellId, 2))); unique(neighsmat(neighsmat(:, 2)==cellId, 1))])}];
+    cellId = cellIx;
+    numNeighs = [numNeighs; length(unique([(unique(neighsmat(neighsmat(:, 1)==cellId, 2))); unique(neighsmat(neighsmat(:, 2)==cellId, 1))]))];
+    neighsArray = [neighsArray, {unique([(unique(neighsmat(neighsmat(:, 1)==cellId, 2))); unique(neighsmat(neighsmat(:, 2)==cellId, 1))])}];
     end
-    
+
     uniqueLabels = unique(pstarts, 'stable');
     areaArray = [];
     perimArray = [];
 
     for cellIx = 1:length(uniqueLabels)
-        cellId = uniqueLabels(cellIx);
-        [area, perim] = calculateArea(vertex, faces, Q, cellId);
-        areaArray = [areaArray; area];
-        perimArray = [perimArray; perim];
+    cellId = uniqueLabels(cellIx);
+    [area, perim] = calculateArea(vertex, faces, Q, cellId);
+    areaArray = [areaArray; area];
+    perimArray = [perimArray; perim];
     end
-    
+
     [totalArea, ~] = calculateArea(vertex, faces, Q, []);
-    
-    infoTable = table(unique(pstarts, 'stable'), areaArray, perimArray, repelem(totalArea, size(numNeighs,1))', numNeighs, neighsArray');
+
+    infoTable = table(unique(pstarts', 'stable'), areaArray, perimArray, repelem(totalArea, size(numNeighs,1))', numNeighs, neighsArray');
     infoTable.Properties.VariableNames = {'id', 'cell_area', 'perim_area', 'total_ellipsoid_area', 'numNeighs', 'neighs'};
-    
+
     %% save name  
     date = datestr(datetime);
     date = strrep(date, ' ', '_');
     date = strrep(date, ':', '-');
 
-    fileName = strcat('voronoiModel_', date, '_principalAxisLength_', num2str(ellipsoidAxis1), '_', num2str(ellipsoidAxis2), '_', num2str(ellipsoidAxis3), '_nSeeds_', num2str(nSeeds), '_nDots_', num2str(nDots), '_lloydIters_', num2str(lloydIter), '_runId_', num2str(runId), '_LAYER_', num2str(0));
+    fileName = strcat('voronoiModel_', date, '_principalAxisLength_', num2str(ellipsoidAxis1), '_', num2str(ellipsoidAxis2), '_', num2str(ellipsoidAxis3), '_nSeeds_', num2str(nSeeds), '_nDots_', num2str(nDots), '_lloydIters_', num2str(0), '_runId_', num2str(runId), '_LAYER_', num2str(0));
 
     writetable(infoTable, strcat(savePath, fileName, '.xls'));
     save(strcat(savePath, fileName), '-v7.3')
+        
+    
+    %% START LLOYD
+    %% lloyd iterations
+    for lloidIterIx = 1:lloydIter
+
+        pstarts = perform_lloyd_mesh(vertex,faces, pstarts, options);
+
+        [D,S,Q] = perform_fast_marching_mesh(vertex, faces, pstarts, options);
+        [Qexact,DQ, voronoi_edges, edges_id, lambda, Djj] = compute_voronoi_mesh(vertex, faces, pstarts, options);
+
+        options.voronoi_edges = voronoi_edges;  
+        ve = voronoi_edges;
+
+        %% Neighs and area
+        [sortedDjj, SortedDjjIndices] = sort(Djj, 2);
+        uniqueVe = unique(ve, 'rows');
+        veInVertexBool = ismember(vertex', ve(1:3,:)', 'rows');
+        neighs = SortedDjjIndices(veInVertexBool, 1:2);
+
+        neighsmat = neighs;
+
+        numNeighs = [];
+        neighsArray = [];
+        labels  = unique(pstarts, 'stable');
+        for cellIx = 1:length(labels)
+            cellId = cellIx;
+            numNeighs = [numNeighs; length(unique([(unique(neighsmat(neighsmat(:, 1)==cellId, 2))); unique(neighsmat(neighsmat(:, 2)==cellId, 1))]))];
+            neighsArray = [neighsArray, {unique([(unique(neighsmat(neighsmat(:, 1)==cellId, 2))); unique(neighsmat(neighsmat(:, 2)==cellId, 1))])}];
+        end
+
+        uniqueLabels = unique(pstarts, 'stable');
+        areaArray = [];
+        perimArray = [];
+
+        for cellIx = 1:length(uniqueLabels)
+            cellId = uniqueLabels(cellIx);
+            [area, perim] = calculateArea(vertex, faces, Q, cellId);
+            areaArray = [areaArray; area];
+            perimArray = [perimArray; perim];
+        end
+
+        [totalArea, ~] = calculateArea(vertex, faces, Q, []);
+
+        infoTable = table(unique(pstarts, 'stable'), areaArray, perimArray, repelem(totalArea, size(numNeighs,1))', numNeighs, neighsArray');
+        infoTable.Properties.VariableNames = {'id', 'cell_area', 'perim_area', 'total_ellipsoid_area', 'numNeighs', 'neighs'};
+
+        %% save name  (not needed calculated before)
+%         date = datestr(datetime);
+%         date = strrep(date, ' ', '_');
+%         date = strrep(date, ':', '-');
+
+        fileName = strcat('voronoiModel_', date, '_principalAxisLength_', num2str(ellipsoidAxis1), '_', num2str(ellipsoidAxis2), '_', num2str(ellipsoidAxis3), '_nSeeds_', num2str(nSeeds), '_nDots_', num2str(nDots), '_lloydIters_', num2str(lloidIterIx), '_runId_', num2str(runId), '_LAYER_', num2str(0));
+
+        writetable(infoTable, strcat(savePath, fileName, '.xls'));
+        save(strcat(savePath, fileName), '-v7.3')
+        
+    end
+    
+    %% STOP LLOYD
     
     
     %% Layers
+    cellHeight = ellipsoidAxis2*surfaceRatio-ellipsoidAxis2;
     step = cellHeight/numLayers;
     
     for layerIx = 1:numLayers
        %% 3d ellipsoid layers
 
-        [vertexPstarts2, X, Y, Z] = getAugmentedCentroids( ellipsoidInfo, vertex(:, pstarts)', layerIx*step); 
+        [vertexPstarts2, X, Y, Z] = getAugmentedCentroids(ellipsoidInfo, vertex(:, pstarts)', layerIx*step); 
         
         coordinates = [X(:),Y(:),Z(:)];
         coordinates = unique(coordinates,'rows');
