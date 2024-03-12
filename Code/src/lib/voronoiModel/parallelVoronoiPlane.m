@@ -1,15 +1,15 @@
 function parallelVoronoiPlane()
 
 savePath = '/media/pedro/6TB/jesus/NaturalVariation/voronoiModel_16_plane/';
-cells = [20, 50, 100, 500, 1000];
+cells = [500, 1000];
 % axis1 = [75, 100];
 lloyd = 10;
 runs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 numLayer = 0;
 surfaceRatio = [8,2.45;16,2.08;20,1.91;30,1.52; 50,1.42;100,1.40; 500,1.15;1000,1.03];
-nDots = [50,100,200];
+nDots = [1000];
 
-[ca, cb] = ndgrid(cells, runs, nDots);
+[ca, cb,  cc] = ndgrid(cells, runs, nDots);
 combs = [ca(:), cb(:), cc(:)];
 
 for index = 1:size(combs,1)
