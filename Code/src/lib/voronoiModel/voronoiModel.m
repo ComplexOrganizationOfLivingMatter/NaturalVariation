@@ -239,11 +239,47 @@ function voronoiModel(ellipsoidAxis1, ellipsoidAxis2, ellipsoidAxis3, nDots, nSe
         
         infoTable = table(unique(pstarts, 'stable'),unique(pstarts2, 'stable'), areaArray, perimArray, repelem(totalArea, size(numNeighs,1))', numNeighs, neighsArray');
         infoTable.Properties.VariableNames = {'id_layer0','id', 'cell_area', 'perim_area', 'total_ellipsoid_area', 'numNeighs', 'neighs'};
-        fileName = strcat('voronoiModel_', date, '_principalAxisLength_', num2str(ellipsoidAxis1), '_', num2str(ellipsoidAxis2), '_', num2str(ellipsoidAxis3), '_nSeeds_', num2str(nSeeds), '_nDots_', num2str(nDots), '_lloydIters_', num2str(lloydIter), '_runId_', num2str(runId), '_LAYER_', num2str(layerIx*step));
+        fileName = strcat('voronoiModel_', date, '_principalAxisLength_', num2str(ellipsoidAxis1), '_', num2str(ellipsoidAxis2), '_', num2str(ellipsoidAxis3), '_nSeeds_', num2str(nSeeds), '_nDots_', num2str(nDots), '_lloydIters_', num2str(lloydIter), '_runId_', num2str(runId), '_LAYER_', num2str(layerIx));
 
         writetable(infoTable, strcat(savePath, fileName, '.xls'));
         save(strcat(savePath, fileName, '.mat'), '-v7.3')
         
+        basalFileName = fileName;
+        if layerIx == numLayers
+            
+           apicalFileName = strcat('voronoiModel_', date, '_principalAxisLength_', num2str(ellipsoidAxis1), '_', num2str(ellipsoidAxis2), '_', num2str(ellipsoidAxis3), '_nSeeds_', num2str(nSeeds), '_nDots_', num2str(nDots), '_lloydIters_', num2str(lloydIter), '_runId_', num2str(runId), '_LAYER_', num2str(0));
+
+           tableLayerApical = readtable(strcat(savePath, apicalFileName));
+           tableLayerBasal = readtable(strcat(savePath, basalFileName));
+           
+           apicalNeighsArray = [];
+           basalNeighsArray= [];
+           apicoBasalTransitionsArray = [];
+           scutoidArray = [];
+           
+           for cellIx=1:size(tableLayerApical,1)
+                apicalNeighs = tableLayerApical(cellIx, 6:end).Variables;
+                basalNeighs = tableLayerBasal(cellIx, 7:end).Variables;
+                
+                apicalNeighs = apicalNeighs(~isnan(apicalNeighs));
+                basalNeighs = basalNeighs(~isnan(basalNeighs));
+                
+                apicoBasalTransitions = length(vertcat(setdiff(basalNeighs,apicalNeighs), setdiff(apicalNeighs,basalNeighs)));
+                scutoid = apicoBasalTransitions>0;
+                
+                apicalNeighsArray = [apicalNeighsArray; {apicalNeighs}];
+                basalNeighsArray = [basalNeighsArray; {basalNeighs}];
+                apicoBasalTransitionsArray = [apicoBasalTransitionsArray; apicoBasalTransitions];
+                scutoidArray = [scutoidArray; scutoid];
+           end
+           
+           dataTable = table(tableLayerApical.id, tableLayerApical.cell_area, tableLayerBasal.cell_area, tableLayerApical.perim_area, tableLayerBasal.perim_area, tableLayerApical.total_ellipsoid_area, tableLayerBasal.total_ellipsoid_area, tableLayerApical.numNeighs, tableLayerBasal.numNeighs, apicoBasalTransitionsArray, scutoidArray, apicalNeighsArray, basalNeighsArray);
+           dataTable.Properties.VariableNames = {'id', 'apicalCellArea', 'basalCellArea', 'apicalPerim', 'basalPerim', 'apicalTotalArea', 'basalTotalArea', 'apicalNumNeighs', 'basalNumNeighs', 'apicoBasalTransitions', 'scutoid', 'apicalNeighs', 'basalNeighs'};           
+           fileName = strcat('voronoiModel_3D_', date, '_principalAxisLength_', num2str(ellipsoidAxis1), '_', num2str(ellipsoidAxis2), '_', num2str(ellipsoidAxis3), '_nSeeds_', num2str(nSeeds), '_nDots_', num2str(nDots), '_lloydIters_', num2str(lloydIter), '_runId_', num2str(runId));
+
+           writetable(dataTable, strcat(savePath, fileName, '.xls'));
+           
+        end
 
     end
     
