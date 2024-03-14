@@ -117,6 +117,10 @@ function voronoiModel(ellipsoidAxis1, ellipsoidAxis2, ellipsoidAxis3, nDots, nSe
 
     fileName = strcat('voronoiModel_', date, '_principalAxisLength_', num2str(ellipsoidAxis1), '_', num2str(ellipsoidAxis2), '_', num2str(ellipsoidAxis3), '_nSeeds_', num2str(nSeeds), '_nDots_', num2str(nDots), '_lloydIters_', num2str(0), '_runId_', num2str(runId), '_LAYER_', num2str(0));
 
+    %% REDEFINE SAVEPATH. CREATE FOLDER
+    savePath = strcat(savePath, 'voronoiModel_', date, '_principalAxisLength_', num2str(ellipsoidAxis1), '_', num2str(ellipsoidAxis2), '_', num2str(ellipsoidAxis3), '_nSeeds_', num2str(nSeeds), '_nDots_', num2str(nDots), '/');
+    mkdir(savePath);
+
     writetable(infoTable, strcat(savePath, fileName, '.xls'));
     save(strcat(savePath, fileName), '-v7.3')
         
