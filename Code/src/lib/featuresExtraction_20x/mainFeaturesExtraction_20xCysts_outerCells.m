@@ -22,11 +22,11 @@ addpath(genpath('D:\Jesus\tutorial\NaturalVariation-main\'));
 %% mat files of fixed cysts
 fixedCystsPath = 'D:\Jesus\tutorial\';
 fixedCystsPath = uigetdir(fixedCystsPath, 'Select label images (.mat or .tif) path');
-fixedCystsPath = strcat(fixedCystsPath, '/');
+fixedCystsPath = strcat(fixedCystsPath, '\');
 %% original tif files of rg cysts
 originalImagesPath = 'D:\Jesus\tutorial\';
 originalImagesPath = uigetdir(originalImagesPath, 'Select raw images (.tif) path');
-originalImagesPath = strcat(originalImagesPath, '/');
+originalImagesPath = strcat(originalImagesPath, '\');
 
 %% path 2 save output
 path2save = '';
@@ -54,7 +54,7 @@ if strcmp(nameQuest,'Default')
 else
     prompt = 'Enter a saveName: ';
     saveName = input(prompt, 's');
-    tablePath = strcat(tablePath, '/', saveName, 'OUTER_CELLS.xls');
+    tablePath = strcat(tablePath, '\', saveName, 'OUTER_CELLS.xls');
 end
 
 %% Create empty table
