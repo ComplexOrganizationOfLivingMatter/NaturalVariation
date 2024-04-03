@@ -1,7 +1,7 @@
 function check3DInfo()
 
 % path = '/media/pedro/6TB/jesus/NaturalVariation/voronoi_SELECTED/bySeeds/';
-path = '/media/pedro/6TB/jesus/NaturalVariation/voronoi_SELECTED/bySeeds/30/';
+path = '/media/pedro/6TB/jesus/NaturalVariation/voronoi_SELECTED/bySeeds/500/';
 
 % matDir = dir(strcat(path, '*/*/*.mat'));
 matDir = dir(strcat(path, '*/*.mat'));
@@ -13,7 +13,6 @@ numLayers = 2;
 
 for dirIx = 1:numel(matDir)
     try
-
         name = matDir(dirIx).name;
         folder = matDir(dirIx).folder;
 
@@ -44,8 +43,13 @@ for dirIx = 1:numel(matDir)
 
            for cellIx=1:size(tableLayerApical,1)
 %                 disp(cellIx)
-                apicalNeighs = tableLayerApical(cellIx, 6:end).Variables;
-                basalNeighs = tableLayerBasal(cellIx, 7:end).Variables;
+                apicalNeighs = tableLayerApical(cellIx, contains(tableLayerApical.Properties.VariableNames, 'neighs_'));
+                basalNeighs = tableLayerBasal(cellIx, contains(tableLayerBasal.Properties.VariableNames, 'neighs_'));
+                
+                apicalNeighs = table2array(apicalNeighs);
+                basalNeighs = table2array(basalNeighs);
+%                 apicalNeighs = tableLayerApical(cellIx, 6:end).Variables;
+%                 basalNeighs = tableLayerBasal(cellIx, 7:end).Variables;
 
                 apicalNeighs = apicalNeighs(~isnan(apicalNeighs));
                 basalNeighs = basalNeighs(~isnan(basalNeighs));
