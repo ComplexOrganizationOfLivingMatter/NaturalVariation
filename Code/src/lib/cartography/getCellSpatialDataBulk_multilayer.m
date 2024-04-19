@@ -104,9 +104,23 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
 
         try
             
+            [lateral3dInfo,totalLateralCellsArea,absoluteLateralContacts] = getLateralContacts(lateralLayer,dilatedVx,contactThreshold);
+
+                    
             %% BASAL INFO: NEIGHBOURS, PERIMETER, AREA, 
             [basal3dInfo] = calculateNeighbours3D(basalLayer, dilatedVx, basalLayer == 0);
-            basal3dInfo = basal3dInfo.neighbourhood;
+
+            if size(basal3dInfo.neighbourhood,1) < size(lateral3dInfo',1)
+                for nCell=size(basal3dInfo.neighbourhood,1)+1:size(lateral3dInfo',1)
+                    basal3dInfo.neighbourhood{nCell}=[];
+                end
+
+            elseif size(basal3dInfo.neighbourhood,1) > size(lateral3dInfo',1)
+                basal3dInfo.neighbourhood=basal3dInfo.neighbourhood(1:size(lateral3dInfo,2),1);
+            end
+            basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,basal3dInfo.neighbourhood','UniformOutput',false);
+            
+            
             basalCells = unique(basalLayer);
             basalCells = basalCells(basalCells>0);
             
