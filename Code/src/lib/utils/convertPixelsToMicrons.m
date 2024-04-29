@@ -36,8 +36,10 @@ function [meanFeatures,stdFeatures, tissue3dFeatures, lumen3dFeatures,hollowTiss
     meanFeatures(:,CellsFeaturesLengthIndexs) = table(table2array(meanFeatures(:,CellsFeaturesLengthIndexs)) * pixelScale);
     stdFeatures(:,CellsFeaturesLengthIndexs) = table(table2array(stdFeatures(:,CellsFeaturesLengthIndexs)) * pixelScale);
 
-    meanFeatures(:,CellsFeaturesHeightIndexs) = table(table2array(meanFeatures(:,CellsFeaturesHeightIndexs)) * pixelScale);
-    stdFeatures(:,CellsFeaturesHeightIndexs) = table(table2array(stdFeatures(:,CellsFeaturesHeightIndexs)) * pixelScale);
+    if sum(CellsFeaturesHeightIndexs)~=0
+        meanFeatures(:,CellsFeaturesHeightIndexs) = table(table2array(meanFeatures(:,CellsFeaturesHeightIndexs)) * pixelScale);
+        stdFeatures(:,CellsFeaturesHeightIndexs) = table(table2array(stdFeatures(:,CellsFeaturesHeightIndexs)) * pixelScale);
+    end
 
     tissue3dFeatures(:,TissueFeaturesLengthIndexs) = table(table2array(tissue3dFeatures(:,TissueFeaturesLengthIndexs)) * pixelScale);
     lumen3dFeatures(:,TissueFeaturesLengthIndexs) = table(table2array(lumen3dFeatures(:,TissueFeaturesLengthIndexs)) * pixelScale);
@@ -48,6 +50,7 @@ function [meanFeatures,stdFeatures, tissue3dFeatures, lumen3dFeatures,hollowTiss
 
     meanFeatures(:,CellsFeaturesPerimeterIndexs) = splitvars(table(table2array(meanFeatures(:,CellsFeaturesPerimeterIndexs)) * pixelScale));
     stdFeatures(:,CellsFeaturesPerimeterIndexs) = splitvars(table(table2array(stdFeatures(:,CellsFeaturesPerimeterIndexs)) * pixelScale));
+
 
 
 end
