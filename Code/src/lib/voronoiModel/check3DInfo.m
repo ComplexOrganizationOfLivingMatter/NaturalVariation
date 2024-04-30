@@ -1,11 +1,10 @@
 function check3DInfo()
 
 % path = '/media/pedro/6TB/jesus/NaturalVariation/voronoi_SELECTED/bySeeds/';
-path = '/media/pedro/6TB/jesus/NaturalVariation/voronoi_SELECTED/bySeeds/500/';
+path = '/media/pedro/6TB/jesus/NaturalVariation/voronoi_SELECTED/bySeeds/30/';
 
 % matDir = dir(strcat(path, '*/*/*.mat'));
 matDir = dir(strcat(path, '*/*.mat'));
-
 
 surfaceRatioList = [8,2.45;16,2.08;20,1.91;30,1.52; 50,1.42;100,1.40; 500,1.15;1000,1.03];
 

@@ -1,4 +1,4 @@
-function voronoiModelPlane(planeAxis, nDots, nSeeds, lloydIter, plotBool, savePath, runId, numLayers, surfaceRatio)
+function voronoiModelPlane(planeAxis, nDots, nSeeds, lloydIter, plotBool, savePath, runId, numLayers, surfaceRatio, neighboursThreshold)
 
 %     voronoiModel(100, 50, 75, 100, 10, 1, false, '')
     tic
@@ -106,8 +106,14 @@ function voronoiModelPlane(planeAxis, nDots, nSeeds, lloydIter, plotBool, savePa
     
     for cellIx = 1:length(labels)
         cellId = cellIx;
-        numNeighs = [numNeighs; length(unique([(unique(neighsmat(neighsmat(:, 1)==cellId, 2))); unique(neighsmat(neighsmat(:, 2)==cellId, 1))]))];
-        neighsArray = [neighsArray, {unique([(unique(neighsmat(neighsmat(:, 1)==cellId, 2))); unique(neighsmat(neighsmat(:, 2)==cellId, 1))])}];
+        possibleNeighs = unique([(unique(neighsmat(neighsmat(:, 1)==cellId, 2))); unique(neighsmat(neighsmat(:, 2)==cellId, 1))]);
+        counts1 = histc(neighsmat(neighsmat(:, 1)==cellId, 2), possibleNeighs);
+        counts2 = histc(neighsmat(neighsmat(:, 2)==cellId, 1), possibleNeighs);
+        countsTotal = counts1+counts2;
+        thresholdedNeighbours = countsTotal>=neighboursThreshold;
+        currentNeighs = possibleNeighs(thresholdedNeighbours);
+        numNeighs = [numNeighs; length(currentNeighs)];
+        neighsArray = [neighsArray, {currentNeighs}];
     end
 
     uniqueLabels = unique(pstarts, 'stable');
@@ -207,8 +213,33 @@ function voronoiModelPlane(planeAxis, nDots, nSeeds, lloydIter, plotBool, savePa
     end
     
     %% STOP LLOYD
+
+    %% COMPARE W/ PLANE VORONOI DELAUNUAY
+    meanNumNeighsDelaunuay = compareWithKnownVoronoi(pstarts, vertex, nSeeds);
+    meanNumNeighs = mean(infoTable(infoTable.validCell==true, 'numNeighs').numNeighs);
     
-   
+    % Read the Excel file
+    comparisonData = readtable('/media/pedro/6TB/jesus/NaturalVariation/voronoiModel_18_findOptimalNeighboursThreshold/findOptimalNeighboursThreshold.xls');
+
+    % Find the next empty row
+    next_empty_row = size(comparisonData,1)+1;
+
+    % If the file is empty, start from the first row
+    if isempty(next_empty_row)
+        next_empty_row = 1;
+    end
+
+    comparisonData(next_empty_row, 1) = {neighboursThreshold};
+    comparisonData(next_empty_row, 2) = {nSeeds};
+    comparisonData(next_empty_row, 3) = {runId};
+    comparisonData(next_empty_row, 4) = {meanNumNeighs};
+    comparisonData(next_empty_row, 5) = {meanNumNeighsDelaunuay};
+    comparisonData(next_empty_row, 6) = {meanNumNeighs-meanNumNeighsDelaunuay};
+
+    % Write back to the Excel file
+    writetable(comparisonData, '/media/pedro/6TB/jesus/NaturalVariation/voronoiModel_18_findOptimalNeighboursThreshold/findOptimalNeighboursThreshold.xls');
+    
+    %%
     if plotBool == true
         %% capture and close
         ve = plot_fast_marching_mesh(vertex,faces, Q, [], options);
