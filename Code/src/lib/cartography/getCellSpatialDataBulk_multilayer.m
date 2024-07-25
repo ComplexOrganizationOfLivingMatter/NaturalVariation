@@ -127,6 +127,10 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
             [~, basalPerimeter, ~, basalNeighsOfNeighs, ~] = calculatePerimeters(basalCells, [], [], basalLayer, basal3dInfo, lateralLayer, []);
             
             basal_area_cells=cell2mat(struct2cell(regionprops(basalLayer,'Area'))).';
+
+            % keep just the basal Cells
+            basal_area_cells = basal_area_cells(basalCells);
+            basal3dInfo = basal3dInfo(basalCells); 
             
             %% CONVEX VOLUME, SOLIDITY, ASPECT RATIO, SPHERICITY, NORMALIZEDVOLUME, IRREGULARITYSHAPE INDEX, 
             cells3dFeatures = extract3dDescriptors(labelledImage, unique(labelledImage));
