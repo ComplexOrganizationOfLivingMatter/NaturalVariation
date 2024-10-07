@@ -110,7 +110,7 @@ for cyst=1:length(fixedCystsDir)
     [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage,'');
     
     basalLayerMask = basalLayer>0;
-    se = strel('disk', 5);
+    se = strel('disk', 10);
     basalLayerMask = imdilate(basalLayerMask, se);
     labelledImage_BASAL = labelledImage.*basalLayerMask;
     
