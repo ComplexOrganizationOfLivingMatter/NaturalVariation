@@ -23,6 +23,7 @@ function [rg, cellOutlierId] = tagCellOutliers(rg, labelledImage)
     for i=1:length(cellOutlierId)
         actualImg = bwlabeln(labelledImage==cellOutlierId(i));
         centroid = regionprops3(actualImg, 'Centroid');
+        indexCell = cellOutlierId(i);
         if size(centroid.Centroid, 1)>1
             warning('%s label identifies more than one cell\n', cells(indexCell));
             for centroidIndex = 1:size(centroid.Centroid, 1)
