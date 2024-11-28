@@ -23,12 +23,11 @@ function [rg, cellOutlierId] = tagCellOutliers(rg, labelledImage)
     for i=1:length(cellOutlierId)
         actualImg = bwlabeln(labelledImage==cellOutlierId(i));
         centroid = regionprops3(actualImg, 'Centroid');
-        indexCell = cellOutlierId(i);
         if size(centroid.Centroid, 1)>1
-            warning('%s label identifies more than one cell\n', cells(indexCell));
+            warning('%s label identifies more than one cell\n', cellOutlierId(i));
             for centroidIndex = 1:size(centroid.Centroid, 1)
                 rgSlice = rg(:, :, round(centroid.Centroid(centroidIndex, 3)));
-                rgSlice = insertText(rgSlice, [round(centroid.Centroid(centroidIndex, 1)), round(centroid.Centroid(centroidIndex, 2))], num2str(cells(indexCell)), 'TextColor', 'black', 'FontSize', 6, 'AnchorPoint', 'Center');
+                rgSlice = insertText(rgSlice, [round(centroid.Centroid(centroidIndex, 1)), round(centroid.Centroid(centroidIndex, 2))], num2str(cellOutlierId(i)), 'TextColor', 'black', 'FontSize', 6, 'AnchorPoint', 'Center');
                 rg(:, :, round(centroid.Centroid(centroidIndex, 3))) = rgSlice(:, :, 1);
             end
         else
