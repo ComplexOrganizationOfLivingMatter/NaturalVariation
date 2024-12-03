@@ -33,6 +33,7 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
     cellIDsArray = [];
     negativeCurvatureArray = [];
     nCellsArray = [];
+    validCellsArray = [];
     normXYPosArray = [];
     xyPosArray = [];
     zPosCentroidArray = [];
@@ -93,7 +94,8 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
         %% At least the 0.5% of lateral membrane contacting with other cell to be1 considered as neighbor.
         contactThreshold = 0.5;
         dilatedVx = 2;
-
+        
+        nCells = length(unique(labelledImage))-1;
         validCells = find(table2array(regionprops3(labelledImage,'Volume'))>0);
         noValidCells = [];
         
@@ -105,7 +107,6 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
         try
             
             [lateral3dInfo,totalLateralCellsArea,absoluteLateralContacts] = getLateralContacts(lateralLayer,dilatedVx,contactThreshold);
-
                     
             %% BASAL INFO: NEIGHBOURS, PERIMETER, AREA, 
             [basal3dInfo] = calculateNeighbours3D(basalLayer, dilatedVx, basalLayer == 0);
@@ -127,10 +128,6 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
             [~, basalPerimeter, ~, basalNeighsOfNeighs, ~] = calculatePerimeters(basalCells, [], [], basalLayer, basal3dInfo, lateralLayer, []);
             
             basal_area_cells=cell2mat(struct2cell(regionprops(basalLayer,'Area'))).';
-
-            % keep just the basal Cells
-            basal_area_cells = basal_area_cells(basalCells);
-            basal3dInfo = basal3dInfo(basalCells); 
             
             %% CONVEX VOLUME, SOLIDITY, ASPECT RATIO, SPHERICITY, NORMALIZEDVOLUME, IRREGULARITYSHAPE INDEX, 
             cells3dFeatures = extract3dDescriptors(labelledImage, unique(labelledImage));
@@ -148,7 +145,7 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
                 currentCellId = str2num(currentCellId{2});
                 
                 if ismember(currentCellId, basalCells)
-                    cells3dFeatures.basalperimeter(cellIx) = basalPerimeter(find(basalCells==currentCellId));
+                    cells3dFeatures.basalPerimeter(cellIx) = basalPerimeter(find(basalCells==currentCellId));
                     cells3dFeatures.basal_Area(cellIx) = basal_area_cells(find(basalCells==currentCellId));
                     cells3dFeatures.basalNeighsOfNeighs(cellIx) = (basalNeighsOfNeighs(find(basalCells==currentCellId)));
                     cells3dFeatures.basal_NumNeighs(cellIx) = length(basal3dInfo{find(basalCells==currentCellId)});
@@ -183,7 +180,8 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
         cystIDArray = [cystIDArray; repmat({cystName}, [size(normZPos,2), 1])];
         cystShapeArray = [cystShapeArray; repmat({cystShape}, [size(normZPos,2), 1])];
         negativeCurvatureArray = [negativeCurvatureArray; repmat({negativeCurvature}, [size(normZPos,2), 1])];
-        nCellsArray = [nCellsArray; repmat({length(validCells)}, [size(normZPos,2), 1])];
+        nCellsArray = [nCellsArray; repmat({nCells}, [size(normZPos,2), 1])];
+        validCellsArray = [validCellsArray; repmat({length(validCells)}, [size(normZPos,2), 1])];
         variableMeanArray = [variableMeanArray; repmat({mean(variableData)}, [size(normZPos,2), 1])];
         normVariableMeanArray = [normVariableMeanArray; repmat({mean(normVariableData)}, [size(normZPos,2), 1])];
 
@@ -207,6 +205,7 @@ end
     spatialDataTable.cystShape = cellfun(@(x) string(x), cystShapeArray);
     spatialDataTable.cystCurvature = cellfun(@(x) string(x), negativeCurvatureArray);
     spatialDataTable.nCells = nCellsArray;
+    spatialDataTable.validCells = validCellsArray;
     spatialDataTable.normZPos = normZPosArray';
     spatialDataTable.zPos = zPosArray';
     spatialDataTable.zPosCentroid = zPosCentroidArray';
