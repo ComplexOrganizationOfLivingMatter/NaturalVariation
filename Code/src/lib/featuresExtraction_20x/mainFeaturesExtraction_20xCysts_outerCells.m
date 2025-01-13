@@ -110,7 +110,7 @@ for cyst=1:length(fixedCystsDir)
     [apicalLayer,basalLayer,lateralLayer,lumenImage] = getApicalBasalLateralAndLumenFromCyst(labelledImage,'');
     
     basalLayerMask = basalLayer>0;
-    se = strel('disk', 10);
+    se = strel('disk', 10); %% 5 tested 9ene24 issues found
     basalLayerMask = imdilate(basalLayerMask, se);
     labelledImage_BASAL = labelledImage.*basalLayerMask;
     
@@ -129,7 +129,7 @@ for cyst=1:length(fixedCystsDir)
 
         try
             %% Obtain 3D descriptors
-            [allGeneralInfo_BASAL,allTissues_BASAL,allLumens_BASAL,allHollowTissue3dFeatures_BASAL,allNetworkFeatures_BASAL,totalMeanCellsFeatures_BASAL,totalStdCellsFeatures]=calculate3DMorphologicalFeatures(labelledImage_BASAL,apicalLayer,basalLayer,lateralLayer,lumenImage,path2save,cystName,pixelScale,contactThreshold, [], [], dilatedVx);
+            [allGeneralInfo_BASAL,allTissues_BASAL,allLumens_BASAL,allHollowTissue3dFeatures_BASAL,allNetworkFeatures_BASAL,totalMeanCellsFeatures_BASAL,totalStdCellsFeatures]=calculate3DMorphologicalFeatures_outerCells(labelledImage_BASAL,apicalLayer,basalLayer,lateralLayer,lumenImage,path2save,cystName,pixelScale,contactThreshold, [], [], dilatedVx);
         catch
             warningCyst = [warningCyst; string(cystName)];
             warning("on")
@@ -170,7 +170,7 @@ for cyst=1:length(fixedCystsDir)
         
         try
             %% Obtain 3D descriptors
-            [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetworkFeatures,totalMeanCellsFeatures,totalStdCellsFeatures]=calculate3DMorphologicalFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,path2save,cystName,pixelScale,contactThreshold, [], [], dilatedVx);
+            [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetworkFeatures,totalMeanCellsFeatures,totalStdCellsFeatures]=calculate3DMorphologicalFeatures_outerCells(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,path2save,cystName,pixelScale,contactThreshold, [], [], dilatedVx);
         catch
             warningCyst = [warningCyst; string(cystName)];
             warning("on")
@@ -227,4 +227,5 @@ writetable(dataTable,tablePath,'Sheet','basalInfo');
 % writetable(dataTable_sheet_3,tablePath,'Sheet','meanCellParameters');
 % dataTable_sheet_4 = dataTable(:, {'ID_Cysts', 'std_cell_apical_Area', 'std_cell_basal_Area', 'std_cell_lateral_Area', 'std_cell_average_cell_wall_Area', 'std_cell_std_cell_wall_Area', 'std_cell_Volume', 'std_cell_cell_height', 'std_cell_apical_NumNeighs', 'std_cell_basal_NumNeighs', 'std_cell_lateral_NumNeighs', 'std_cell_ConvexVolume', 'std_cell_Solidity', 'std_cell_SurfaceArea', 'std_cell_sphericity', 'std_cell_PrincipalAxisLength', 'std_cell_aspectRatio', 'std_cell_irregularityShapeIndex', 'std_coefCluster', 'std_betCentrality'});
 % writetable(dataTable_sheet_4,tablePath,'Sheet','stdCellParameters');
+
 
