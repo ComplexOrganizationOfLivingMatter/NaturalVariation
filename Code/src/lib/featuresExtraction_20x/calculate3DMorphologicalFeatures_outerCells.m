@@ -38,15 +38,16 @@ function [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetwo
         validCells = find(table2array(regionprops3(labelledImage,'Volume'))>0);
         noValidCells = [];
         
-%         validCells_size = find(table2array(regionprops3(labelledImage,'Volume'))>0);
-%         validCells_apicoBasal = intersect(unique(apicalLayer),unique(basalLayer));
-%         validCells = intersect(unique(validCells_size), unique(validCells_apicoBasal));
-%         noValidCells = setdiff(unique(labelledImage), validCells);
+        validCells_size = find(table2array(regionprops3(labelledImage,'Volume'))>0);
+        validCells_apicoBasal = intersect(unique(apicalLayer),unique(basalLayer));
+        validCells = intersect(unique(validCells_size), unique(validCells_apicoBasal));
+        noValidCells = setdiff(unique(labelledImage), validCells);
         
-%         if isempty(validCells)
-%             validCells = find(table2array(regionprops3(labelledImage,'Volume'))>0);
-%             noValidCells = [];
-%         end
+        if isempty(validCells)
+            validCells = find(table2array(regionprops3(labelledImage,'Volume'))>0);
+            noValidCells = [];
+        end
+        
         %% Obtain 3D features from Cells, Tissue, Lumen and Tissue+Lumen
         [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatures, polygon_distribution_apical, polygon_distribution_basal,polygon_distribution_lateral, numValidCells,numTotalCells, surfaceRatio3D, validCells, apicoBasalNeighs] = obtain3DFeatures_outerCells(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,path2save, '', contactThreshold, dilatedVx);
         
