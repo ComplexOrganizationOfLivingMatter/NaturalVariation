@@ -119,9 +119,9 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
             elseif size(basal3dInfo.neighbourhood,1) > size(lateral3dInfo',1)
                 basal3dInfo.neighbourhood=basal3dInfo.neighbourhood(1:size(lateral3dInfo,2),1);
             end
-%             basal3dInfo = basal3dInfo.neighbourhood';            
+             basal3dInfo = basal3dInfo.neighbourhood';            
 
-            basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,basal3dInfo.neighbourhood','UniformOutput',false);  %% commented 20250113
+%            basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,basal3dInfo.neighbourhood','UniformOutput',false);  %% commented 20250113
 
             
             basalCells = unique(basalLayer);
