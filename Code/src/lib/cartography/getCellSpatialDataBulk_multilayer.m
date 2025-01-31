@@ -123,6 +123,8 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
 
 %            basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,basal3dInfo.neighbourhood','UniformOutput',false);  %% commented 20250113
 
+            total3Dneighbours = calculateTotalNeighbours3D(labelledImage, dilatedVx, labelledImage == 0);
+            total3Dneighbours = cellfun(@numel, total3Dneighbours.neighbourhood);
             
             basalCells = unique(basalLayer);
             basalCells = basalCells(basalCells>0);
@@ -153,7 +155,9 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
                     cells3dFeatures.basal_NumNeighs(cellIx) = length(basal3dInfo{find(basalCells==currentCellId)});
                 end
             end
-                        
+
+            cells3dFeatures.total3DNeighbours = total3Dneighbours;
+
             %% JOIN TABLES
             cells3dFeatures.totalBasalArea = repmat(sum(cells3dFeatures.basal_Area), size(cells3dFeatures, 1), 1);
             
