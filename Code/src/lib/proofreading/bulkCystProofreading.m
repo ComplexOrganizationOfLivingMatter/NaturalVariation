@@ -17,7 +17,7 @@
 addpath(genpath('D:\Jesus\tutorial\NaturalVariation-main\'))
 
 %% Last fixed Cyst.
-lastFixedCyst = []; %Example '7d.1.B.5_3.tif' // all cysts are in the same folder. That's to resume the fixing where you stopped (based on the xls)
+lastFixedCyst =['']; %Example '7d.1.B.5_3.tif' // all cysts are in the same folder. That's to resume the fixing where you stopped (based on the xls)
 
 %% No-voronoi Warnings table path
 [warningsTableName, warningsPath] = uigetfile('D:\Jesus\tutorial\*.xls', 'Select warnings table');
@@ -45,10 +45,10 @@ validCysts = warningsTable;
 
 %% filter (4 wrong cells or less [user customizable])
 %validCysts(strcmp(validCysts.cellsNoBothSurfaces,'OPEN cyst'), :) = [];
-lengths = cellfun(@(x) length(str2num(x)), validCysts.cellsNoBothSurfaces, 'UniformOutput', false);
-lessThan4 = cellfun(@(x) x, lengths)<=4;
-validCysts = validCysts(lessThan4, :);
-errorNum = lengths(lessThan4);
+% lengths = cellfun(@(x) length(str2num(x)), validCysts.cellsNoBothSurfaces, 'UniformOutput', false);
+% lessThan4 = cellfun(@(x) x, lengths)<=4;
+% validCysts = validCysts(lessThan4, :);
+% errorNum = lengths(lessThan4);
 
 if ~isempty(lastFixedCyst)
     startCyst = find(strcmp(validCysts.name, lastFixedCyst)) + 1;
