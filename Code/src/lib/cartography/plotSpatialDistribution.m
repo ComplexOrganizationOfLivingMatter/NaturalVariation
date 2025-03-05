@@ -106,18 +106,18 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
         end
 
         %% Obtain 3D features from Cells, Tissue, Lumen and Tissue+Lumen
-        try
-            [cells3dFeatures, ~, ~,~, ~, ~,~, ~,~, ~, ~, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,'',contactThreshold, dilatedVx);
+%         try
+            [cells3dFeatures, ~, ~,~, ~, ~,~, ~,~, ~, ~, apicoBasalNeighs] = obtain3DFeatures(labelledImage,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,'','',contactThreshold, dilatedVx);
             %% Calculate Network features            
             [degreeNodesCorrelation,coefCluster,betweennessCentrality] = obtainNetworksFeatures(apicoBasalNeighs,validCells, '');
             
             [cells3dFeatures, ~,~,~] = convertPixelsToMicrons(cells3dFeatures, cells3dFeatures, cells3dFeatures, cells3dFeatures,cells3dFeatures, pixelScale);
 
-        catch
-            warning("ERROR")
-            disp(cystName)
-            continue
-        end
+%         catch
+%              warning("ERROR")
+%             disp(cystName)
+%             continue
+%         end
         if variable == "scutoids"
             colours = [];
             maxValue = 1;
@@ -144,6 +144,8 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             disp(strcat('scutoids: ', num2str(scu/size(cells3dFeatures, 1))));
                 elseif contains(variable,"NumNeighs")
             colours = [];
+            uniqueLabels = unique(labelledImage);
+            uniqueLabels = uniqueLabels(uniqueLabels~=0);
             maxValue = 9;
             minValue = 3;
             cMap = [1 0 0;254/255,101/255,0; 0, 152/255, 0;52/255,102/255,254/255;128/255,0,128/255;1/255,108/255,127/255;0 0 0];
@@ -394,6 +396,7 @@ function plotSpatialDistribution(rgStackPath, labelsPath, variable, savePath, sa
             paint3D(apicalLayerToDraw, 1:length(apicalCellsToDraw), colours, 2);
         else
             paint3D(labelledImage, uniqueLabels, colours, 3, 2);
+%             cells3dFeatures.(variable)
         end
         material([0.5 0.2 0.0 10 1])
         fig = get(groot,'CurrentFigure');

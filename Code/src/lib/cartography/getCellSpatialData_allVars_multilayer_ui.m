@@ -17,7 +17,7 @@ function getCellSpatialData_allVars_multilayer_ui()
 %     savePath = '/home/pedro/Escritorio/testEMB/testOrgP_ErrorAllvars/';
 
     %% select variable to plot
-    params = ["Volume", "PrincipalAxisLength", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "basal_NumNeighs", "basal_Area", "basalPerimeter", "basalNeighsOfNeighs", "totalBasalArea"];
+    params = ["total3DNeighbours","Volume", "PrincipalAxisLength", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "basal_NumNeighs", "basal_Area", "basalPerimeter", "basalNeighsOfNeighs", "totalBasalArea"];
 
     for idx = 1:length(params) 
        param = params{idx};
@@ -37,7 +37,7 @@ function getCellSpatialData_allVars_multilayer_ui()
         variables = [variables, {struct.(C{idx(k)})}];
     end
         
-    variables = params;
+    variables = variables;
 
     %% Ask for saveName
     prompt = 'Enter a saveName: ';
@@ -52,7 +52,7 @@ function getCellSpatialData_allVars_multilayer_ui()
     end
     
     %JOIN TABLES
-    for variableIx=1:length(variables)
+    for varibaleIx=1:length(variables)
         if variableIx == 1
             variable = variables(variableIx);
             variable = variable{1};

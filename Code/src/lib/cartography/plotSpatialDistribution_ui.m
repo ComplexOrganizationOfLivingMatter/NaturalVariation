@@ -17,10 +17,12 @@ function plotSpatialDistribution_ui
     addpath(genpath('D:\Jesus\tutorial\NaturalVariation-main\'));
 
     labelsPath = uigetdir('D:\Jesus\tutorial', 'Select label images (.mat or .tif) path');
+%     labelsPath = 'D:\Laura\Models\CYSTS\Cysts FBS\Natural Variation\AllCystsFBS2_curated\revision_Euler\fixed_cyst\';
     rgStackPath = uigetdir('D:\Jesus\tutorial', 'Select raw images (.tif) path');
+%     rgStackPath = 'D:\Laura\Models\CYSTS\Cysts FBS\Natural Variation\AllCystsFBS2_curated\revision_Euler\rgstack\';
     savePath = uigetdir('D:\Jesus\tutorial', 'Select save path');
-
-    %% select variable to plot
+%     savePath = 'D:\Laura\Models\CYSTS\Cysts FBS\Natural Variation\AllCystsFBS2_curated\revision_Euler\';
+    % select variable to plot
     params = ["ID_Cell", "Volume", "EquivDiameter", "PrincipalAxisLength", "ConvexVolume", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "apical_NumNeighs", "apical_Area", "basal_NumNeighs", "basal_Area", "cell_height", "lateral_NumNeighs", "lateral_Area", "average_cell_wall_Area", "std_cell_wall_Area", "scutoids", "apicoBasalTransitions", "surfaceRatio", "betCentrality", "coefCluster", "GRAY"];
 
     for idx = 1:length(params) 
@@ -40,10 +42,10 @@ function plotSpatialDistribution_ui
     for k = 1:numel(idx)
         variable = [variable, {struct.(C{idx(k)})}];
     end
-    
-    %% Ask for saveName
+%     variable = {'basal_NumNeighs'};
+    % Ask for saveName
     prompt = 'Enter a saveName: ';
     saveName = input(prompt, 's');
-    
+%     saveName = 'a';
     plotSpatialDistribution(rgStackPath, labelsPath, variable{1}, savePath, saveName)
 end
