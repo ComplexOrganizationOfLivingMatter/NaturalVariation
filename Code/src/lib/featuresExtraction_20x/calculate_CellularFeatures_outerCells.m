@@ -49,7 +49,6 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
     %% Correct apicoBasalTransitions
     apicoBasalTransitions = apicoBasalTransitions.*scutoids_cells;
 
-
     neighbours_data = table(apical3dInfo, basal3dInfo, lateral3dInfo);
     neighbours_data.Properties.VariableNames = {'Apical','Basal','Lateral'};
 
@@ -64,6 +63,17 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
     basal_area_cells=cell2mat(struct2cell(regionprops(basalLayer,'Area'))).';
     lateral_area_cells = totalLateralCellsArea;
     
+    %% added 20250225 cause of size mismatch when merging tables
+    apical_area_cells_aux = zeros(size(totalLateralCellsArea));
+    basal_area_cells_aux = zeros(size(totalLateralCellsArea));
+
+    apical_area_cells_aux(1:size(apical_area_cells)) = apical_area_cells;
+    basal_area_cells_aux(1:size(basal_area_cells)) = basal_area_cells;
+
+    apical_area_cells = apical_area_cells_aux;
+    basal_area_cells = basal_area_cells_aux;
+    %
+    
     average_lateral_wall = cellfun(@mean, absoluteLateralContacts);
     std_lateral_wall = cellfun(@std, absoluteLateralContacts);
     
@@ -71,7 +81,8 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
 
     %%  Calculate volume cells
     volume_cells=table2array(regionprops3(labelledImage,'Volume'));
-
+    volume_cells = volume_cells(1:length(basal3dInfo));
+    
     %% Calculate polygon distribution
     [polygon_distribution_Apical] = calculate_polygon_distribution(cellfun(@length, apical3dInfo), validCells);
     [polygon_distribution_Basal] = calculate_polygon_distribution(cellfun(@length, basal3dInfo), validCells);

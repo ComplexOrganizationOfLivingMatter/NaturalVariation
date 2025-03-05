@@ -104,7 +104,7 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         cells3dFeatures = horzcat(cells3dFeatures, perimeterAndNeighsOfNeighsTable);
         %% Save variables
 %         if ~isempty(isempty(path2save))
-%             save(fullfile(path2save, strcat(fileName,'_morphological3dFeatures.mat')), 'cells3dFeatures', 'tissue3dFeatures', 'lumen3dFeatures', 'polygon_distribution_apical', 'polygon_distribution_basal','polygon_distribution_lateral', 'cellularFeaturesValidCells', 'numValidCells','numTotalCells', 'surfaceRatio3D', 'polygon_distribution_lateral','apicoBasalNeighs', 'hollowTissue3dFeatures','apical3dInfo','basal3dInfo','lateral3dInfo');
+            save(fullfile(path2save, strcat(fileName,'_morphological3dFeatures.mat')), 'cells3dFeatures', 'tissue3dFeatures', 'lumen3dFeatures', 'polygon_distribution_apical', 'polygon_distribution_basal','polygon_distribution_lateral', 'cellularFeaturesValidCells', 'numValidCells','numTotalCells', 'surfaceRatio3D', 'polygon_distribution_lateral','apicoBasalNeighs', 'hollowTissue3dFeatures','apical3dInfo','basal3dInfo','lateral3dInfo');
 %         end
     else
         load(fullfile(path2save, 'morphological3dFeatures.mat'), 'cells3dFeatures', 'tissue3dFeatures', 'lumen3dFeatures', 'polygon_distribution_apical', 'polygon_distribution_basal','polygon_distribution_lateral', 'cellularFeaturesValidCells', 'numValidCells','numTotalCells', 'surfaceRatio3D', 'polygon_distribution_lateral','apicoBasalNeighs', 'hollowTissue3dFeatures','apical3dInfo','basal3dInfo','lateral3dInfo');

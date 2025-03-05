@@ -47,7 +47,7 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
     [scutoids_cells,apical3dInfo,basal3dInfo,lateral3dInfo] = filterScutoids(apical3dInfo, basal3dInfo, lateral3dInfo, scutoids_cells);
     
     %% Correct apicoBasalTransitions
-    apicoBasalTransitions = apicoBasalTransitions.*scutoids_cells;
+     apicoBasalTransitions = cellfun(@(x, y) length(unique(vertcat(setdiff(y,x), setdiff(x,y)))), apical3dInfo,basal3dInfo);
 
 
     neighbours_data = table(apical3dInfo, basal3dInfo, lateral3dInfo);
@@ -64,6 +64,12 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
     basal_area_cells=cell2mat(struct2cell(regionprops(basalLayer,'Area'))).';
     lateral_area_cells = totalLateralCellsArea;
     
+    if size(apical_area_cells,1)>size(basal_area_cells,1)
+        basal_area_cells(size(basal_area_cells,1)+1:size(apical_area_cells,1))=0;
+    elseif size(apical_area_cells,1)<size(basal_area_cells,1)
+        apical_area_cells(size(apical_area_cells,1)+1:size(basal_area_cells,1))=0;
+    end
+        
     average_lateral_wall = cellfun(@mean, absoluteLateralContacts);
     std_lateral_wall = cellfun(@std, absoluteLateralContacts);
     

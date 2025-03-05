@@ -2,6 +2,18 @@ function cell_heights = calculateCellHeight(apicalLayer, basalLayer)
    
     centroidsApical = table2array(regionprops3(apicalLayer,'Centroid'));
    	centroidsBasal = table2array(regionprops3(basalLayer,'Centroid'));
+
+    if size(centroidsBasal,1)<size(centroidsApical,1)
+        for nCell=size(centroidsBasal,1)+1:size(centroidsApical,1)
+             centroidsBasal=[centroidsBasal;NaN NaN NaN];
+        end
+    end
+    
+    if size(centroidsApical,1)<size(centroidsBasal,1)
+        for nCell=size(centroidsApical,1)+1:size(centroidsBasal,1)
+             centroidsApical=[centroidsApical;NaN NaN NaN];
+        end
+    end
     
     centroidsApicalAux = centroidsApical;
     centroidsBasalAux = centroidsBasal;

@@ -80,6 +80,14 @@ for cyst=1:length(fixedCystsDir)
         labelledImage = readStackTif(strcat(fixedCystsPath, cystName, '.tif'));
     end
     
+    %% RELABEL from 0 to #uniqueCells
+        idLabels = unique(labelledImage);
+        imgRelabel = zeros(size(labelledImage));
+        for id = 1:length(idLabels)-1
+            imgRelabel(labelledImage==idLabels(id+1))= id;
+        end
+    labelledImage = imgRelabel;
+    
     %% Read rgStack and imgInfo
     [rgStackImg, imgInfo] = readStackTif(strcat(originalImagesPath, cystName, '.tif'));
     
