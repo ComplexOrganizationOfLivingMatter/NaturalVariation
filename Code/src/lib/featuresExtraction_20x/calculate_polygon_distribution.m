@@ -5,6 +5,7 @@ function [polygon_distribution]=calculate_polygon_distribution( sides_cells, val
     
   
     %Calculate percentages
+    digons=sum(sides_valid_cells==2)/length(sides_valid_cells);
     triangles=sum(sides_valid_cells==3)/length(sides_valid_cells);
     squares=sum(sides_valid_cells==4)/length(sides_valid_cells);
     pentagons=sum(sides_valid_cells==5)/length(sides_valid_cells);
@@ -18,13 +19,15 @@ function [polygon_distribution]=calculate_polygon_distribution( sides_cells, val
     % Clasify in a variable type cell
     polygon_distribution={};
     
-    polygon_distribution{1,1}='triangles';polygon_distribution{1,2}='squares';polygon_distribution{1,3}='pentagons';
-    polygon_distribution{1,4}='hexagons';polygon_distribution{1,5}='heptagons';polygon_distribution{1,6}='octogons';
-    polygon_distribution{1,7}='nonagons';polygon_distribution{1,8}='decagons';
+    polygon_distribution{1,1}='digons'; polygon_distribution{1,2}='triangles'; polygon_distribution{1,3}='squares';  
+    polygon_distribution{1,4}='pentagons'; polygon_distribution{1,5}='hexagons'; polygon_distribution{1,6}='heptagons';  
+    polygon_distribution{1,7}='octogons'; polygon_distribution{1,8}='nonagons'; polygon_distribution{1,9}='decagons';
 
-    polygon_distribution{2,1}=triangles;polygon_distribution{2,2}=squares;polygon_distribution{2,3}=pentagons;
-    polygon_distribution{2,4}=hexagons;polygon_distribution{2,5}=heptagons;polygon_distribution{2,6}=octogons;
-    polygon_distribution{2,7}=nonagons;polygon_distribution{2,8}=decagons;
+
+    polygon_distribution{2,1}=digons; polygon_distribution{2,2}=triangles; polygon_distribution{2,3}=squares;  
+    polygon_distribution{2,4}=pentagons; polygon_distribution{2,5}=hexagons; polygon_distribution{2,6}=heptagons;  
+    polygon_distribution{2,7}=octogons; polygon_distribution{2,8}=nonagons; polygon_distribution{2,9}=decagons;
+
     
        
 end
