@@ -119,9 +119,9 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
             elseif size(basal3dInfo.neighbourhood,1) > size(lateral3dInfo',1)
                 basal3dInfo.neighbourhood=basal3dInfo.neighbourhood(1:size(lateral3dInfo,2),1);
             end
-             basal3dInfo = basal3dInfo.neighbourhood';            
+            basal3dInfo = basal3dInfo.neighbourhood';      
 
-%            basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,basal3dInfo.neighbourhood','UniformOutput',false);  %% commented 20250113
+%             basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,basal3dInfo.neighbourhood','UniformOutput',false);  %% commented 20250113
 
             
             basalCells = unique(basalLayer);
@@ -130,10 +130,10 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
             [~, basalPerimeter, ~, basalNeighsOfNeighs, ~] = calculatePerimeters(basalCells, [], [], basalLayer, basal3dInfo, lateralLayer, []);
             
             basal_area_cells=cell2mat(struct2cell(regionprops(basalLayer,'Area'))).';
-            
+
             total3Dneighbours = calculateTotalNeighbours3D(labelledImage, dilatedVx, labelledImage == 0);
             total3Dneighbours = cellfun(@numel, total3Dneighbours.neighbourhood);
-
+            
             %% CONVEX VOLUME, SOLIDITY, ASPECT RATIO, SPHERICITY, NORMALIZEDVOLUME, IRREGULARITYSHAPE INDEX, 
             cells3dFeatures = extract3dDescriptors(labelledImage, unique(labelledImage));
             cells3dFeatures = cells3dFeatures(~strcmpi(cells3dFeatures.ID_Cell,'cell_0'), :);
@@ -151,13 +151,15 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
                 
                 if ismember(currentCellId, basalCells)
                     cells3dFeatures.basalPerimeter(cellIx) = basalPerimeter(find(basalCells==currentCellId));
-                    cells3dFeatures.basal_Area(cellIx) = basal_area_cells(find(basalCells==currentCellId));
+                    cells3dFeatures.basal_Area(cellIx) = basal_area_cells(currentCellId);
                     cells3dFeatures.basalNeighsOfNeighs(cellIx) = (basalNeighsOfNeighs(find(basalCells==currentCellId)));
-                    cells3dFeatures.basal_NumNeighs(cellIx) = length(basal3dInfo{find(basalCells==currentCellId)});
+                    cells3dFeatures.basal_NumNeighs(cellIx) = length(basal3dInfo{currentCellId});
                 end
             end
-            %add total3Dneighbours  
+                
+            % add total3dNeighbours
             cells3dFeatures.total3DNeighbours = total3Dneighbours;
+            
             %% JOIN TABLES
             cells3dFeatures.totalBasalArea = repmat(sum(cells3dFeatures.basal_Area), size(cells3dFeatures, 1), 1);
             
@@ -190,7 +192,7 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
         validCellsArray = [validCellsArray; repmat({length(validCells)}, [size(normZPos,2), 1])];
         variableMeanArray = [variableMeanArray; repmat({mean(variableData)}, [size(normZPos,2), 1])];
         normVariableMeanArray = [normVariableMeanArray; repmat({mean(normVariableData)}, [size(normZPos,2), 1])];
-
+        
         cellIDsArray = [cellIDsArray, cellIDArray'];
         normZPosArray = [normZPosArray, normZPos];      
         zPosCentroidArray = [zPosCentroidArray, zPosCentroid];        
