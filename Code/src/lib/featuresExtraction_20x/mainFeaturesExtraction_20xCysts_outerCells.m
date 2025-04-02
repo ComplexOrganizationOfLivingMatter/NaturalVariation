@@ -211,7 +211,7 @@ for cyst=1:length(fixedCystsDir)
     %% build and write table
 %     aux_table = [allGeneralInfo, allTissues, allHollowTissue3dFeatures, allLumens, allNetworkFeatures, totalMeanCellsFeatures, totalStdCellsFeatures, cystShape, negativeCurvature, perCell, percentageLumenSpace];
     
-    aux_table = [allGeneralInfo_BASAL.ID_Cysts, nCells_wholeTissue, allGeneralInfo_BASAL.NCells_valid, allTissues.tissue_Volume, allTissues.tissue_Solidity, allTissues_BASAL.tissue_PrincipalAxisLength, allTissues_BASAL.tissue_SurfaceArea, totalMeanCellsFeatures.mean_cell_Volume, totalMeanCellsFeatures.mean_cell_Solidity, totalMeanCellsFeatures_BASAL.mean_cell_basal_NumNeighs, allTissues_BASAL.tissue_apical_digons, allTissues_BASAL.tissue_basal_triangles, allTissues_BASAL.tissue_basal_squares, allTissues_BASAL.tissue_basal_pentagons, allTissues_BASAL.tissue_basal_hexagons, allTissues_BASAL.tissue_basal_heptagons, allTissues_BASAL.tissue_basal_octogons, allTissues_BASAL.tissue_basal_nonagons, totalMeanCellsFeatures_BASAL.mean_cell_basal_Area, totalMeanCellsFeatures_BASAL.mean_cell_basalPerimeter];
+    aux_table = [allGeneralInfo_BASAL.ID_Cysts, nCells_wholeTissue, allGeneralInfo_BASAL.NCells_valid, allTissues.tissue_Volume, allTissues.tissue_Solidity, allTissues_BASAL.tissue_PrincipalAxisLength, allTissues_BASAL.tissue_SurfaceArea, totalMeanCellsFeatures.mean_cell_Volume, totalMeanCellsFeatures.mean_cell_Solidity, totalMeanCellsFeatures_BASAL.mean_cell_basal_NumNeighs, allTissues_BASAL.tissue_basal_digons, allTissues_BASAL.tissue_basal_triangles, allTissues_BASAL.tissue_basal_squares, allTissues_BASAL.tissue_basal_pentagons, allTissues_BASAL.tissue_basal_hexagons, allTissues_BASAL.tissue_basal_heptagons, allTissues_BASAL.tissue_basal_octogons, allTissues_BASAL.tissue_basal_nonagons,allTissues_BASAL.tissue_basal_pentagons,totalMeanCellsFeatures_BASAL.mean_cell_basal_Area, totalMeanCellsFeatures_BASAL.mean_cell_basalPerimeter];
     cell2table(aux_table);
     dataTable = [dataTable; aux_table];
     
@@ -228,4 +228,3 @@ writetable(dataTable,tablePath,'Sheet','basalInfo');
 % writetable(dataTable_sheet_3,tablePath,'Sheet','meanCellParameters');
 % dataTable_sheet_4 = dataTable(:, {'ID_Cysts', 'std_cell_apical_Area', 'std_cell_basal_Area', 'std_cell_lateral_Area', 'std_cell_average_cell_wall_Area', 'std_cell_std_cell_wall_Area', 'std_cell_Volume', 'std_cell_cell_height', 'std_cell_apical_NumNeighs', 'std_cell_basal_NumNeighs', 'std_cell_lateral_NumNeighs', 'std_cell_ConvexVolume', 'std_cell_Solidity', 'std_cell_SurfaceArea', 'std_cell_sphericity', 'std_cell_PrincipalAxisLength', 'std_cell_aspectRatio', 'std_cell_irregularityShapeIndex', 'std_coefCluster', 'std_betCentrality'});
 % writetable(dataTable_sheet_4,tablePath,'Sheet','stdCellParameters');
-
