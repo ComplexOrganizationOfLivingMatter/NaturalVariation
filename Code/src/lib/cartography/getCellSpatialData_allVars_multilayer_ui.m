@@ -17,7 +17,7 @@ function getCellSpatialData_allVars_multilayer_ui()
 %     savePath = '/home/pedro/Escritorio/testEMB/testOrgP_ErrorAllvars/';
 
     %% select variable to plot
-    params = ["total3DNeighbours","Volume", "PrincipalAxisLength", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "basal_NumNeighs", "basal_Area", "basalPerimeter", "basalNeighsOfNeighs", "totalBasalArea"];
+    params = ["total3DNeighbours","Volume", "PrincipalAxisLength", "Solidity", "SurfaceArea", "aspectRatio", "sphericity", "normalizedVolume", "irregularityShapeIndex", "basal_NumNeighs", "basal_Area", "basalPerimeter", "basalNeighsOfNeighs", "totalBasalArea", "basal3dInfo"];
 
     for idx = 1:length(params) 
        param = params{idx};
