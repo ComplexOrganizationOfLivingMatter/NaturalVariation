@@ -43,6 +43,7 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
     normVariableMeanArray = [];
     
     for cyst=1:length(fixedCystsDir)
+        warningStatus = 0;
 
         %% Extract cyst name
         cystName = fixedCystsDir(cyst).name;
@@ -142,6 +143,7 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
             cells3dFeatures.basalNeighsOfNeighs = repmat(0, size(cells3dFeatures,1), 1);
             cells3dFeatures.basal_NumNeighs = repmat(0, size(cells3dFeatures,1), 1);
             cells3dFeatures.basal_Area = repmat(0, size(cells3dFeatures,1), 1);
+            cells3dFeatures.basal3dInfo = cell(size(cells3dFeatures,1), 1); 
             
             for cellIx = 1:size(cells3dFeatures,1)
                 currentCellId = cells3dFeatures.ID_Cell(cellIx);
@@ -154,6 +156,8 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
                     cells3dFeatures.basal_Area(cellIx) = basal_area_cells(currentCellId);
                     cells3dFeatures.basalNeighsOfNeighs(cellIx) = (basalNeighsOfNeighs(find(basalCells==currentCellId)));
                     cells3dFeatures.basal_NumNeighs(cellIx) = length(basal3dInfo{currentCellId});
+                    cells3dFeatures.basal3dInfo(cellIx) = basal3dInfo(currentCellId);
+
                 end
             end
                 
@@ -172,7 +176,46 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
         data = cells3dFeatures(:, variable).Variables;
         
         cellIDArray = cells3dFeatures.ID_Cell;
+        
+        [tissue3dFeatures] = extract3dDescriptors(labelledImage>0|lumenImage>0, 1);
+
+        cystShape = clasifyCyst(tissue3dFeatures.PrincipalAxisLength, 0.1);
+        negativeCurvature = {evaluateCurvNeg(tissue3dFeatures.Solidity, 0.9)};
                 
+        if strcmp(variable, "basal3dInfo")
+            basal3dInfo = arrayfun(@(i) ['[' num2str(basal3dInfo{i}') ']'], 1:numel(basal3dInfo), 'UniformOutput', false);    
+            
+            cystIDArray = [cystIDArray; repmat({cystName}, [size(basal3dInfo,2), 1])];
+            cystShapeArray = [cystShapeArray; repmat({cystShape}, [size(basal3dInfo,2), 1])];
+            negativeCurvatureArray = [negativeCurvatureArray; repmat({negativeCurvature}, [size(basal3dInfo,2), 1])];
+            nCellsArray = [nCellsArray; repmat({nCells}, [size(basal3dInfo,2), 1])];
+            validCellsArray = [validCellsArray; repmat({length(validCells)}, [size(basal3dInfo,2), 1])];
+            variableMeanArray = [variableMeanArray; basal3dInfo'];
+            normVariableMeanArray = [normVariableMeanArray; basal3dInfo'];
+            
+            normZPos = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+            zPosCentroid = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+            zPos = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+            normXYPos = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+            xyPos = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+            polarDist = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+            polarDistr = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+
+            normVariableData = basal3dInfo;
+            variableData = basal3dInfo;
+
+            cellIDsArray = [cellIDsArray, cellIDArray'];
+            normZPosArray = [normZPosArray, normZPos'];      
+            zPosCentroidArray = [zPosCentroidArray, zPosCentroid'];        
+            zPosArray = [zPosArray, zPos'];     
+            normXYPosArray = [normXYPosArray, normXYPos'];        
+            xyPosArray = [xyPosArray, xyPos'];   
+            normVariableDataArray = [normVariableDataArray, normVariableData];  
+            variableDataArray = [variableDataArray, variableData];
+            polarDistArray = [polarDistArray, polarDist'];
+            polarDistrArray = [polarDistrArray, polarDistr'];
+        end
+        
         try
             [normZPos, zPos, normVariableData, variableData, xyPos, normXYPos, zPosCentroid, polarDist, polarDistr] = getCellSpatialData(labelledImage, data, cellIDArray, variable, pixelScale);
         catch
@@ -180,10 +223,6 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
             continue
         end
         
-        [tissue3dFeatures] = extract3dDescriptors(labelledImage>0|lumenImage>0, 1);
-
-        cystShape = clasifyCyst(tissue3dFeatures.PrincipalAxisLength, 0.1);
-        negativeCurvature = {evaluateCurvNeg(tissue3dFeatures.Solidity, 0.9)};
 
         cystIDArray = [cystIDArray; repmat({cystName}, [size(normZPos,2), 1])];
         cystShapeArray = [cystShapeArray; repmat({cystShape}, [size(normZPos,2), 1])];
@@ -194,15 +233,15 @@ function getCellSpatialDataBulk_multilayer(originalImagesPath, fixedCystsPath, v
         normVariableMeanArray = [normVariableMeanArray; repmat({mean(normVariableData)}, [size(normZPos,2), 1])];
         
         cellIDsArray = [cellIDsArray, cellIDArray'];
-        normZPosArray = [normZPosArray, normZPos];      
-        zPosCentroidArray = [zPosCentroidArray, zPosCentroid];        
-        zPosArray = [zPosArray, zPos];     
-        normXYPosArray = [normXYPosArray, normXYPos];        
-        xyPosArray = [xyPosArray, xyPos];   
-        normVariableDataArray = [normVariableDataArray, normVariableData];  
-        variableDataArray = [variableDataArray, variableData];
-        polarDistArray = [polarDistArray, polarDist];
-        polarDistrArray = [polarDistrArray, polarDistr];
+        normZPosArray = [normZPosArray, normZPos'];      
+        zPosCentroidArray = [zPosCentroidArray, zPosCentroid'];        
+        zPosArray = [zPosArray, zPos'];     
+        normXYPosArray = [normXYPosArray, normXYPos'];        
+        xyPosArray = [xyPosArray, xyPos'];   
+        normVariableDataArray = [normVariableDataArray, normVariableData'];  
+        variableDataArray = [variableDataArray, variableData'];
+        polarDistArray = [polarDistArray, polarDist'];
+        polarDistrArray = [polarDistrArray, polarDistr'];
 
 
 
@@ -233,8 +272,12 @@ end
     spatialDataTable.Properties.VariableNames{'variableDataMean'} = char(strcat(variable, '_mean'));
     spatialDataTable.Properties.VariableNames{'normVariableDataMean'} = char(strcat(variable, '_mean_norm'));
 
-    fileName = strcat(savePath, saveName, '_', variable, '_spatialData.xls');
-    writetable(spatialDataTable,fileName);
-    
+    try
+        fileName = strcat(savePath, saveName, '_', variable, '_spatialData.xls');
+        writetable(spatialDataTable,fileName);
+    catch
+        fileName = strcat(savePath, saveName, '_', variable, '_spatialData.csv');
+        writetable(spatialDataTable, fileName);
+    end
 
 end
