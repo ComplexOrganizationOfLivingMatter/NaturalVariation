@@ -128,6 +128,45 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
         end
         
         cellIDArray = cells3dFeatures.ID_Cell;
+        
+        
+        cystShape = clasifyCyst(tissue3dFeatures.PrincipalAxisLength, 0.1);
+        negativeCurvature = {evaluateCurvNeg(tissue3dFeatures.Solidity, 0.9)};
+                
+        if strcmp(variable, "basal3dInfo")
+            basal3dInfo = data;
+            basal3dInfo = arrayfun(@(i) ['[' num2str(basal3dInfo{i}') ']'], 1:numel(basal3dInfo), 'UniformOutput', false);    
+            
+            cystIDArray = [cystIDArray; repmat({cystName}, [size(basal3dInfo,2), 1])];
+            cystShapeArray = [cystShapeArray; repmat({cystShape}, [size(basal3dInfo,2), 1])];
+            negativeCurvatureArray = [negativeCurvatureArray; repmat({negativeCurvature}, [size(basal3dInfo,2), 1])];
+            nCellsArray = [nCellsArray; repmat({length(validCells)}, [size(basal3dInfo,2), 1])];
+            variableMeanArray = [variableMeanArray; basal3dInfo'];
+            normVariableMeanArray = [normVariableMeanArray; basal3dInfo'];
+            
+            normZPos = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+            zPosCentroid = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+            zPos = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+            normXYPos = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+            xyPos = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+            polarDist = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+            polarDistr = repmat({(nan)}, [size(basal3dInfo,2), 1]);
+
+            normVariableData = basal3dInfo;
+            variableData = basal3dInfo;
+
+            cellIDsArray = [cellIDsArray, cellIDArray'];
+            normZPosArray = [normZPosArray, normZPos'];      
+            zPosCentroidArray = [zPosCentroidArray, zPosCentroid'];        
+            zPosArray = [zPosArray, zPos'];     
+            normXYPosArray = [normXYPosArray, normXYPos'];        
+            xyPosArray = [xyPosArray, xyPos'];   
+            normVariableDataArray = [normVariableDataArray, normVariableData];  
+            variableDataArray = [variableDataArray, variableData];
+            polarDistArray = [polarDistArray, polarDist'];
+            polarDistrArray = [polarDistrArray, polarDistr'];
+        end
+
                 
         try
             [normZPos, zPos, normVariableData, variableData, xyPos, normXYPos, zPosCentroid, polarDist, polarDistr] = getCellSpatialData(labelledImage, data, cellIDArray, variable, pixelScale);
@@ -136,9 +175,6 @@ function getCellSpatialDataBulk(originalImagesPath, fixedCystsPath, variable, sa
             continue
         end
         
-        cystShape = clasifyCyst(tissue3dFeatures.PrincipalAxisLength, 0.1);
-        negativeCurvature = {evaluateCurvNeg(tissue3dFeatures.Solidity, 0.9)};
-
         cystIDArray = [cystIDArray; repmat({cystName}, [size(normZPos,2), 1])];
         cystShapeArray = [cystShapeArray; repmat({cystShape}, [size(normZPos,2), 1])];
         negativeCurvatureArray = [negativeCurvatureArray; repmat({negativeCurvature}, [size(normZPos,2), 1])];
