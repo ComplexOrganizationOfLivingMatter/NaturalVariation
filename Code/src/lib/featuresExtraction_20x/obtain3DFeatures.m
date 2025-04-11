@@ -33,6 +33,9 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
             basal3dInfo.neighbourhood=basal3dInfo.neighbourhood(1:size(lateral3dInfo,2),1);
         end
         basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,basal3dInfo.neighbourhood','UniformOutput',false);
+        
+
+        %%
                 
         lateralLayerAux = lateralLayer;
         lateralLayerAux(labelledImage==0)=0;
@@ -57,11 +60,9 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         end
         noValidCells(ismember(noValidCells,missingCells))=[];
         numValidCells = length(validCells);
-        
+
         %% perimeters and meanNeighs
         [apicalPerimeter, basalPerimeter, apicalNeighsOfNeighs, basalNeighsOfNeighs, lateralNeighsOfNeighs] = calculatePerimeters(validCells, apicalLayer, apical3dInfo, basalLayer, basal3dInfo, lateralLayer, lateral3dInfo);
-        
-        %%
         
         %% Obtain cells descriptors
         % get apical, basal and lateral sides cells. Areas and cell Volume
@@ -85,7 +86,6 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         %% Obtain Tissue + Lumen descriptors
         [tissue3dFeatures] = extract3dDescriptors(labelledImage>0|lumenImage>0, 1);
         tissue3dFeatures.ID_Cell = 'Tissue and Lumen';
-
         
         %refactor purely voxels measurement to be compared with the surface
         %area extraction 
@@ -100,11 +100,11 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         perimeterAndNeighsOfNeighsTable = table(apicalPerimeter, basalPerimeter, apicalNeighsOfNeighs, basalNeighsOfNeighs, lateralNeighsOfNeighs);
 
         cellAreaNeighsInfo = table(cellularFeaturesValidCells.Apical_sides, cellularFeaturesValidCells.Apical_area./refactorApicalAreas,cellularFeaturesValidCells.Basal_sides, cellularFeaturesValidCells.Basal_area./refactorBasalAreas,cellularFeaturesValidCells.Cell_height,cellularFeaturesValidCells.Lateral_sides, cellularFeaturesValidCells.Lateral_area./refactorLateralAreas,cellularFeaturesValidCells.Average_cell_wall_area./refactorLateralAreas,cellularFeaturesValidCells.Std_cell_wall_area./refactorLateralAreas,'VariableNames',{'apical_NumNeighs','apical_Area','basal_NumNeighs','basal_Area','cell_height','lateral_NumNeighs','lateral_Area','average_cell_wall_Area','std_cell_wall_Area'});
-        cells3dFeatures = horzcat(cells3dFeatures, cellAreaNeighsInfo,table(cellularFeaturesValidCells.Scutoids, cellularFeaturesValidCells.apicoBasalTransitions,'VariableNames',{'scutoids','apicoBasalTransitions'}));
+        cells3dFeatures = horzcat(cells3dFeatures, cellAreaNeighsInfo,table(cellularFeaturesValidCells.Scutoids, cellularFeaturesValidCells.apicoBasalTransitions, cellularFeaturesValidCells.basal3dInfo,'VariableNames',{'scutoids','apicoBasalTransitions', 'basal3dInfo'}));
         cells3dFeatures = horzcat(cells3dFeatures, perimeterAndNeighsOfNeighsTable);
         %% Save variables
 %         if ~isempty(isempty(path2save))
-            save(fullfile(path2save, strcat(fileName,'_morphological3dFeatures.mat')), 'cells3dFeatures', 'tissue3dFeatures', 'lumen3dFeatures', 'polygon_distribution_apical', 'polygon_distribution_basal','polygon_distribution_lateral', 'cellularFeaturesValidCells', 'numValidCells','numTotalCells', 'surfaceRatio3D', 'polygon_distribution_lateral','apicoBasalNeighs', 'hollowTissue3dFeatures','apical3dInfo','basal3dInfo','lateral3dInfo');
+%             save(fullfile(path2save, strcat(fileName,'_morphological3dFeatures.mat')), 'cells3dFeatures', 'tissue3dFeatures', 'lumen3dFeatures', 'polygon_distribution_apical', 'polygon_distribution_basal','polygon_distribution_lateral', 'cellularFeaturesValidCells', 'numValidCells','numTotalCells', 'surfaceRatio3D', 'polygon_distribution_lateral','apicoBasalNeighs', 'hollowTissue3dFeatures','apical3dInfo','basal3dInfo','lateral3dInfo');
 %         end
     else
         load(fullfile(path2save, 'morphological3dFeatures.mat'), 'cells3dFeatures', 'tissue3dFeatures', 'lumen3dFeatures', 'polygon_distribution_apical', 'polygon_distribution_basal','polygon_distribution_lateral', 'cellularFeaturesValidCells', 'numValidCells','numTotalCells', 'surfaceRatio3D', 'polygon_distribution_lateral','apicoBasalNeighs', 'hollowTissue3dFeatures','apical3dInfo','basal3dInfo','lateral3dInfo');
