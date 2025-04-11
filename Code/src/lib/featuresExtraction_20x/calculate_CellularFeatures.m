@@ -47,7 +47,7 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
     [scutoids_cells,apical3dInfo,basal3dInfo,lateral3dInfo] = filterScutoids(apical3dInfo, basal3dInfo, lateral3dInfo, scutoids_cells);
     
     %% Correct apicoBasalTransitions
-     apicoBasalTransitions = cellfun(@(x, y) length(unique(vertcat(setdiff(y,x), setdiff(x,y)))), apical3dInfo,basal3dInfo);
+    apicoBasalTransitions = apicoBasalTransitions.*scutoids_cells;
 
 
     neighbours_data = table(apical3dInfo, basal3dInfo, lateral3dInfo);
@@ -64,12 +64,6 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
     basal_area_cells=cell2mat(struct2cell(regionprops(basalLayer,'Area'))).';
     lateral_area_cells = totalLateralCellsArea;
     
-    if size(apical_area_cells,1)>size(basal_area_cells,1)
-        basal_area_cells(size(basal_area_cells,1)+1:size(apical_area_cells,1))=0;
-    elseif size(apical_area_cells,1)<size(basal_area_cells,1)
-        apical_area_cells(size(apical_area_cells,1)+1:size(basal_area_cells,1))=0;
-    end
-        
     average_lateral_wall = cellfun(@mean, absoluteLateralContacts);
     std_lateral_wall = cellfun(@std, absoluteLateralContacts);
     
@@ -90,8 +84,8 @@ function [CellularFeaturesValidCells,CellularFeaturesAllCells, meanSurfaceRatio,
     
     %%  Export to a excel file
     ID_cells=(1:length(basal3dInfo)).';
-    CellularFeaturesAllCells=table(ID_cells,number_neighbours.Var1',number_neighbours.Var2',number_neighbours.Var3',apicobasal_neighboursRecount',scutoids_cells', apicoBasalTransitions', apical_area_cells,basal_area_cells,lateral_area_cells, average_lateral_wall, std_lateral_wall, volume_cells,cell_heights);
-    CellularFeaturesAllCells.Properties.VariableNames = {'ID_Cell','Apical_sides','Basal_sides','Lateral_sides','Apicobasal_neighbours','Scutoids', 'apicoBasalTransitions', 'Apical_area','Basal_area','Lateral_area','Average_cell_wall_area', 'Std_cell_wall_area', 'Volume','Cell_height'};
+    CellularFeaturesAllCells=table(ID_cells,number_neighbours.Var1',number_neighbours.Var2',number_neighbours.Var3',apicobasal_neighboursRecount',scutoids_cells', apicoBasalTransitions', apical_area_cells,basal_area_cells,lateral_area_cells, average_lateral_wall, std_lateral_wall, volume_cells,cell_heights, basal3dInfo');
+    CellularFeaturesAllCells.Properties.VariableNames = {'ID_Cell','Apical_sides','Basal_sides','Lateral_sides','Apicobasal_neighbours','Scutoids', 'apicoBasalTransitions', 'Apical_area','Basal_area','Lateral_area','Average_cell_wall_area', 'Std_cell_wall_area', 'Volume','Cell_height', 'basal3dInfo'};
 
     CellularFeaturesValidCells = CellularFeaturesAllCells(validCells,:);
 end
