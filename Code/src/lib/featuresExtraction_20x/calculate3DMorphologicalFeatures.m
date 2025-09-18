@@ -70,9 +70,9 @@ function [allGeneralInfo,allTissues,allLumens,allHollowTissue3dFeatures,allNetwo
         allTissues = [tissue3dFeatures, cell2table(polygon_distribution_apical(2, :), 'VariableNames', strcat('apical_', polygon_distribution_apical(1, :))), cell2table(polygon_distribution_basal(2, :), 'VariableNames', strcat('basal_', polygon_distribution_basal(1, :))), cell2table(polygon_distribution_lateral(2, :), 'VariableNames', strcat('lateral_', polygon_distribution_lateral(1, :)))];
         allGeneralInfo = cell2table([{fileName}, {surfaceRatio3D}, {numValidCells},{numTotalCells},{mean(cells3dFeatures.scutoids)},{mean(cells3dFeatures.apicoBasalTransitions)}],'VariableNames', {'ID_Glands', 'SurfaceRatio3D_areas', 'NCells_valid','NCells_total','Scutoids','ApicoBasalTransitions'});
 
-        
+        if ~isempty(path2save)
             save(fullfile(path2save, 'global_3dFeatures.mat'), 'allGeneralInfo', 'totalMeanCellsFeatures','totalStdCellsFeatures', 'allLumens', 'allTissues', 'allNetworkFeatures', 'allHollowTissue3dFeatures');
-        
+        end
     else
         load(fullfile(path2save, 'global_3dFeatures.mat'), 'allGeneralInfo', 'totalMeanCellsFeatures','totalStdCellsFeatures', 'allLumens', 'allTissues', 'allNetworkFeatures', 'allHollowTissue3dFeatures');
     end

@@ -52,7 +52,7 @@ function getCellSpatialData_allVars_multilayer_ui()
     end
     
     %JOIN TABLES
-    for varibaleIx=1:length(variables)
+    for variableIx=1:length(variables)
         if variableIx == 1
             variable = variables(variableIx);
             variable = variable{1};

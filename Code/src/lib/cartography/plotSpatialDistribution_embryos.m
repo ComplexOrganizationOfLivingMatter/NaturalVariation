@@ -119,8 +119,9 @@ function plotSpatialDistribution_embryos(rgStackPath, labelsPath, variable, save
             validCells = find(table2array(regionprops3(labelledImage_BASAL,'Volume'))>0);
             noValidCells = [];
         end
-
-        labelledImage = labelledImage_BASAL;
+        mask = ismember(labelledImage_BASAL, validCells);
+        labelledImage_save = labelledImage;
+        labelledImage = labelledImage_BASAL.*mask;
         %% Obtain 3D features from Cells, Tissue, Lumen and Tissue+Lumen
         try
             [cells3dFeatures, ~, ~,~, ~, ~,~, ~,~, ~, ~, apicoBasalNeighs] = obtain3DFeatures_outerCells(labelledImage_BASAL,apicalLayer,basalLayer,lateralLayer,lumenImage,validCells,noValidCells,'', '', contactThreshold, dilatedVx);
@@ -409,7 +410,9 @@ function plotSpatialDistribution_embryos(rgStackPath, labelsPath, variable, save
             
             paint3D(apicalLayerToDraw, 1:length(apicalCellsToDraw), colours, 2);
         else
-            paint3D(labelledImage, uniqueLabels, colours, 3, 1);
+%             se = strel('sphere', 2);
+%             labelledImage = imdilate(labelledImage, se);
+            paint3D(labelledImage, uniqueLabels, colours, 3, 0.5);
         end
         material([0.5 0.2 0.0 10 1])
         fig = get(groot,'CurrentFigure');

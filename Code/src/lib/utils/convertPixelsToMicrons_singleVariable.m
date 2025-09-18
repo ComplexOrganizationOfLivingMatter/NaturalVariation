@@ -9,5 +9,7 @@ function variableData = convertPixelsToMicrons_singleVariable(variableData, vari
         variableData = variableData*pixelScale;
     elseif strcmp(variableType, 'height')
         variableData = variableData*pixelScale;
+    elseif strcmp(variableType, 'perimeter')
+        variableData = variableData*pixelScale;
 
 end
