@@ -35,10 +35,10 @@ function [cells3dFeatures, tissue3dFeatures, lumen3dFeatures,hollowTissue3dFeatu
         basal3dInfo = basal3dInfo.neighbourhood';
 %         basal3dInfo = cellfun(@(x,y) intersect(x,y),lateral3dInfo,basal3dInfo.neighbourhood','UniformOutput',false);
 
-        warning('this should be uncommented if analyzing Voronoi embryos')
+        warning('this 2 lines should be uncommented if analyzing Voronoi embryos')
         %[basal3dInfo, ~] = filterNeighboursCrosses2(basalLayer, basal3dInfo);
-        %%
         %basal3dInfo = basal3dInfo';
+        
         lateralLayerAux = lateralLayer;
         lateralLayerAux(labelledImage==0)=0;
         if ~isequal(lateralLayer, lateralLayerAux)
